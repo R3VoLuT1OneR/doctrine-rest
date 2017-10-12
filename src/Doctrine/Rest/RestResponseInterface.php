@@ -1,0 +1,53 @@
+<?php namespace Pz\Doctrine\Rest;
+
+use Doctrine\ORM\QueryBuilder;
+
+use Pz\Doctrine\Rest\Action\Index\ResponseDataInterface;
+use Pz\Doctrine\Rest\Request\CreateRequestInterface;
+use Pz\Doctrine\Rest\Request\DeleteRequestInterface;
+use Pz\Doctrine\Rest\Request\IndexRequestInterface;
+use Pz\Doctrine\Rest\Request\ShowRequestInterface;
+use Pz\Doctrine\Rest\Request\UpdateRequestInterface;
+
+interface RestResponseInterface
+{
+    /**
+     * @param IndexRequestInterface $request
+     * @param ResponseDataInterface $response
+     *
+     * @return array
+     */
+    public function index(IndexRequestInterface $request, ResponseDataInterface $response);
+
+    /**
+     * @param ShowRequestInterface $request
+     * @param object               $entity
+     *
+     * @return array
+     */
+    public function show(ShowRequestInterface $request, $entity);
+
+    /**
+     * @param CreateRequestInterface $request
+     * @param object                 $entity
+     *
+     * @return array
+     */
+    public function create(CreateRequestInterface $request, $entity);
+
+    /**
+     * @param UpdateRequestInterface $request
+     * @param object                 $entity
+     *
+     * @return array
+     */
+    public function update(UpdateRequestInterface $request, $entity);
+
+    /**
+     * @param DeleteRequestInterface $request
+     * @param object                 $entity
+     *
+     * @return array
+     */
+    public function delete(DeleteRequestInterface $request, $entity);
+}
