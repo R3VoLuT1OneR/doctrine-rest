@@ -6,14 +6,23 @@ use Pz\Doctrine\Rest\Request\DeleteRequestInterface;
 use Pz\Doctrine\Rest\Request\IndexRequestInterface;
 use Pz\Doctrine\Rest\Request\ShowRequestInterface;
 use Pz\Doctrine\Rest\Request\UpdateRequestInterface;
+use Pz\Doctrine\Rest\RestResponse as Response;
 
-interface RestResponseInterface
+/**
+ * Rest Response Interface
+ *
+ * Used as api for all rest responses.
+ *
+ * @package Pz\Doctrine\Rest
+ */
+interface RestResponseFactory
 {
     /**
      * @param IndexRequestInterface $request
      * @param ResponseDataInterface $response
      *
-     * @return array
+     * @return Response
+     * @throws \Exception
      */
     public function index(IndexRequestInterface $request, ResponseDataInterface $response);
 
@@ -21,7 +30,8 @@ interface RestResponseInterface
      * @param ShowRequestInterface $request
      * @param object               $entity
      *
-     * @return array
+     * @return Response
+     * @throws \Exception
      */
     public function show(ShowRequestInterface $request, $entity);
 
@@ -29,7 +39,8 @@ interface RestResponseInterface
      * @param CreateRequestInterface $request
      * @param object                 $entity
      *
-     * @return array
+     * @return Response
+     * @throws \Exception
      */
     public function create(CreateRequestInterface $request, $entity);
 
@@ -37,7 +48,8 @@ interface RestResponseInterface
      * @param UpdateRequestInterface $request
      * @param object                 $entity
      *
-     * @return array
+     * @return Response
+     * @throws \Exception
      */
     public function update(UpdateRequestInterface $request, $entity);
 
@@ -45,14 +57,22 @@ interface RestResponseInterface
      * @param DeleteRequestInterface $request
      * @param object                 $entity
      *
-     * @return array
+     * @return Response
+     * @throws \Exception
      */
     public function delete(DeleteRequestInterface $request, $entity);
 
     /**
      * @param RestRequestInterface $request
      *
-     * @return array
+     * @return Response
      */
     public function notFound(RestRequestInterface $request);
+
+    /**
+     * @param \Exception|\Error|RestException $exception
+     *
+     * @return Response
+     */
+    public function exception($exception);
 }

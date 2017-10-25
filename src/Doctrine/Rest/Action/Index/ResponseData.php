@@ -29,11 +29,11 @@ class ResponseData implements ResponseDataInterface
     }
 
     /**
-     * @return Paginator
+     * @return array
      */
     public function data()
     {
-        return $this->paginator;
+        return iterator_to_array($this->paginator);
     }
 
     /**

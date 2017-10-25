@@ -2,8 +2,8 @@
 
 use Pz\Doctrine\Rest\Request\ShowRequestInterface;
 use Pz\Doctrine\Rest\RestRepository;
-use Pz\Doctrine\Rest\RestResponseInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Pz\Doctrine\Rest\RestResponseFactory;
+use Pz\Doctrine\Rest\RestResponse;
 
 trait ShowAction
 {
@@ -15,23 +15,28 @@ trait ShowAction
     abstract protected function repository();
 
     /**
-     * @return RestResponseInterface
+     * @return RestResponseFactory
      */
     abstract protected function response();
 
     /**
      * @param ShowRequestInterface $request
      *
-     * @return array
+     * @return RestResponse
      */
     public function show(ShowRequestInterface $request)
     {
-        if (null === ($entity = $this->repository()->find($request->getId()))) {
-            return $this->response()->notFound($request);
+        try {
+
+            if (null === ($entity = $this->repository()->find($request->getId()))) {
+                return $this->response()->notFound($request);
+            }
+
+            $request->authorize($entity);
+
+            return $this->response()->show($request, $entity);
+        } catch (\Exception $e) {
+            return $this->response()->exception($e);
         }
-
-        $request->authorize($entity);
-
-        return $this->response()->show($request, $entity);
     }
 }

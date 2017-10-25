@@ -8,8 +8,10 @@ use Pz\Doctrine\Rest\BuilderChain\CriteriaChain;
 use Pz\Doctrine\Rest\QueryParser\FilterableQueryParser;
 use Pz\Doctrine\Rest\QueryParser\PropertyQueryParser;
 use Pz\Doctrine\Rest\Request\IndexRequestInterface;
+use Pz\Doctrine\Rest\RestException;
 use Pz\Doctrine\Rest\RestRepository;
-use Pz\Doctrine\Rest\RestResponseInterface;
+use Pz\Doctrine\Rest\RestResponse;
+use Pz\Doctrine\Rest\RestResponseFactory;
 
 trait IndexAction
 {
@@ -28,31 +30,36 @@ trait IndexAction
     abstract protected function repository();
 
     /**
-     * @return RestResponseInterface
+     * @return RestResponseFactory
      */
     abstract protected function response();
 
     /**
      * @param IndexRequestInterface $request
      *
-     * @return array
+     * @return RestResponse
      */
     public function index(IndexRequestInterface $request)
     {
-        $request->authorize($this->repository()->getClassName());
-        $chain = CriteriaChain::create($this->criteriaBuilders($request));
+        try {
 
-        $criteria = new Criteria(null,
-            $request->getOrderBy(),
-            $request->getStart(),
-            $request->getLimit()
-        );
+            $request->authorize($this->repository()->getClassName());
+            $chain = CriteriaChain::create($this->criteriaBuilders($request));
 
-        $qb = $this->repository()
-            ->createQueryBuilder($this->alias())
-            ->addCriteria($chain->process($criteria));
+            $criteria = new Criteria(null,
+                $request->getOrderBy(),
+                $request->getStart(),
+                $request->getLimit()
+            );
 
-        return $this->response()->index($request, $this->buildResponseData($qb));
+            $qb = $this->repository()
+                ->createQueryBuilder($this->alias())
+                ->addCriteria($chain->process($criteria));
+
+            return $this->response()->index($request, $this->buildResponseData($qb));
+        } catch (\Exception $e) {
+            return $this->response()->exception($e);
+        }
     }
 
     /**

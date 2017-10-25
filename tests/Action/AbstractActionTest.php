@@ -7,7 +7,7 @@ use Doctrine\ORM\Query;
 use League\Fractal\TransformerAbstract;
 use Pz\Doctrine\Rest\Response\FractalResponse;
 use Pz\Doctrine\Rest\RestRepository;
-use Pz\Doctrine\Rest\RestResponseInterface;
+use Pz\Doctrine\Rest\RestResponseFactory;
 use Doctrine\ORM\QueryBuilder;
 use Mockery as m;
 
@@ -27,7 +27,7 @@ abstract class AbstractActionTest extends \PHPUnit\Framework\TestCase
     protected $repository;
 
     /**
-     * @var RestResponseInterface|m\Mock
+     * @var RestResponseFactory|m\Mock
      */
     protected $response;
 
@@ -68,7 +68,7 @@ abstract class AbstractActionTest extends \PHPUnit\Framework\TestCase
             ->shouldReceive('createQueryBuilder')->with('i')->andReturn($this->queryBuilder)
             ->getMock();
 
-        $this->response = m::mock(RestResponseInterface::class);
+        $this->response = m::mock(RestResponseFactory::class);
     }
 
 }

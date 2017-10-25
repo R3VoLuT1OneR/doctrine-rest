@@ -1,8 +1,5 @@
 <?php namespace Pz\Doctrine\Rest\Response;
 
-use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Tools\Pagination\Paginator;
-
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
@@ -14,10 +11,14 @@ use Pz\Doctrine\Rest\Request\DeleteRequestInterface;
 use Pz\Doctrine\Rest\Request\IndexRequestInterface;
 use Pz\Doctrine\Rest\Request\ShowRequestInterface;
 use Pz\Doctrine\Rest\Request\UpdateRequestInterface;
+use Pz\Doctrine\Rest\RestException;
 use Pz\Doctrine\Rest\RestRequestInterface;
-use Pz\Doctrine\Rest\RestResponseInterface;
+use Pz\Doctrine\Rest\RestResponseFactory;
 
-class FractalResponse implements RestResponseInterface
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+
+class FractalResponse implements RestResponseFactory
 {
     /**
      * @var TransformerAbstract
@@ -40,13 +41,123 @@ class FractalResponse implements RestResponseInterface
     }
 
     /**
+     * @param IndexRequestInterface $request
+     * @param ResponseDataInterface $response
+     *
+     * @return array
+     */
+    public function index(IndexRequestInterface $request, ResponseDataInterface $response)
+    {
+        $resource = new Collection($response->data(), $this->transformer());
+        $resource->setMetaValue('count', $response->count());
+        $resource->setMetaValue('limit', $response->limit());
+        $resource->setMetaValue('start', $response->start());
+
+        return $this->response(
+            $this->fractal($request)
+                ->createData($resource)
+                ->toArray()
+        );
+    }
+
+    /**
+     * @param ShowRequestInterface $request
+     * @param             $entity
+     *
+     * @return array
+     */
+    public function show(ShowRequestInterface $request, $entity)
+    {
+        return $this->response(
+            $this->fractal($request)
+                ->createData(new Item($entity, $this->transformer()))
+                ->toArray()
+        );
+    }
+
+    /**
+     * @param CreateRequestInterface $request
+     * @param               $entity
+     *
+     * @return array
+     */
+    public function create(CreateRequestInterface $request, $entity)
+    {
+        return $this->response(
+            $this->fractal($request)
+                ->createData(new Item($entity, $this->transformer()))
+                ->toArray()
+        );
+    }
+
+    /**
+     * @param UpdateRequestInterface $request
+     * @param               $entity
+     *
+     * @return array
+     */
+    public function update(UpdateRequestInterface $request, $entity)
+    {
+        return $this->response(
+            $this->fractal($request)
+                ->createData(new Item($entity, $this->transformer()))
+                ->toArray()
+        );
+    }
+
+    /**
+     * @param DeleteRequestInterface $request
+     * @param               $entity
+     *
+     * @return JsonResponse
+     */
+    public function delete(DeleteRequestInterface $request, $entity)
+    {
+        return $this->response();
+    }
+
+    /**
+     * @param RestRequestInterface $request
+     *
+     * @return JsonResponse
+     */
+    public function notFound(RestRequestInterface $request)
+    {
+        return $this->response(null, Response::HTTP_NOT_FOUND);
+    }
+
+    /**
+     * @param \Error|\Exception|\Pz\Doctrine\Rest\RestException $exception
+     *
+     * @return JsonResponse
+     */
+    public function exception($exception)
+    {
+        $message = $exception->getMessage();
+
+        switch (true) {
+            case ($exception instanceof RestException):
+                $httpStatus = $exception->httpStatus();
+                $errors = $exception->errors();
+                break;
+
+            default:
+                $httpStatus = JsonResponse::HTTP_INTERNAL_SERVER_ERROR;
+                $errors = $exception->getTrace();
+                break;
+        }
+
+        return $this->response(['message' => $message, 'errors' => $errors], $httpStatus);
+    }
+
+    /**
      * Return configured fractal by request format.
      *
      * @param RestRequestInterface $request
      *
      * @return Manager
      */
-    protected function fractal(RestRequestInterface $request)
+    protected function fractal(/** @scrutinizer ignore-unused */ RestRequestInterface $request)
     {
         if ($this->fractal === null) {
             $this->fractal = new Manager();
@@ -64,86 +175,13 @@ class FractalResponse implements RestResponseInterface
     }
 
     /**
-     * @param IndexRequestInterface $request
-     * @param ResponseDataInterface $response
+     * @param null $data
+     * @param int  $httStatus
      *
-     * @return array
+     * @return JsonResponse
      */
-    public function index(IndexRequestInterface $request, ResponseDataInterface $response)
+    protected function response($data = null, $httStatus = Response::HTTP_OK)
     {
-        $resource = new Collection($response->data(), $this->transformer());
-        $resource->setMetaValue('count', $response->count());
-        $resource->setMetaValue('limit', $response->limit());
-        $resource->setMetaValue('start', $response->start());
-
-        return $this->fractal($request)
-            ->createData($resource)
-            ->toArray();
-    }
-
-    /**
-     * @param ShowRequestInterface $request
-     * @param             $entity
-     *
-     * @return array
-     */
-    public function show(ShowRequestInterface $request, $entity)
-    {
-        $resource = new Item($entity, $this->transformer());
-
-        return $this->fractal($request)
-            ->createData($resource)
-            ->toArray();
-    }
-
-    /**
-     * @param CreateRequestInterface $request
-     * @param               $entity
-     *
-     * @return array
-     */
-    public function create(CreateRequestInterface $request, $entity)
-    {
-        $resource = new Item($entity, $this->transformer());
-
-        return $this->fractal($request)
-            ->createData($resource)
-            ->toArray();
-    }
-
-    /**
-     * @param UpdateRequestInterface $request
-     * @param               $entity
-     *
-     * @return array
-     */
-    public function update(UpdateRequestInterface $request, $entity)
-    {
-        $resource = new Item($entity, $this->transformer());
-
-        return $this->fractal($request)
-            ->createData($resource)
-            ->toArray();
-    }
-
-    /**
-     * @param DeleteRequestInterface $request
-     * @param               $entity
-     *
-     * @return null
-     */
-    public function delete(DeleteRequestInterface $request, $entity)
-    {
-        return null;
-    }
-
-    /**
-     * @param RestRequestInterface $request
-     *
-     * @return null
-     */
-    public function notFound(RestRequestInterface $request)
-    {
-        return null;
+        return new JsonResponse($data, $httStatus);
     }
 }

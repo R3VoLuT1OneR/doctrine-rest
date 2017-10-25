@@ -2,8 +2,8 @@
 
 use Pz\Doctrine\Rest\Request\UpdateRequestInterface;
 use Pz\Doctrine\Rest\RestRepository;
-use Pz\Doctrine\Rest\RestResponseInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Pz\Doctrine\Rest\RestResponseFactory;
+use Pz\Doctrine\Rest\RestResponse;
 
 trait UpdateAction
 {
@@ -15,7 +15,7 @@ trait UpdateAction
     abstract protected function repository();
 
     /**
-     * @return RestResponseInterface
+     * @return RestResponseFactory
      */
     abstract protected function response();
 
@@ -30,21 +30,24 @@ trait UpdateAction
     /**
      * @param UpdateRequestInterface $request
      *
-     * @return array
-     * @throws \Doctrine\ORM\EntityNotFoundException
+     * @return RestResponse
      */
     public function update(UpdateRequestInterface $request)
     {
-        if (null === ($entity = $this->repository()->find($request->getId()))) {
-            return $this->response()->notFound($request);
+        try {
+            if (null === ($entity = $this->repository()->find($request->getId()))) {
+                return $this->response()->notFound($request);
+            }
+
+            $request->authorize($entity);
+
+            $this->updateEntity($request, $entity);
+
+            $this->repository()->em()->flush();
+
+            return $this->response()->update($request, $entity);
+        } catch (\Exception $e) {
+            return $this->response()->exception($e);
         }
-
-        $request->authorize($entity);
-
-        $this->updateEntity($request, $entity);
-
-        $this->repository()->em()->flush();
-
-        return $this->response()->update($request, $entity);
     }
 }

@@ -2,7 +2,8 @@
 
 use Pz\Doctrine\Rest\Request\CreateRequestInterface;
 use Pz\Doctrine\Rest\RestRepository;
-use Pz\Doctrine\Rest\RestResponseInterface;
+use Pz\Doctrine\Rest\RestResponseFactory;
+use Pz\Doctrine\Rest\RestResponse;
 
 trait CreateAction
 {
@@ -14,7 +15,7 @@ trait CreateAction
     abstract protected function repository();
 
     /**
-     * @return RestResponseInterface
+     * @return RestResponseFactory
      */
     abstract protected function response();
 
@@ -28,17 +29,21 @@ trait CreateAction
     /**
      * @param CreateRequestInterface $request
      *
-     * @return array
+     * @return RestResponse
      */
     public function create(CreateRequestInterface $request)
     {
-        $request->authorize($this->repository()->getClassName());
+        try {
+            $request->authorize($this->repository()->getClassName());
 
-        $entity = $this->createEntity($request);
+            $entity = $this->createEntity($request);
 
-        $this->repository()->em()->persist($entity);
-        $this->repository()->em()->flush();
+            $this->repository()->em()->persist($entity);
+            $this->repository()->em()->flush();
 
-        return $this->response()->create($request, $entity);
+            return $this->response()->create($request, $entity);
+        } catch (\Exception $e) {
+            return $this->response()->exception($e);
+        }
     }
 }

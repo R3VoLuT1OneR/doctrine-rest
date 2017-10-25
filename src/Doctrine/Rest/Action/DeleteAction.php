@@ -2,7 +2,8 @@
 
 use Pz\Doctrine\Rest\Request\DeleteRequestInterface;
 use Pz\Doctrine\Rest\RestRepository;
-use Pz\Doctrine\Rest\RestResponseInterface;
+use Pz\Doctrine\Rest\RestResponseFactory;
+use Pz\Doctrine\Rest\RestResponse;
 
 trait DeleteAction
 {
@@ -14,26 +15,30 @@ trait DeleteAction
     abstract protected function repository();
 
     /**
-     * @return RestResponseInterface
+     * @return RestResponseFactory
      */
     abstract protected function response();
 
     /**
      * @param DeleteRequestInterface $request
      *
-     * @return array
+     * @return RestResponse
      */
     public function delete(DeleteRequestInterface $request)
     {
-        if (null === ($entity = $this->repository()->find($request->getId()))) {
-            return $this->response()->notFound($request);
+        try {
+            if (null === ($entity = $this->repository()->find($request->getId()))) {
+                return $this->response()->notFound($request);
+            }
+
+            $request->authorize($entity);
+
+            $this->repository()->em()->remove($entity);
+            $this->repository()->em()->flush();
+
+            return $this->response()->delete($request, $entity);
+        } catch (\Exception $e) {
+            return $this->response()->exception($e);
         }
-
-        $request->authorize($entity);
-
-        $this->repository()->em()->remove($entity);
-        $this->repository()->em()->flush();
-
-        return $this->response()->delete($request, $entity);
     }
 }
