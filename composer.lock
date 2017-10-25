@@ -537,12 +537,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "24d95796bb27ee06f4687b03c58ecba057be15f9"
+                "reference": "e1b851f2e93a4afd82fb7e7f32c6f114d0ea7b71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/24d95796bb27ee06f4687b03c58ecba057be15f9",
-                "reference": "24d95796bb27ee06f4687b03c58ecba057be15f9",
+                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/e1b851f2e93a4afd82fb7e7f32c6f114d0ea7b71",
+                "reference": "e1b851f2e93a4afd82fb7e7f32c6f114d0ea7b71",
                 "shasum": ""
             },
             "require": {
@@ -553,11 +553,11 @@
                 "doctrine/instantiator": "^1.0.1",
                 "ext-pdo": "*",
                 "php": ">=5.4",
-                "symfony/console": "~2.5|~3.0"
+                "symfony/console": "~2.5|~3.0|~4.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "~4.0",
-                "symfony/yaml": "~2.3|~3.0"
+                "symfony/yaml": "~2.3|~3.0|~4.0"
             },
             "suggest": {
                 "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
@@ -605,7 +605,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2017-09-18 06:52:10"
+            "time": "2017-10-23 18:26:03"
         },
         {
             "name": "league/fractal",
@@ -724,12 +724,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "0b3c68603ca452d69d713ca5551b5a8799d938f1"
+                "reference": "8e5f4d2b26b0a158bd7c83ffc780ffcd08fd3bb3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/0b3c68603ca452d69d713ca5551b5a8799d938f1",
-                "reference": "0b3c68603ca452d69d713ca5551b5a8799d938f1",
+                "url": "https://api.github.com/repos/symfony/console/zipball/8e5f4d2b26b0a158bd7c83ffc780ffcd08fd3bb3",
+                "reference": "8e5f4d2b26b0a158bd7c83ffc780ffcd08fd3bb3",
                 "shasum": ""
             },
             "require": {
@@ -785,7 +785,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2017-10-15 12:36:44"
+            "time": "2017-10-24 14:40:29"
         },
         {
             "name": "symfony/debug",
@@ -793,12 +793,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/debug.git",
-                "reference": "147025beafa520d0e0fee9dbd073636ef819f675"
+                "reference": "9ebd15444205b29a3088dfd3eb92ba5f648fceea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/debug/zipball/147025beafa520d0e0fee9dbd073636ef819f675",
-                "reference": "147025beafa520d0e0fee9dbd073636ef819f675",
+                "url": "https://api.github.com/repos/symfony/debug/zipball/9ebd15444205b29a3088dfd3eb92ba5f648fceea",
+                "reference": "9ebd15444205b29a3088dfd3eb92ba5f648fceea",
                 "shasum": ""
             },
             "require": {
@@ -841,7 +841,7 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-            "time": "2017-10-10 10:38:39"
+            "time": "2017-10-24 14:12:06"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -958,12 +958,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mockery/mockery.git",
-                "reference": "128608f262b44360f7e3e86e6eae73f448398711"
+                "reference": "89f27e4548cea8fa032646903ba6b0d1e725be35"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mockery/mockery/zipball/128608f262b44360f7e3e86e6eae73f448398711",
-                "reference": "128608f262b44360f7e3e86e6eae73f448398711",
+                "url": "https://api.github.com/repos/mockery/mockery/zipball/89f27e4548cea8fa032646903ba6b0d1e725be35",
+                "reference": "89f27e4548cea8fa032646903ba6b0d1e725be35",
                 "shasum": ""
             },
             "require": {
@@ -1015,7 +1015,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2017-10-11 11:37:29"
+            "time": "2017-10-24 10:19:12"
         },
         {
             "name": "myclabs/deep-copy",
@@ -1629,12 +1629,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "958157eb0dc4344b68d96361d4bd05ca05db0a04"
+                "reference": "5c34f3cf7ce5793782c047961a0a5d539596f4ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/958157eb0dc4344b68d96361d4bd05ca05db0a04",
-                "reference": "958157eb0dc4344b68d96361d4bd05ca05db0a04",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/5c34f3cf7ce5793782c047961a0a5d539596f4ef",
+                "reference": "5c34f3cf7ce5793782c047961a0a5d539596f4ef",
                 "shasum": ""
             },
             "require": {
@@ -1705,7 +1705,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-10-16 03:34:17"
+            "time": "2017-10-25 10:02:28"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
