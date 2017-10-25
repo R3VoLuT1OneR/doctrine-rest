@@ -3,6 +3,7 @@
 use Pz\Doctrine\Rest\Request\ShowRequestInterface;
 use Pz\Doctrine\Rest\RestRepository;
 use Pz\Doctrine\Rest\RestResponseInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 trait ShowAction
 {
@@ -22,11 +23,12 @@ trait ShowAction
      * @param ShowRequestInterface $request
      *
      * @return array
-     * @throws \Doctrine\ORM\EntityNotFoundException
      */
     public function show(ShowRequestInterface $request)
     {
-        $entity = $this->repository()->findById($request->getId());
+        if (null === ($entity = $this->repository()->find($request->getId()))) {
+            return $this->response()->notFound($request);
+        }
 
         $request->authorize($entity);
 

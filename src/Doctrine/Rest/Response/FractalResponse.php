@@ -130,9 +130,19 @@ class FractalResponse implements RestResponseInterface
      * @param DeleteRequestInterface $request
      * @param               $entity
      *
-     * @return array
+     * @return null
      */
     public function delete(DeleteRequestInterface $request, $entity)
+    {
+        return null;
+    }
+
+    /**
+     * @param RestRequestInterface $request
+     *
+     * @return null
+     */
+    public function notFound(RestRequestInterface $request)
     {
         return null;
     }

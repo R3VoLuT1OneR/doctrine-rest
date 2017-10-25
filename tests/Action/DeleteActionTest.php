@@ -9,6 +9,16 @@ class DeleteActionTest extends AbstractActionTest
 {
     use DeleteAction;
 
+    public function test_delete_action_not_found()
+    {
+        $request = m::mock(DeleteRequestInterface::class)
+            ->shouldReceive('getId')->andReturn(1)
+            ->getMock();
+
+        $this->repository->shouldReceive('find')->with(1)->andReturn(null);
+        $this->assertNull($this->delete($request));
+    }
+
     public function test_delete_action()
     {
         $entity = new \stdClass();
@@ -17,11 +27,10 @@ class DeleteActionTest extends AbstractActionTest
             ->shouldReceive('authorize')->with($entity)
             ->getMock();
 
-        $this->repository->shouldReceive('findById')->with(1)->andReturn($entity);
+        $this->repository->shouldReceive('find')->with(1)->andReturn($entity);
         $this->em->shouldReceive('remove')->with($entity);
         $this->em->shouldReceive('flush');
 
         $this->assertEquals(null, $this->delete($request));
     }
-
 }

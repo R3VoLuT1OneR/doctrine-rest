@@ -16,6 +16,16 @@ class UpdateActionTest extends AbstractActionTest
         return $entity;
     }
 
+    public function test_update_action_not_found()
+    {
+        $request = m::mock(UpdateRequestInterface::class)
+            ->shouldReceive('getId')->andReturn(1)
+            ->getMock();
+
+        $this->repository->shouldReceive('find')->with(1)->andReturn(null);
+        $this->assertNull($this->update($request));
+    }
+
     public function test_update_action()
     {
         $entity = new \stdClass();
@@ -24,7 +34,7 @@ class UpdateActionTest extends AbstractActionTest
             ->shouldReceive('authorize')->with($entity)
             ->getMock();
 
-        $this->repository->shouldReceive('find')->with(1, null, null)->andReturn($entity);
+        $this->repository->shouldReceive('find')->with(1)->andReturn($entity);
         $this->response->shouldReceive('update')->with($request, $entity)->andReturn('update view');
         $this->em->shouldReceive('flush');
 

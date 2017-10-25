@@ -31,12 +31,13 @@ class CreateActionTest extends AbstractActionTest
             ->shouldReceive('authorize')->with(static::class)
             ->getMock();
 
+        $this->em->shouldReceive('persist')->with(m::on(function($entity) { return $this->newEntity === $entity; }));
         $this->em->shouldReceive('flush');
+
         $this->response->shouldReceive('create')
             ->with($request, m::on(function($entity) { return $this->newEntity === $entity; }))
             ->andReturn('create view');
 
         $this->assertEquals(['data' => ['test' => 'testData']], $this->create($request));
     }
-
 }

@@ -36,6 +36,7 @@ trait CreateAction
 
         $entity = $this->createEntity($request);
 
+        $this->repository()->em()->persist($entity);
         $this->repository()->em()->flush();
 
         return $this->response()->create($request, $entity);

@@ -22,11 +22,12 @@ trait DeleteAction
      * @param DeleteRequestInterface $request
      *
      * @return array
-     * @throws \Doctrine\ORM\EntityNotFoundException
      */
     public function delete(DeleteRequestInterface $request)
     {
-        $entity = $this->repository()->findById($request->getId());
+        if (null === ($entity = $this->repository()->find($request->getId()))) {
+            return $this->response()->notFound($request);
+        }
 
         $request->authorize($entity);
 

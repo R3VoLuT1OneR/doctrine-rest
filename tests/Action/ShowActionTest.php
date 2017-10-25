@@ -12,14 +12,12 @@ class ShowActionTest extends AbstractActionTest
 
     public function test_show_action_not_found()
     {
-        $this->expectException(EntityNotFoundException::class);
-
         $request = m::mock(ShowRequestInterface::class)
             ->shouldReceive('getId')->andReturn(1)
             ->getMock();
 
-        $this->repository->shouldReceive('find')->with(1, null, null)->andReturn(null);
-        $this->show($request);
+        $this->repository->shouldReceive('find')->with(1)->andReturn(null);
+        $this->assertNull($this->show($request));
     }
 
     public function test_show_action()
@@ -30,7 +28,7 @@ class ShowActionTest extends AbstractActionTest
             ->shouldReceive('getId')->andReturn(1)
             ->getMock();
 
-        $this->repository->shouldReceive('find')->with(1, null, null)->andReturn($entity);
+        $this->repository->shouldReceive('find')->with(1)->andReturn($entity);
         $this->response->shouldReceive('show')->with($request, $entity)->andReturn('show view');
 
         $this->assertEquals(['data' => ['test' => 'testData']], $this->show($request));
