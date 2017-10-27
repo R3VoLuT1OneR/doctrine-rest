@@ -1,48 +1,45 @@
-<?php namespace Tests\Action;
+<?php namespace Pz\Doctrine\Rest\Tests\Action;
 
-use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Tools\Pagination\Paginator;
-use Pz\Doctrine\Rest\Action\Index\ResponseData;
-use Pz\Doctrine\Rest\Action\Index\ResponseDataInterface;
 use Pz\Doctrine\Rest\Action\IndexAction;
 use Pz\Doctrine\Rest\Request\IndexRequestInterface;
-use Doctrine\ORM\Query\Expr\OrderBy;
 use Mockery as m;
+use Pz\Doctrine\Rest\Response\FractalResponse;
+use Pz\Doctrine\Rest\RestException;
+use Pz\Doctrine\Rest\RestResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class IndexActionTest extends AbstractActionTest
 {
-    use IndexAction {
-        buildResponseData as traitBuildResponseData;
-    }
+    use IndexAction;
 
-    public function buildResponseData(QueryBuilder $qb)
+    public function test_index_action_exception()
     {
-        $reflectionClass = new \ReflectionClass(ResponseData::class);
-        $property = $reflectionClass->getProperty('paginator');
-        $property->setAccessible(true);
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('test exception');
 
-        $responseData = $this->traitBuildResponseData($qb);
-
-        $paginator = m::mock(Paginator::class)
-            ->shouldReceive('count')->andReturn(3000)
-            ->shouldReceive('getIterator')->andReturn(new \ArrayIterator([1,2,3]))
-            ->shouldReceive('getQuery')->andReturn(
-                m::mock()
-                    ->shouldReceive('getMaxResults')->andReturn(1000)
-                    ->shouldReceive('getFirstResult')->andReturn(2000)
-                    ->getMock()
-            )
+        $request = m::mock(IndexRequestInterface::class)
+            ->shouldReceive('authorize')->andThrow(new \Exception('test exception'))
             ->getMock();
 
-        $property->setValue($responseData, $paginator);
-
-        return $responseData;
+        $this->index($request);
     }
 
-    public function test_index_action()
+    public function test_index_action_rest_exception()
     {
-        /** @var IndexRequestInterface $indexRequest */
-        $indexRequest = m::mock(IndexRequestInterface::class)
+        $request = m::mock(IndexRequestInterface::class)
+            ->shouldReceive('authorize')->andThrow(new RestException(422, 'test exception'))
+            ->getMock();
+
+        $this->assertInstanceOf(RestResponse::class, $response = $this->index($request));
+        $this->assertEquals(422, $response->getStatusCode());
+        $this->assertArraySubset(['message' => 'test exception', 'errors' => []], json_decode($response->getContent(), true));
+    }
+
+    public function test_index_action_simple()
+    {
+        /** @var IndexRequestInterface $request */
+        $request = m::mock(IndexRequestInterface::class)
+            ->shouldReceive('http')->andReturn(new Request())
             ->shouldReceive('authorize')->withArgs([static::class])
             ->shouldReceive('getQuery')->andReturn('testQuery')
             ->shouldReceive('getLimit')->andReturn(1000)
@@ -50,26 +47,64 @@ class IndexActionTest extends AbstractActionTest
             ->shouldReceive('getOrderBy')->andReturn(['field1' => 'asc', 'field2' => 'desc'])
             ->getMock();
 
+        $this->assertInstanceOf(RestResponse::class, $response = $this->index($request));
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([
-            'data' => [
-                ['test' => 'testData'],
-                ['test' => 'testData'],
-                ['test' => 'testData'],
-            ],
+            'data' => [],
             'meta' => [
-                'count' => 3000,
-                'limit' => 1000,
-                'start' => 2000,
+                'pagination' => [
+                    'total' => 0,
+                    'count' => 0,
+                    'per_page' => 1000,
+                    'current_page' => 3,
+                    'total_pages' => 0,
+                    'links' => [
+                        'previous' => null,
+                    ],
+                ],
             ],
-        ], $this->index($indexRequest));
+        ], json_decode($response->getContent(), true));
+    }
 
-        $this->assertEquals(1000, $this->queryBuilder->getMaxResults());
-        $this->assertEquals(2000, $this->queryBuilder->getFirstResult());
+    public function test_index_action()
+    {
+        $httpRequest =  new Request();
+        $httpRequest->attributes->add([
+            'include' => 'test',
+            'exclude' => 'test'
+        ]);
 
-        /** @var OrderBy $orderBy */
-        $orderBy = $this->queryBuilder->getDQLPart('orderBy');
-        $this->assertCount(2, $orderBy);
-        $this->assertEquals('i.field1 ASC', $orderBy[0]);
-        $this->assertEquals('i.field2 DESC', $orderBy[1]);
+        $httpRequest->headers->set('Accept', FractalResponse::JSON_API_CONTENT_TYPE);
+
+        /** @var IndexRequestInterface $request */
+        $request = m::mock(IndexRequestInterface::class)
+            ->shouldReceive('http')->andReturn($httpRequest)
+            ->shouldReceive('authorize')->withArgs([static::class])
+            ->shouldReceive('getQuery')->andReturn('testQuery')
+            ->shouldReceive('getLimit')->andReturn(1000)
+            ->shouldReceive('getStart')->andReturn(2000)
+            ->shouldReceive('getOrderBy')->andReturn(['field1' => 'asc', 'field2' => 'desc'])
+            ->getMock();
+
+        $this->assertInstanceOf(RestResponse::class, $response = $this->index($request));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals([
+            'data' => [],
+            'meta' => [
+                'pagination' => [
+                    'total' => 0,
+                    'count' => 0,
+                    'per_page' => 1000,
+                    'current_page' => 3,
+                    'total_pages' => 0,
+                ],
+            ],
+            'links' => [
+                'self' => null,
+                'first' => null,
+                'prev' => null,
+                'last' => null,
+            ],
+        ], json_decode($response->getContent(), true));
     }
 }

@@ -1,6 +1,6 @@
 <?php namespace Pz\Doctrine\Rest;
 
-use Pz\Doctrine\Rest\Action\Index\ResponseDataInterface;
+use Doctrine\ORM\QueryBuilder;
 use Pz\Doctrine\Rest\Request\CreateRequestInterface;
 use Pz\Doctrine\Rest\Request\DeleteRequestInterface;
 use Pz\Doctrine\Rest\Request\IndexRequestInterface;
@@ -19,12 +19,12 @@ interface RestResponseFactory
 {
     /**
      * @param IndexRequestInterface $request
-     * @param ResponseDataInterface $response
+     * @param QueryBuilder          $qb
      *
      * @return Response
      * @throws \Exception
      */
-    public function index(IndexRequestInterface $request, ResponseDataInterface $response);
+    public function index(IndexRequestInterface $request, QueryBuilder $qb);
 
     /**
      * @param ShowRequestInterface $request

@@ -1,7 +1,7 @@
 <?php namespace Pz\Doctrine\Rest;
 
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
-class RestResponse extends Response
+class RestResponse extends JsonResponse
 {
 }

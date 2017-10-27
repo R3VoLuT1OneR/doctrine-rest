@@ -1,5 +1,7 @@
 <?php namespace Pz\Doctrine\Rest;
 
+use Symfony\Component\HttpFoundation\Request;
+
 interface RestRequestInterface
 {
     /**
@@ -12,4 +14,9 @@ interface RestRequestInterface
      * @return mixed
      */
     public function authorize($entity);
+
+    /**
+     * @return Request
+     */
+    public function http();
 }

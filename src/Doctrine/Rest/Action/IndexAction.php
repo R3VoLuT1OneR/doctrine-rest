@@ -1,14 +1,10 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\Query;
-use Doctrine\ORM\QueryBuilder;
-use Pz\Doctrine\Rest\Action\Index\ResponseData;
 use Pz\Doctrine\Rest\BuilderChain\CriteriaChain;
 use Pz\Doctrine\Rest\QueryParser\FilterableQueryParser;
 use Pz\Doctrine\Rest\QueryParser\PropertyQueryParser;
 use Pz\Doctrine\Rest\Request\IndexRequestInterface;
-use Pz\Doctrine\Rest\RestException;
 use Pz\Doctrine\Rest\RestRepository;
 use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\RestResponseFactory;
@@ -56,20 +52,10 @@ trait IndexAction
                 ->createQueryBuilder($this->alias())
                 ->addCriteria($chain->process($criteria));
 
-            return $this->response()->index($request, $this->buildResponseData($qb));
+            return $this->response()->index($request, $qb);
         } catch (\Exception $e) {
             return $this->response()->exception($e);
         }
-    }
-
-    /**
-     * @param QueryBuilder $qb
-     *
-     * @return ResponseData
-     */
-    protected function buildResponseData(QueryBuilder $qb)
-    {
-        return new ResponseData($qb);
     }
 
     /**

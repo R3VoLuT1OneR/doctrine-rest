@@ -1,11 +1,14 @@
 <?php namespace Pz\Doctrine\Rest\Response;
 
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use League\Fractal\Manager;
+use League\Fractal\Pagination\DoctrinePaginatorAdapter;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
+use League\Fractal\Serializer\JsonApiSerializer;
 use League\Fractal\TransformerAbstract;
 
-use Pz\Doctrine\Rest\Action\Index\ResponseDataInterface;
 use Pz\Doctrine\Rest\Request\CreateRequestInterface;
 use Pz\Doctrine\Rest\Request\DeleteRequestInterface;
 use Pz\Doctrine\Rest\Request\IndexRequestInterface;
@@ -13,22 +16,18 @@ use Pz\Doctrine\Rest\Request\ShowRequestInterface;
 use Pz\Doctrine\Rest\Request\UpdateRequestInterface;
 use Pz\Doctrine\Rest\RestException;
 use Pz\Doctrine\Rest\RestRequestInterface;
+use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\RestResponseFactory;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 
 class FractalResponse implements RestResponseFactory
 {
+    const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
+
     /**
      * @var TransformerAbstract
      */
     protected $transformer;
-
-    /**
-     * @var Manager|null
-     */
-    protected $fractal;
 
     /**
      * FractalResponse constructor.
@@ -42,16 +41,14 @@ class FractalResponse implements RestResponseFactory
 
     /**
      * @param IndexRequestInterface $request
-     * @param ResponseDataInterface $response
+     * @param QueryBuilder          $qb
      *
-     * @return array
+     * @return RestResponse
      */
-    public function index(IndexRequestInterface $request, ResponseDataInterface $response)
+    public function index(IndexRequestInterface $request, QueryBuilder $qb)
     {
-        $resource = new Collection($response->data(), $this->transformer());
-        $resource->setMetaValue('count', $response->count());
-        $resource->setMetaValue('limit', $response->limit());
-        $resource->setMetaValue('start', $response->start());
+        $resource = new Collection($paginator = new Paginator($qb), $this->transformer());
+        $resource->setPaginator(new DoctrinePaginatorAdapter($paginator, $this->getPaginatorRouteGenerator()));
 
         return $this->response(
             $this->fractal($request)
@@ -64,7 +61,7 @@ class FractalResponse implements RestResponseFactory
      * @param ShowRequestInterface $request
      * @param             $entity
      *
-     * @return array
+     * @return RestResponse
      */
     public function show(ShowRequestInterface $request, $entity)
     {
@@ -79,7 +76,7 @@ class FractalResponse implements RestResponseFactory
      * @param CreateRequestInterface $request
      * @param               $entity
      *
-     * @return array
+     * @return RestResponse
      */
     public function create(CreateRequestInterface $request, $entity)
     {
@@ -94,7 +91,7 @@ class FractalResponse implements RestResponseFactory
      * @param UpdateRequestInterface $request
      * @param               $entity
      *
-     * @return array
+     * @return RestResponse
      */
     public function update(UpdateRequestInterface $request, $entity)
     {
@@ -109,7 +106,7 @@ class FractalResponse implements RestResponseFactory
      * @param DeleteRequestInterface $request
      * @param               $entity
      *
-     * @return JsonResponse
+     * @return RestResponse
      */
     public function delete(DeleteRequestInterface $request, $entity)
     {
@@ -119,17 +116,18 @@ class FractalResponse implements RestResponseFactory
     /**
      * @param RestRequestInterface $request
      *
-     * @return JsonResponse
+     * @return RestResponse
      */
     public function notFound(RestRequestInterface $request)
     {
-        return $this->response(null, Response::HTTP_NOT_FOUND);
+        return $this->response(null, RestResponse::HTTP_NOT_FOUND);
     }
 
     /**
      * @param \Error|\Exception|\Pz\Doctrine\Rest\RestException $exception
      *
-     * @return JsonResponse
+     * @return RestResponse
+     * @throws \Error|\Exception|RestException
      */
     public function exception($exception)
     {
@@ -142,8 +140,9 @@ class FractalResponse implements RestResponseFactory
                 break;
 
             default:
-                $httpStatus = JsonResponse::HTTP_INTERNAL_SERVER_ERROR;
-                $errors = $exception->getTrace();
+                throw $exception;
+                // $httpStatus = RestResponse::HTTP_INTERNAL_SERVER_ERROR;
+                // $errors = $exception->getTrace();
                 break;
         }
 
@@ -157,13 +156,23 @@ class FractalResponse implements RestResponseFactory
      *
      * @return Manager
      */
-    protected function fractal(/** @scrutinizer ignore-unused */ RestRequestInterface $request)
+    protected function fractal(RestRequestInterface $request)
     {
-        if ($this->fractal === null) {
-            $this->fractal = new Manager();
+        $fractal = new Manager();
+
+        if (in_array(static::JSON_API_CONTENT_TYPE, $request->http()->getAcceptableContentTypes())) {
+            $fractal->setSerializer(new JsonApiSerializer());
         }
 
-        return $this->fractal;
+        if ($includes = $request->http()->get('include')) {
+            $fractal->parseIncludes($includes);
+        }
+
+        if ($excludes = $request->http()->get('exclude')) {
+            $fractal->parseExcludes($excludes);
+        }
+
+        return $fractal;
     }
 
     /**
@@ -175,13 +184,23 @@ class FractalResponse implements RestResponseFactory
     }
 
     /**
-     * @param null $data
-     * @param int  $httStatus
+     * @param mixed $data
+     * @param int   $httStatus
      *
-     * @return JsonResponse
+     * @return RestResponse
      */
-    protected function response($data = null, $httStatus = Response::HTTP_OK)
+    protected function response($data = null, $httStatus = RestResponse::HTTP_OK)
     {
-        return new JsonResponse($data, $httStatus);
+        return new RestResponse($data, $httStatus);
+    }
+
+    /**
+     * @return \Closure
+     */
+    protected function getPaginatorRouteGenerator()
+    {
+        return function() {
+            return null;
+        };
     }
 }

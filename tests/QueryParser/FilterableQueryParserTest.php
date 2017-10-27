@@ -1,4 +1,4 @@
-<?php namespace Tests\QueryParser;
+<?php namespace Pz\Doctrine\Rest\Tests\QueryParser;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;

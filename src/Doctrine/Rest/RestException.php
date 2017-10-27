@@ -2,7 +2,7 @@
 
 use Symfony\Component\HttpFoundation\Response;
 
-class RestException extends \HttpResponseException
+class RestException extends \RuntimeException
 {
     /**
      * @var int

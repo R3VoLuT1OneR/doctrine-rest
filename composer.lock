@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ed86ff975925bc8d7c6f9872e7d1c612",
+    "hash": "5813a319c815c06efdab4eb2a8413d46",
     "content-hash": "1954b2911b7b64bb346da109ee10c34b",
     "packages": [
         {
@@ -897,12 +897,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-foundation.git",
-                "reference": "33a1f4e8e930226e24d8864119d66b162c200188"
+                "reference": "f70dc2c910c722aeeb2c988e8b337bb9726e32fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/33a1f4e8e930226e24d8864119d66b162c200188",
-                "reference": "33a1f4e8e930226e24d8864119d66b162c200188",
+                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/f70dc2c910c722aeeb2c988e8b337bb9726e32fb",
+                "reference": "f70dc2c910c722aeeb2c988e8b337bb9726e32fb",
                 "shasum": ""
             },
             "require": {
@@ -943,7 +943,7 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "https://symfony.com",
-            "time": "2017-10-24 14:12:06"
+            "time": "2017-10-25 16:42:56"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -1180,16 +1180,16 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.x-dev",
+            "version": "1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "770e5098e013d961f11f4087f5478e0dca2c9fb5"
+                "reference": "3b8a3a99ba1f6a3952ac2747d989303cbd6b7a3e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/770e5098e013d961f11f4087f5478e0dca2c9fb5",
-                "reference": "770e5098e013d961f11f4087f5478e0dca2c9fb5",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/3b8a3a99ba1f6a3952ac2747d989303cbd6b7a3e",
+                "reference": "3b8a3a99ba1f6a3952ac2747d989303cbd6b7a3e",
                 "shasum": ""
             },
             "require": {
@@ -1221,7 +1221,7 @@
                 "object",
                 "object graph"
             ],
-            "time": "2017-10-15 23:07:04"
+            "time": "2017-10-19 19:58:43"
         },
         {
             "name": "phar-io/manifest",

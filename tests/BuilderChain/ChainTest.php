@@ -1,4 +1,4 @@
-<?php namespace Tests\BuilderChain;
+<?php namespace Pz\Doctrine\Rest\Tests\BuilderChain;
 
 use Pz\Doctrine\Rest\BuilderChain\Chain;
 use Pz\Doctrine\Rest\BuilderChain\MemberInterface;

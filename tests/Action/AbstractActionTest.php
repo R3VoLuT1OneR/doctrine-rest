@@ -1,15 +1,18 @@
-<?php namespace Tests\Action;
+<?php namespace Pz\Doctrine\Rest\Tests\Action;
 
+use Pz\Doctrine\Rest\Response\FractalResponse;
+use Pz\Doctrine\Rest\RestRepository;
+use Pz\Doctrine\Rest\RestResponseFactory;
+
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
+
 use League\Fractal\TransformerAbstract;
-use Pz\Doctrine\Rest\Response\FractalResponse;
-use Pz\Doctrine\Rest\RestRepository;
-use Pz\Doctrine\Rest\RestResponseFactory;
-use Doctrine\ORM\QueryBuilder;
 use Mockery as m;
+use Pz\Doctrine\Rest\Tests\DoctrineTest;
 
 class TestTransformer extends TransformerAbstract
 {
@@ -19,17 +22,12 @@ class TestTransformer extends TransformerAbstract
     }
 }
 
-abstract class AbstractActionTest extends \PHPUnit\Framework\TestCase
+abstract class AbstractActionTest extends DoctrineTest
 {
     /**
      * @var RestRepository|m\Mock
      */
     protected $repository;
-
-    /**
-     * @var RestResponseFactory|m\Mock
-     */
-    protected $response;
 
     /**
      * @var QueryBuilder|m\Mock
@@ -49,26 +47,30 @@ abstract class AbstractActionTest extends \PHPUnit\Framework\TestCase
     public function response()
     {
         return new FractalResponse(new TestTransformer());
-        return $this->response;
     }
 
     public function setUp()
     {
         parent::setUp();
 
-        $this->em = m::mock(EntityManager::class)->makePartial();
+        $metadata = new ClassMetadata(static::class);
+        $metadata->mapField(['fieldName' => 'field1', 'type' => 'integer']);
+        $metadata->mapField(['fieldName' => 'field2', 'type' => 'integer']);
+        $metadata->setIdentifier(['field1']);
 
-        $this->queryBuilder = m::mock(QueryBuilder::class, [$this->em])->makePartial()
-            ->shouldReceive('getQuery')->andReturn(m::mock(AbstractQuery::class))
-            ->shouldReceive('getRootAliases')->andReturn(['i'])
-            ->getMock();
+        $this->em = m::mock($this->_getTestEntityManager())->makePartial();
+        $this->em->getMetadataFactory()->setMetadataFor(static::class, $metadata);
+        $this->repository = new RestRepository($this->em, $metadata);
 
-        $this->repository = m::mock(RestRepository::class, [$this->em, m::mock(ClassMetadata::class)])->makePartial();
-        $this->repository->shouldReceive('getClassName')->andReturn(static::class)
-            ->shouldReceive('createQueryBuilder')->with('i')->andReturn($this->queryBuilder)
-            ->getMock();
+//        $this->queryBuilder = m::mock(QueryBuilder::class, [$this->em])->makePartial()
+//            ->shouldReceive('getQuery')->andReturn(m::mock(AbstractQuery::class))
+//            ->shouldReceive('getRootAliases')->andReturn(['i'])
+//            ->getMock();
 
-        $this->response = m::mock(RestResponseFactory::class);
+//        $this->repository = m::mock(RestRepository::class, [$this->em, $metadata])->makePartial();
+
+//        $this->repository->shouldReceive('getClassName')->andReturn(static::class)
+//            ->shouldReceive('createQueryBuilder')->with('i')->andReturn($this->queryBuilder)
+//            ->getMock();
     }
-
 }
