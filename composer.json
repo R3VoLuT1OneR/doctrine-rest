@@ -1,8 +1,17 @@
 {
     "name": "pz/doctrine-rest",
+    "version": "0.0.1",
     "description": "Rest API library for Doctrine 2 ORM",
     "keywords": ["doctrine", "rest"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "PavelZ",
+            "email": "r3volut1oner@gmail.com"
+        }
+    ],
     "type": "library",
+    "minimum-stability": "stable",
     "require": {
         "php": "^7.0",
         "doctrine/orm": "^2.5",
@@ -14,13 +23,6 @@
         "mockery/mockery": "^1.0",
         "phpunit/php-code-coverage": "^5.2"
     },
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "PavelZ",
-            "email": "r3volut1oner@gmail.com"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Pz\\": "src/"
@@ -30,6 +32,5 @@
         "psr-4": {
             "Pz\\Doctrine\\Rest\\Tests\\": "tests/"
         }
-    },
-    "minimum-stability": "dev"
+    }
 }

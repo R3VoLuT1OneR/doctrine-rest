@@ -13,7 +13,7 @@ class Chain
     /**
      * Provide class or interface for verification member return.
      *
-     * @return string
+     * @return string|bool
      */
     public function buildClass()
     {
@@ -49,7 +49,7 @@ class Chain
     public function add($member)
     {
         if (is_array($member)) {
-            foreach($member as $item) {
+            foreach ($member as $item) {
                 $this->add($item);
             }
 
