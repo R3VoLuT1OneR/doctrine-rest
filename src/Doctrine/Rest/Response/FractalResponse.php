@@ -9,6 +9,11 @@ use League\Fractal\Resource\Item;
 use League\Fractal\Serializer\JsonApiSerializer;
 use League\Fractal\TransformerAbstract;
 
+use Pz\Doctrine\Rest\Request\CreateRequestInterface;
+use Pz\Doctrine\Rest\Request\DeleteRequestInterface;
+use Pz\Doctrine\Rest\Request\IndexRequestInterface;
+use Pz\Doctrine\Rest\Request\ShowRequestInterface;
+use Pz\Doctrine\Rest\Request\UpdateRequestInterface;
 use Pz\Doctrine\Rest\RestException;
 use Pz\Doctrine\Rest\RestRequestInterface;
 use Pz\Doctrine\Rest\RestResponse;
@@ -25,22 +30,27 @@ class FractalResponse implements RestResponseFactory
     protected $transformer;
 
     /**
-     * FractalResponse constructor.
+     * @param TransformerAbstract|null $transformer
      *
-     * @param TransformerAbstract $transformer
+     * @return TransformerAbstract
      */
-    public function __construct(TransformerAbstract $transformer)
+    public function transformer(TransformerAbstract $transformer = null)
     {
-        $this->transformer = $transformer;
+        if ($transformer !== null) {
+            $this->transformer = $transformer;
+            return $this;
+        }
+
+        return $this->transformer;
     }
 
     /**
-     * @param RestRequestInterface  $request
+     * @param IndexRequestInterface $request
      * @param QueryBuilder          $qb
      *
      * @return RestResponse
      */
-    public function index(RestRequestInterface $request, QueryBuilder $qb)
+    public function index(IndexRequestInterface $request, QueryBuilder $qb)
     {
         $resource = new Collection($paginator = new Paginator($qb), $this->transformer());
         $resource->setPaginator(new DoctrinePaginatorAdapter($paginator, $this->getPaginatorRouteGenerator()));
@@ -53,12 +63,12 @@ class FractalResponse implements RestResponseFactory
     }
 
     /**
-     * @param RestRequestInterface  $request
-     * @param                       $entity
+     * @param ShowRequestInterface $request
+     * @param             $entity
      *
      * @return RestResponse
      */
-    public function show(RestRequestInterface $request, $entity)
+    public function show(ShowRequestInterface $request, $entity)
     {
         return $this->response(
             $this->fractal($request)
@@ -68,12 +78,12 @@ class FractalResponse implements RestResponseFactory
     }
 
     /**
-     * @param RestRequestInterface  $request
-     * @param                       $entity
+     * @param CreateRequestInterface $request
+     * @param               $entity
      *
      * @return RestResponse
      */
-    public function create(RestRequestInterface $request, $entity)
+    public function create(CreateRequestInterface $request, $entity)
     {
         return $this->response(
             $this->fractal($request)
@@ -83,12 +93,12 @@ class FractalResponse implements RestResponseFactory
     }
 
     /**
-     * @param RestRequestInterface  $request
-     * @param                       $entity
+     * @param UpdateRequestInterface $request
+     * @param               $entity
      *
      * @return RestResponse
      */
-    public function update(RestRequestInterface $request, $entity)
+    public function update(UpdateRequestInterface $request, $entity)
     {
         return $this->response(
             $this->fractal($request)
@@ -98,12 +108,12 @@ class FractalResponse implements RestResponseFactory
     }
 
     /**
-     * @param RestRequestInterface  $request
-     * @param                       $entity
+     * @param DeleteRequestInterface $request
+     * @param               $entity
      *
      * @return RestResponse
      */
-    public function delete(RestRequestInterface $request, $entity)
+    public function delete(DeleteRequestInterface $request, $entity)
     {
         return $this->response();
     }
@@ -168,14 +178,6 @@ class FractalResponse implements RestResponseFactory
         }
 
         return $fractal;
-    }
-
-    /**
-     * @return TransformerAbstract
-     */
-    protected function transformer()
-    {
-        return $this->transformer;
     }
 
     /**
