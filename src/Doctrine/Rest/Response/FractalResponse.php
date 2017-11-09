@@ -9,6 +9,7 @@ use League\Fractal\Resource\Item;
 use League\Fractal\Serializer\JsonApiSerializer;
 use League\Fractal\TransformerAbstract;
 
+use Pz\Doctrine\Rest\Contracts\HasResourceKey;
 use Pz\Doctrine\Rest\Request\CreateRequestInterface;
 use Pz\Doctrine\Rest\Request\DeleteRequestInterface;
 use Pz\Doctrine\Rest\Request\IndexRequestInterface;
@@ -18,6 +19,7 @@ use Pz\Doctrine\Rest\RestException;
 use Pz\Doctrine\Rest\RestRequestInterface;
 use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\RestResponseFactory;
+use Symfony\Component\HttpFoundation\Response;
 
 
 class FractalResponse implements RestResponseFactory
@@ -28,6 +30,21 @@ class FractalResponse implements RestResponseFactory
      * @var TransformerAbstract
      */
     protected $transformer;
+
+    /**
+     * @var string|null
+     */
+    protected $baseUrl;
+
+    /**
+     * FractalResponse constructor.
+     *
+     * @param null $baseUrl
+     */
+    public function __construct($baseUrl = null)
+    {
+        $this->baseUrl = $baseUrl;
+    }
 
     /**
      * @param TransformerAbstract|null $transformer
@@ -50,13 +67,16 @@ class FractalResponse implements RestResponseFactory
      *
      * @return RestResponse
      */
-    public function index(IndexRequestInterface $request, QueryBuilder $qb)
+    public function index(RestRequestInterface $request, QueryBuilder $qb)
     {
-        $resource = new Collection($paginator = new Paginator($qb), $this->transformer());
-        $resource->setPaginator(new DoctrinePaginatorAdapter($paginator, $this->getPaginatorRouteGenerator()));
+        $paginator = new Paginator($qb, false);
+        $generator = $this->getPaginatorRouteGenerator($request);
+        $resource = new Collection($paginator, $this->transformer(), $this->getIndexResourceKey($qb));
+        $resource->setPaginator(new DoctrinePaginatorAdapter($paginator, $generator));
 
         return $this->response(
             $this->fractal($request)
+                ->parseFieldsets($request->getFields())
                 ->createData($resource)
                 ->toArray()
         );
@@ -68,11 +88,16 @@ class FractalResponse implements RestResponseFactory
      *
      * @return RestResponse
      */
-    public function show(ShowRequestInterface $request, $entity)
+    public function show(RestRequestInterface $request, $entity)
     {
+        if ($entity instanceof HasResourceKey) {
+            $resourceKey = $entity->getResourceKey();
+        }
+
         return $this->response(
             $this->fractal($request)
-                ->createData(new Item($entity, $this->transformer()))
+                ->parseFieldsets($request->getFields())
+                ->createData(new Item($entity, $this->transformer(), $resourceKey ?? null))
                 ->toArray()
         );
     }
@@ -83,12 +108,18 @@ class FractalResponse implements RestResponseFactory
      *
      * @return RestResponse
      */
-    public function create(CreateRequestInterface $request, $entity)
+    public function create(RestRequestInterface $request, $entity)
     {
+        if ($entity instanceof HasResourceKey) {
+            $resourceKey = $entity->getResourceKey();
+        }
+
         return $this->response(
             $this->fractal($request)
-                ->createData(new Item($entity, $this->transformer()))
-                ->toArray()
+                ->parseFieldsets($request->getFields())
+                ->createData(new Item($entity, $this->transformer(), $resourceKey ?? null))
+                ->toArray(),
+            Response::HTTP_CREATED
         );
     }
 
@@ -98,11 +129,16 @@ class FractalResponse implements RestResponseFactory
      *
      * @return RestResponse
      */
-    public function update(UpdateRequestInterface $request, $entity)
+    public function update(RestRequestInterface $request, $entity)
     {
+        if ($entity instanceof HasResourceKey) {
+            $resourceKey = $entity->getResourceKey();
+        }
+
         return $this->response(
             $this->fractal($request)
-                ->createData(new Item($entity, $this->transformer()))
+                ->parseFieldsets($request->getFields())
+                ->createData(new Item($entity, $this->transformer(), $resourceKey ?? null))
                 ->toArray()
         );
     }
@@ -113,7 +149,7 @@ class FractalResponse implements RestResponseFactory
      *
      * @return RestResponse
      */
-    public function delete(DeleteRequestInterface $request, $entity)
+    public function delete(RestRequestInterface $request, $entity)
     {
         return $this->response();
     }
@@ -165,8 +201,8 @@ class FractalResponse implements RestResponseFactory
     {
         $fractal = new Manager();
 
-        if (in_array(static::JSON_API_CONTENT_TYPE, $request->http()->getAcceptableContentTypes())) {
-            $fractal->setSerializer(new JsonApiSerializer());
+        if ($request->isJsonApi()) {
+            $fractal->setSerializer(new JsonApiSerializer($this->baseUrl));
         }
 
         if ($includes = $request->http()->get('include')) {
@@ -192,11 +228,29 @@ class FractalResponse implements RestResponseFactory
     }
 
     /**
+     * @param QueryBuilder $qb
+     *
+     * @return string
+     */
+    protected function getIndexResourceKey(QueryBuilder $qb)
+    {
+        $class = $qb->getRootEntities()[0];
+        if (isset(class_implements($class)[HasResourceKey::class])) {
+            return call_user_func($class . '::getResourceKey');
+        }
+
+        return $qb->getRootAliases()[0];
+    }
+
+
+    /**
+     * @param RestRequestInterface $request
+     *
      * @return \Closure
      */
-    protected function getPaginatorRouteGenerator()
+    protected function getPaginatorRouteGenerator($request)
     {
-        return function() {
+        return function(int $page) {
             return null;
         };
     }

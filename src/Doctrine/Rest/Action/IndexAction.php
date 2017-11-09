@@ -2,6 +2,7 @@
 
 use Doctrine\Common\Collections\Criteria;
 use Pz\Doctrine\Rest\BuilderChain\CriteriaChain;
+use Pz\Doctrine\Rest\Contracts\HasResourceKey;
 use Pz\Doctrine\Rest\QueryParser\FilterableQueryParser;
 use Pz\Doctrine\Rest\QueryParser\PropertyQueryParser;
 use Pz\Doctrine\Rest\Request\IndexRequestInterface;
@@ -64,8 +65,17 @@ trait IndexAction
     protected function alias()
     {
         if ($this->rootAlias === null) {
-            $reflectionClass = new \ReflectionClass($this->repository()->getClassName());
-            $this->rootAlias = strtolower($reflectionClass->getShortName()[0]);
+
+            $reflectionClass = $this->repository()->em()
+                ->getClassMetadata($this->repository()->getClassName())
+                ->getReflectionClass();
+
+            if ($reflectionClass->implementsInterface(HasResourceKey::class)) {
+                $this->rootAlias = call_user_func($reflectionClass->getName(). '::getResourceKey');
+            } else {
+                // Camel case to underscore-case
+                $this->rootAlias = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $reflectionClass->getShortName()));
+            }
         }
 
         return $this->rootAlias;

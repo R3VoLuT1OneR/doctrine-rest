@@ -5,6 +5,7 @@ use Pz\Doctrine\Rest\Request\IndexRequestInterface;
 use Mockery as m;
 use Pz\Doctrine\Rest\Response\FractalResponse;
 use Pz\Doctrine\Rest\RestException;
+use Pz\Doctrine\Rest\RestRequestInterface;
 use Pz\Doctrine\Rest\RestResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -74,7 +75,7 @@ class IndexActionTest extends AbstractActionTest
             'exclude' => 'test'
         ]);
 
-        $httpRequest->headers->set('Accept', FractalResponse::JSON_API_CONTENT_TYPE);
+        $httpRequest->headers->set('Accept', RestRequestInterface::JSON_API_CONTENT_TYPE);
 
         /** @var IndexRequestInterface $request */
         $request = m::mock(IndexRequestInterface::class)
