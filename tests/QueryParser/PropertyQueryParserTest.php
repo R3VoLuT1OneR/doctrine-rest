@@ -7,13 +7,14 @@ use Pz\Doctrine\Rest\QueryParser\PropertyQueryParser;
 use Pz\Doctrine\Rest\Request\IndexRequestAbstract;
 
 use Mockery as m;
+use Pz\Doctrine\Rest\RestRequestAbstract;
 
 class PropertyQueryParserTest extends TestCase
 {
     public function test_property_query_parser()
     {
-        $request = m::mock(IndexRequestAbstract::class)
-            ->shouldReceive('getQuery')->andReturn('queryString')
+        $request = m::mock(RestRequestAbstract::class)
+            ->shouldReceive('getFilter')->andReturn('queryString')
             ->getMock();
 
         $parser = new PropertyQueryParser($request, 'testField');

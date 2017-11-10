@@ -1,7 +1,7 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
-use Doctrine\Rest\Action\CanHydrate;
-use Doctrine\Rest\Action\RestActionAbstract;
+use Pz\Doctrine\Rest\Action\CanHydrate;
+use Pz\Doctrine\Rest\Action\RestActionAbstract;
 use Pz\Doctrine\Rest\RestRequestAbstract;
 use Pz\Doctrine\Rest\RestResponse;
 

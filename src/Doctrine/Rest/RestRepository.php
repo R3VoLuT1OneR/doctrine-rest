@@ -2,7 +2,7 @@
 
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
-use Pz\Doctrine\Rest\Contracts\HasResourceKey;
+use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 
 class RestRepository extends EntityRepository
 {
@@ -28,7 +28,7 @@ class RestRepository extends EntityRepository
     {
         if ($this->rootAlias === null) {
             $reflectionClass = $this->getClassMetadata()->getReflectionClass();
-            if ($reflectionClass->implementsInterface(HasResourceKey::class)) {
+            if ($reflectionClass->implementsInterface(JsonApiResource::class)) {
                 $this->rootAlias = call_user_func($reflectionClass->getName(). '::getResourceKey');
             } else {
                 // Camel case to underscore-case
@@ -47,15 +47,8 @@ class RestRepository extends EntityRepository
      */
     public function findByIdentifier(RestRequestAbstract $request)
     {
-        $id = array_map(
-            function($idField) use ($request) {
-                return $request->get($idField);
-            },
-            $this->getClassMetadata()->getIdentifier()
-        );
-
-        if (null === ($entity = $this->find($id))) {
-            throw new EntityNotFoundException($this->getClassName(), $id);
+        if (null === ($entity = $this->find($request->getId()))) {
+            throw new EntityNotFoundException($this->getClassName(), $request->getId());
         }
 
         return $entity;

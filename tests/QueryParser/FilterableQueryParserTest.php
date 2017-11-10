@@ -8,6 +8,7 @@ use Pz\Doctrine\Rest\QueryParser\FilterableQueryParser;
 use Pz\Doctrine\Rest\Request\IndexRequestAbstract;
 
 use Mockery as m;
+use Pz\Doctrine\Rest\RestRequestAbstract;
 
 class FilterableQueryParserTest extends TestCase
 {
@@ -16,8 +17,8 @@ class FilterableQueryParserTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $request = m::mock(IndexRequestAbstract::class)
-            ->shouldReceive('getQuery')->andReturn([
+        $request = m::mock(RestRequestAbstract::class)
+            ->shouldReceive('getFilter')->andReturn([
                 'field1' => ['operator' => 'not', 'value' => false],
                 'field2' => ['operator' => 'eq', 'value' => 'test2'],
             ])
@@ -29,8 +30,8 @@ class FilterableQueryParserTest extends TestCase
 
     public function test_filterable_query_parser_operator_filter()
     {
-        $request = m::mock(IndexRequestAbstract::class)
-            ->shouldReceive('getQuery')->andReturn([
+        $request = m::mock(RestRequestAbstract::class)
+            ->shouldReceive('getFilter')->andReturn([
                 'field1' => ['operator' => 'neq', 'value' => false],
                 'field2' => ['operator' => 'eq', 'value' => 'test2'],
             ])
@@ -57,8 +58,8 @@ class FilterableQueryParserTest extends TestCase
 
     public function test_filterable_query_parser_between_filter()
     {
-        $request = m::mock(IndexRequestAbstract::class)
-            ->shouldReceive('getQuery')->andReturn(['field1' => ['start' => 1, 'end' => 10]])
+        $request = m::mock(RestRequestAbstract::class)
+            ->shouldReceive('getFilter')->andReturn(['field1' => ['start' => 1, 'end' => 10]])
             ->getMock();
 
         $parser = new FilterableQueryParser($request, ['field1', 'field2']);
@@ -82,8 +83,8 @@ class FilterableQueryParserTest extends TestCase
 
     public function test_filterable_query_parser_equal_filter()
     {
-        $request = m::mock(IndexRequestAbstract::class)
-            ->shouldReceive('getQuery')->andReturn(['field1' => 'test1', 'field2' => 'test2', 'field3' => 'test3'])
+        $request = m::mock(RestRequestAbstract::class)
+            ->shouldReceive('getFilter')->andReturn(['field1' => 'test1', 'field2' => 'test2', 'field3' => 'test3'])
             ->getMock();
 
         $parser = new FilterableQueryParser($request, ['field1', 'field2']);

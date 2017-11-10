@@ -1,7 +1,6 @@
 <?php namespace Pz\Doctrine\Rest\Response;
 
-use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use League\Fractal\Manager;
 use League\Fractal\Pagination\DoctrinePaginatorAdapter;
 use League\Fractal\Resource\Collection;
@@ -9,13 +8,15 @@ use League\Fractal\Resource\Item;
 use League\Fractal\Serializer\JsonApiSerializer;
 use League\Fractal\TransformerAbstract;
 
-use Pz\Doctrine\Rest\Contracts\HasResourceKey;
 use Pz\Doctrine\Rest\RestException;
 use Pz\Doctrine\Rest\RestRequestAbstract;
 use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\RestResponseFactory;
-use Symfony\Component\HttpFoundation\Response;
 
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+
+use Symfony\Component\HttpFoundation\Response;
 
 class FractalResponse implements RestResponseFactory
 {
@@ -64,15 +65,22 @@ class FractalResponse implements RestResponseFactory
      */
     public function index(RestRequestAbstract $request, QueryBuilder $qb)
     {
+        $headers = [];
         $paginator = new Paginator($qb, false);
         $resource = new Collection($paginator, $this->transformer(), $this->getIndexResourceKey($qb));
         $resource->setPaginator(new DoctrinePaginatorAdapter($paginator, $this->getPaginatorRouteGenerator($request)));
+
+        if ($request->isAcceptJsonApi()) {
+            $headers['Content-Type'] = static::JSON_API_CONTENT_TYPE;
+        }
 
         return $this->response(
             $this->fractal($request)
                 ->parseFieldsets($request->getFields())
                 ->createData($resource)
-                ->toArray()
+                ->toArray(),
+            RestResponse::HTTP_OK,
+            $headers
         );
     }
 
@@ -84,15 +92,25 @@ class FractalResponse implements RestResponseFactory
      */
     public function show(RestRequestAbstract $request, $entity)
     {
-        if ($entity instanceof HasResourceKey) {
+        $headers = [];
+        $resourceKey = null;
+
+        if ($entity instanceof JsonApiResource) {
             $resourceKey = $entity->getResourceKey();
+
+            if ($request->isAcceptJsonApi()) {
+                $headers['Location'] = $this->linkJsonApiResource($entity);
+                $headers['Content-Type'] = static::JSON_API_CONTENT_TYPE;
+            }
         }
 
         return $this->response(
             $this->fractal($request)
                 ->parseFieldsets($request->getFields())
                 ->createData(new Item($entity, $this->transformer(), $resourceKey ?? null))
-                ->toArray()
+                ->toArray(),
+            RestResponse::HTTP_OK,
+            $headers
         );
     }
 
@@ -104,16 +122,25 @@ class FractalResponse implements RestResponseFactory
      */
     public function create(RestRequestAbstract $request, $entity)
     {
-        if ($entity instanceof HasResourceKey) {
+        $headers = [];
+        $resourceKey = null;
+
+        if ($entity instanceof JsonApiResource) {
             $resourceKey = $entity->getResourceKey();
+
+            if ($request->isAcceptJsonApi()) {
+                $headers['Location'] = $this->linkJsonApiResource($entity);
+                $headers['Content-Type'] = static::JSON_API_CONTENT_TYPE;
+            }
         }
 
         return $this->response(
             $this->fractal($request)
                 ->parseFieldsets($request->getFields())
-                ->createData(new Item($entity, $this->transformer(), $resourceKey ?? null))
+                ->createData(new Item($entity, $this->transformer(), $resourceKey))
                 ->toArray(),
-            Response::HTTP_CREATED
+            Response::HTTP_CREATED,
+            $headers
         );
     }
 
@@ -125,15 +152,25 @@ class FractalResponse implements RestResponseFactory
      */
     public function update(RestRequestAbstract $request, $entity)
     {
-        if ($entity instanceof HasResourceKey) {
+        $headers = [];
+        $resourceKey = null;
+
+        if ($entity instanceof JsonApiResource) {
             $resourceKey = $entity->getResourceKey();
+
+            if ($request->isAcceptJsonApi()) {
+                $headers['Location'] = $this->linkJsonApiResource($entity);
+                $headers['Content-Type'] = static::JSON_API_CONTENT_TYPE;
+            }
         }
 
         return $this->response(
             $this->fractal($request)
                 ->parseFieldsets($request->getFields())
-                ->createData(new Item($entity, $this->transformer(), $resourceKey ?? null))
-                ->toArray()
+                ->createData(new Item($entity, $this->transformer(), $resourceKey))
+                ->toArray(),
+            Response::HTTP_OK,
+            $headers
         );
     }
 
@@ -145,7 +182,7 @@ class FractalResponse implements RestResponseFactory
      */
     public function delete(RestRequestAbstract $request, $entity)
     {
-        return $this->response();
+        return $this->response(null, RestResponse::HTTP_NO_CONTENT);
     }
 
     /**
@@ -195,15 +232,15 @@ class FractalResponse implements RestResponseFactory
     {
         $fractal = new Manager();
 
-        if (in_array(static::JSON_API_CONTENT_TYPE, $request->getAcceptableContentTypes())) {
+        if ($request->isAcceptJsonApi()) {
             $fractal->setSerializer(new JsonApiSerializer($this->baseUrl));
         }
 
-        if ($includes = $request->get('include')) {
+        if ($includes = $request->getInclude()) {
             $fractal->parseIncludes($includes);
         }
 
-        if ($excludes = $request->get('exclude')) {
+        if ($excludes = $request->getExclude()) {
             $fractal->parseExcludes($excludes);
         }
 
@@ -213,12 +250,13 @@ class FractalResponse implements RestResponseFactory
     /**
      * @param mixed $data
      * @param int   $httStatus
+     * @param array $headers
      *
      * @return RestResponse
      */
-    protected function response($data = null, $httStatus = RestResponse::HTTP_OK)
+    protected function response($data = null, $httStatus = RestResponse::HTTP_OK, array $headers = [])
     {
-        return new RestResponse($data, $httStatus);
+        return new RestResponse($data, $httStatus, $headers);
     }
 
     /**
@@ -229,13 +267,22 @@ class FractalResponse implements RestResponseFactory
     protected function getIndexResourceKey(QueryBuilder $qb)
     {
         $class = $qb->getRootEntities()[0];
-        if (isset(class_implements($class)[HasResourceKey::class])) {
+        if (isset(class_implements($class)[JsonApiResource::class])) {
             return call_user_func($class . '::getResourceKey');
         }
 
         return $qb->getRootAliases()[0];
     }
 
+    /**
+     * @param JsonApiResource $resource
+     *
+     * @return string|null
+     */
+    protected function linkJsonApiResource(JsonApiResource $resource)
+    {
+        return sprintf('%s/%s/%s', $this->baseUrl, $resource->getResourceKey(), $resource->getId());
+    }
 
     /**
      * @param RestRequestAbstract $request

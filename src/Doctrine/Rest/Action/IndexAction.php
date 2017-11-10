@@ -1,7 +1,6 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Rest\Action\RestActionAbstract;
 use Pz\Doctrine\Rest\BuilderChain\CriteriaChain;
 use Pz\Doctrine\Rest\QueryParser\FilterableQueryParser;
 use Pz\Doctrine\Rest\QueryParser\PropertyQueryParser;

@@ -1,4 +1,4 @@
-<?php namespace Doctrine\Rest\Action;
+<?php namespace Pz\Doctrine\Rest\Action;
 
 use App\JsonApiHydrator;
 use Doctrine\ORM\EntityManager;

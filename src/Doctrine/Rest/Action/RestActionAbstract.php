@@ -1,4 +1,4 @@
-<?php namespace Doctrine\Rest\Action;
+<?php namespace Pz\Doctrine\Rest\Action;
 
 use Pz\Doctrine\Rest\RestRepository;
 use Pz\Doctrine\Rest\RestRequestAbstract;

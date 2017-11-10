@@ -1,5 +1,6 @@
 <?php namespace Pz\Doctrine\Rest\Tests\Action;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Pz\Doctrine\Rest\Response\FractalResponse;
 use Pz\Doctrine\Rest\RestRepository;
 use Pz\Doctrine\Rest\RestResponseFactory;
@@ -54,9 +55,11 @@ abstract class AbstractActionTest extends DoctrineTest
         parent::setUp();
 
         $metadata = new ClassMetadata(static::class);
+        $metadata->initializeReflection(new RuntimeReflectionService());
         $metadata->mapField(['fieldName' => 'field1', 'type' => 'integer']);
         $metadata->mapField(['fieldName' => 'field2', 'type' => 'integer']);
         $metadata->setIdentifier(['field1']);
+
 
         $this->em = m::mock($this->_getTestEntityManager())->makePartial();
         $this->em->getMetadataFactory()->setMetadataFor(static::class, $metadata);

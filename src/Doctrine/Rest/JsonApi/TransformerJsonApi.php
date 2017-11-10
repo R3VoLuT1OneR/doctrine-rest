@@ -1,6 +1,6 @@
 <?php namespace Doctrine\Rest\JsonApi;
 
-use Doctrine\Rest\Contracts\JsonApiResource;
+use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use League\Fractal\TransformerAbstract;
 
 class TransformerJsonApi extends TransformerAbstract

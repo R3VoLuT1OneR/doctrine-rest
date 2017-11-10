@@ -1,7 +1,14 @@
-<?php namespace Doctrine\Rest\Contracts;
+<?php namespace Pz\Doctrine\Rest\Contracts;
 
 interface JsonApiResource
 {
+    /**
+     * Get fractal resource key.
+     *
+     * @return string
+     */
+    public static function getResourceKey();
+
     /**
      * JSON API `id`
      *
