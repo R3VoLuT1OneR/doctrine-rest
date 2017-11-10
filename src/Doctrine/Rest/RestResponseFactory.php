@@ -1,11 +1,6 @@
 <?php namespace Pz\Doctrine\Rest;
 
 use Doctrine\ORM\QueryBuilder;
-use Pz\Doctrine\Rest\Request\CreateRequestInterface;
-use Pz\Doctrine\Rest\Request\DeleteRequestInterface;
-use Pz\Doctrine\Rest\Request\IndexRequestInterface;
-use Pz\Doctrine\Rest\Request\ShowRequestInterface;
-use Pz\Doctrine\Rest\Request\UpdateRequestInterface;
 use Pz\Doctrine\Rest\RestResponse as Response;
 
 /**
@@ -18,56 +13,56 @@ use Pz\Doctrine\Rest\RestResponse as Response;
 interface RestResponseFactory
 {
     /**
-     * @param IndexRequestInterface $request
-     * @param QueryBuilder          $qb
+     * @param RestRequestAbstract $request
+     * @param QueryBuilder         $qb
      *
      * @return Response
      * @throws \Exception
      */
-    public function index(RestRequestInterface $request, QueryBuilder $qb);
+    public function index(RestRequestAbstract $request, QueryBuilder $qb);
 
     /**
-     * @param ShowRequestInterface $request
-     * @param object               $entity
+     * @param RestRequestAbstract $request
+     * @param object              $entity
      *
      * @return Response
      * @throws \Exception
      */
-    public function show(RestRequestInterface$request, $entity);
+    public function show(RestRequestAbstract$request, $entity);
 
     /**
-     * @param CreateRequestInterface $request
+     * @param RestRequestAbstract   $request
+     * @param object                $entity
+     *
+     * @return Response
+     * @throws \Exception
+     */
+    public function create(RestRequestAbstract $request, $entity);
+
+    /**
+     * @param RestRequestAbstract    $request
      * @param object                 $entity
      *
      * @return Response
      * @throws \Exception
      */
-    public function create(RestRequestInterface $request, $entity);
+    public function update(RestRequestAbstract $request, $entity);
 
     /**
-     * @param UpdateRequestInterface $request
+     * @param RestRequestAbstract    $request
      * @param object                 $entity
      *
      * @return Response
      * @throws \Exception
      */
-    public function update(RestRequestInterface $request, $entity);
+    public function delete(RestRequestAbstract $request, $entity);
 
     /**
-     * @param DeleteRequestInterface $request
-     * @param object                 $entity
-     *
-     * @return Response
-     * @throws \Exception
-     */
-    public function delete(RestRequestInterface $request, $entity);
-
-    /**
-     * @param RestRequestInterface $request
+     * @param RestRequestAbstract $request
      *
      * @return Response
      */
-    public function notFound(RestRequestInterface$request);
+    public function notFound(RestRequestAbstract$request);
 
     /**
      * @param \Exception|\Error|RestException $exception

@@ -2,12 +2,10 @@
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Query\Expr;
-use Pz\Doctrine\Rest\Request\IndexRequestInterface;
+use Pz\Doctrine\Rest\RestRequestAbstract;
 
 class FilterableQueryParser extends IndexQueryParser
 {
-    const PARAM_PREFIX = 'array_filterable';
-
     /**
      * @var bool|array
      */
@@ -16,10 +14,10 @@ class FilterableQueryParser extends IndexQueryParser
     /**
      * StringParser constructor.
      *
-     * @param IndexRequestInterface $request
-     * @param bool|array            $filterable
+     * @param RestRequestAbstract $request
+     * @param bool|array           $filterable
      */
-    public function __construct(IndexRequestInterface $request, array $filterable)
+    public function __construct(RestRequestAbstract $request, array $filterable)
     {
         parent::__construct($request);
         $this->filterable = $filterable;

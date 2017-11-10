@@ -1,11 +1,11 @@
 <?php namespace Pz\Doctrine\Rest\Tests\Action;
 
 use Pz\Doctrine\Rest\Action\IndexAction;
-use Pz\Doctrine\Rest\Request\IndexRequestInterface;
+use Pz\Doctrine\Rest\Request\IndexRequestAbstract;
 use Mockery as m;
 use Pz\Doctrine\Rest\Response\FractalResponse;
 use Pz\Doctrine\Rest\RestException;
-use Pz\Doctrine\Rest\RestRequestInterface;
+use Pz\Doctrine\Rest\RestRequestAbstract;
 use Pz\Doctrine\Rest\RestResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -18,7 +18,7 @@ class IndexActionTest extends AbstractActionTest
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('test exception');
 
-        $request = m::mock(IndexRequestInterface::class)
+        $request = m::mock(IndexRequestAbstract::class)
             ->shouldReceive('authorize')->andThrow(new \Exception('test exception'))
             ->getMock();
 
@@ -27,7 +27,7 @@ class IndexActionTest extends AbstractActionTest
 
     public function test_index_action_rest_exception()
     {
-        $request = m::mock(IndexRequestInterface::class)
+        $request = m::mock(IndexRequestAbstract::class)
             ->shouldReceive('authorize')->andThrow(new RestException(422, 'test exception'))
             ->getMock();
 
@@ -38,8 +38,8 @@ class IndexActionTest extends AbstractActionTest
 
     public function test_index_action_simple()
     {
-        /** @var IndexRequestInterface $request */
-        $request = m::mock(IndexRequestInterface::class)
+        /** @var IndexRequestAbstract $request */
+        $request = m::mock(IndexRequestAbstract::class)
             ->shouldReceive('http')->andReturn(new Request())
             ->shouldReceive('authorize')->withArgs([static::class])
             ->shouldReceive('getQuery')->andReturn('testQuery')
@@ -75,10 +75,10 @@ class IndexActionTest extends AbstractActionTest
             'exclude' => 'test'
         ]);
 
-        $httpRequest->headers->set('Accept', RestRequestInterface::JSON_API_CONTENT_TYPE);
+        $httpRequest->headers->set('Accept', RestRequestAbstract::JSON_API_CONTENT_TYPE);
 
-        /** @var IndexRequestInterface $request */
-        $request = m::mock(IndexRequestInterface::class)
+        /** @var IndexRequestAbstract $request */
+        $request = m::mock(IndexRequestAbstract::class)
             ->shouldReceive('http')->andReturn($httpRequest)
             ->shouldReceive('authorize')->withArgs([static::class])
             ->shouldReceive('getQuery')->andReturn('testQuery')

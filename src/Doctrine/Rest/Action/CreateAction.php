@@ -1,49 +1,42 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
-use Pz\Doctrine\Rest\Request\CreateRequestInterface;
-use Pz\Doctrine\Rest\RestRepository;
-use Pz\Doctrine\Rest\RestResponseFactory;
+use Doctrine\Rest\Action\CanHydrate;
+use Doctrine\Rest\Action\RestActionAbstract;
+use Pz\Doctrine\Rest\RestRequestAbstract;
 use Pz\Doctrine\Rest\RestResponse;
 
-trait CreateAction
+class CreateAction extends RestActionAbstract
 {
-    /**
-     * Doctrine repository from where get data.
-     *
-     * @return RestRepository
-     */
-    abstract protected function repository();
+    use CanHydrate;
 
     /**
-     * @return RestResponseFactory
-     */
-    abstract protected function response();
-
-    /**
-     * @param CreateRequestInterface $request
-     *
-     * @return object
-     */
-    abstract protected function createEntity($request);
-
-    /**
-     * @param CreateRequestInterface $request
+     * @param RestRequestAbstract $request
      *
      * @return RestResponse
      */
-    public function create(CreateRequestInterface $request)
+    public function handle(RestRequestAbstract $request)
     {
-        try {
-            $request->authorize($this->repository()->getClassName());
+        $request->authorize($this->repository()->getClassName());
 
-            $entity = $this->createEntity($request);
+        $entity = $this->createEntity($request);
 
-            $this->repository()->em()->persist($entity);
-            $this->repository()->em()->flush();
+        $this->repository()->em()->persist($entity);
+        $this->repository()->em()->flush();
 
-            return $this->response()->create($request, $entity);
-        } catch (\Exception $e) {
-            return $this->response()->exception($e);
-        }
+        return $this->response()->create($request, $entity);
+    }
+
+    /**
+     * @param RestRequestAbstract $request
+     *
+     * @return object
+     */
+    protected function createEntity(RestRequestAbstract $request)
+    {
+        return $this->hydrate(
+            $this->repository()->getClassName(),
+            $this->repository()->em(),
+            $request
+        );
     }
 }

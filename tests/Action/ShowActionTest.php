@@ -2,7 +2,7 @@
 
 use Doctrine\ORM\EntityNotFoundException;
 use Pz\Doctrine\Rest\Action\ShowAction;
-use Pz\Doctrine\Rest\Request\ShowRequestInterface;
+use Pz\Doctrine\Rest\Request\ShowRequestAbstract;
 
 use Mockery as m;
 use Pz\Doctrine\Rest\RestException;
@@ -15,7 +15,7 @@ class ShowActionTest extends AbstractActionTest
 
     public function test_show_action_exception()
     {
-        $request = m::mock(ShowRequestInterface::class)
+        $request = m::mock(ShowRequestAbstract::class)
             ->shouldReceive('getId')->andReturn(1)
             ->shouldReceive('authorize')->andThrow(new RestException(403, 'not auth'))
             ->getMock();
@@ -28,7 +28,7 @@ class ShowActionTest extends AbstractActionTest
 
     public function test_show_action_not_found()
     {
-        $request = m::mock(ShowRequestInterface::class)
+        $request = m::mock(ShowRequestAbstract::class)
             ->shouldReceive('getId')->andReturn(1)
             ->getMock();
 
@@ -38,7 +38,7 @@ class ShowActionTest extends AbstractActionTest
 
     public function test_show_action()
     {
-        $request = m::mock(ShowRequestInterface::class)
+        $request = m::mock(ShowRequestAbstract::class)
             ->shouldReceive('http')->andReturn($http = new Request())
             ->shouldReceive('authorize')->with($this)
             ->shouldReceive('getId')->andReturn(1)

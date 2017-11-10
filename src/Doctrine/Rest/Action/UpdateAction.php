@@ -1,53 +1,38 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
-use Pz\Doctrine\Rest\Request\UpdateRequestInterface;
-use Pz\Doctrine\Rest\RestRepository;
-use Pz\Doctrine\Rest\RestResponseFactory;
+use Doctrine\Rest\Action\CanHydrate;
+use Doctrine\Rest\Action\RestActionAbstract;
+use Pz\Doctrine\Rest\RestRequestAbstract;
 use Pz\Doctrine\Rest\RestResponse;
 
-trait UpdateAction
+class UpdateAction extends RestActionAbstract
 {
-    /**
-     * Doctrine repository from where get data.
-     *
-     * @return RestRepository
-     */
-    abstract protected function repository();
+    use CanHydrate;
 
     /**
-     * @return RestResponseFactory
-     */
-    abstract protected function response();
-
-    /**
-     * @param UpdateRequestInterface $request
-     * @param                        $entity
-     *
-     * @return object
-     */
-    abstract protected function updateEntity($request, $entity);
-
-    /**
-     * @param UpdateRequestInterface $request
+     * @param RestRequestAbstract $request
      *
      * @return RestResponse
      */
-    public function update(UpdateRequestInterface $request)
+    public function handle(RestRequestAbstract $request)
     {
-        try {
-            if (null === ($entity = $this->repository()->find($request->getId()))) {
-                return $this->response()->notFound($request);
-            }
+        $entity = $this->repository()->findByIdentifier($request);
+        $request->authorize($entity);
 
-            $request->authorize($entity);
+        $this->updateEntity($request, $entity);
+        $this->repository()->em()->flush();
 
-            $this->updateEntity($request, $entity);
+        return $this->response()->update($request, $entity);
+    }
 
-            $this->repository()->em()->flush();
-
-            return $this->response()->update($request, $entity);
-        } catch (\Exception $e) {
-            return $this->response()->exception($e);
-        }
+    /**
+     * @param RestRequestAbstract $request
+     * @param object              $entity
+     *
+     * @return object
+     */
+    protected function updateEntity($request, $entity)
+    {
+        return $this->hydrate($entity, $this->repository()->em(), $request);
     }
 }

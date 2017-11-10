@@ -10,13 +10,8 @@ use League\Fractal\Serializer\JsonApiSerializer;
 use League\Fractal\TransformerAbstract;
 
 use Pz\Doctrine\Rest\Contracts\HasResourceKey;
-use Pz\Doctrine\Rest\Request\CreateRequestInterface;
-use Pz\Doctrine\Rest\Request\DeleteRequestInterface;
-use Pz\Doctrine\Rest\Request\IndexRequestInterface;
-use Pz\Doctrine\Rest\Request\ShowRequestInterface;
-use Pz\Doctrine\Rest\Request\UpdateRequestInterface;
 use Pz\Doctrine\Rest\RestException;
-use Pz\Doctrine\Rest\RestRequestInterface;
+use Pz\Doctrine\Rest\RestRequestAbstract;
 use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\RestResponseFactory;
 use Symfony\Component\HttpFoundation\Response;
@@ -62,17 +57,16 @@ class FractalResponse implements RestResponseFactory
     }
 
     /**
-     * @param IndexRequestInterface $request
+     * @param RestRequestAbstract   $request
      * @param QueryBuilder          $qb
      *
      * @return RestResponse
      */
-    public function index(RestRequestInterface $request, QueryBuilder $qb)
+    public function index(RestRequestAbstract $request, QueryBuilder $qb)
     {
         $paginator = new Paginator($qb, false);
-        $generator = $this->getPaginatorRouteGenerator($request);
         $resource = new Collection($paginator, $this->transformer(), $this->getIndexResourceKey($qb));
-        $resource->setPaginator(new DoctrinePaginatorAdapter($paginator, $generator));
+        $resource->setPaginator(new DoctrinePaginatorAdapter($paginator, $this->getPaginatorRouteGenerator($request)));
 
         return $this->response(
             $this->fractal($request)
@@ -83,12 +77,12 @@ class FractalResponse implements RestResponseFactory
     }
 
     /**
-     * @param ShowRequestInterface $request
-     * @param             $entity
+     * @param RestRequestAbstract   $request
+     * @param object                $entity
      *
      * @return RestResponse
      */
-    public function show(RestRequestInterface $request, $entity)
+    public function show(RestRequestAbstract $request, $entity)
     {
         if ($entity instanceof HasResourceKey) {
             $resourceKey = $entity->getResourceKey();
@@ -103,12 +97,12 @@ class FractalResponse implements RestResponseFactory
     }
 
     /**
-     * @param CreateRequestInterface $request
-     * @param               $entity
+     * @param RestRequestAbstract   $request
+     * @param object                $entity
      *
      * @return RestResponse
      */
-    public function create(RestRequestInterface $request, $entity)
+    public function create(RestRequestAbstract $request, $entity)
     {
         if ($entity instanceof HasResourceKey) {
             $resourceKey = $entity->getResourceKey();
@@ -124,12 +118,12 @@ class FractalResponse implements RestResponseFactory
     }
 
     /**
-     * @param UpdateRequestInterface $request
-     * @param               $entity
+     * @param RestRequestAbstract $request
+     * @param object              $entity
      *
      * @return RestResponse
      */
-    public function update(RestRequestInterface $request, $entity)
+    public function update(RestRequestAbstract $request, $entity)
     {
         if ($entity instanceof HasResourceKey) {
             $resourceKey = $entity->getResourceKey();
@@ -144,22 +138,22 @@ class FractalResponse implements RestResponseFactory
     }
 
     /**
-     * @param DeleteRequestInterface $request
-     * @param               $entity
+     * @param RestRequestAbstract $request
+     * @param object              $entity
      *
      * @return RestResponse
      */
-    public function delete(RestRequestInterface $request, $entity)
+    public function delete(RestRequestAbstract $request, $entity)
     {
         return $this->response();
     }
 
     /**
-     * @param RestRequestInterface $request
+     * @param RestRequestAbstract $request
      *
      * @return RestResponse
      */
-    public function notFound(RestRequestInterface $request)
+    public function notFound(RestRequestAbstract $request)
     {
         return $this->response(null, RestResponse::HTTP_NOT_FOUND);
     }
@@ -193,23 +187,23 @@ class FractalResponse implements RestResponseFactory
     /**
      * Return configured fractal by request format.
      *
-     * @param RestRequestInterface $request
+     * @param RestRequestAbstract $request
      *
      * @return Manager
      */
-    protected function fractal(RestRequestInterface $request)
+    protected function fractal(RestRequestAbstract $request)
     {
         $fractal = new Manager();
 
-        if ($request->isJsonApi()) {
+        if (in_array(static::JSON_API_CONTENT_TYPE, $request->getAcceptableContentTypes())) {
             $fractal->setSerializer(new JsonApiSerializer($this->baseUrl));
         }
 
-        if ($includes = $request->http()->get('include')) {
+        if ($includes = $request->get('include')) {
             $fractal->parseIncludes($includes);
         }
 
-        if ($excludes = $request->http()->get('exclude')) {
+        if ($excludes = $request->get('exclude')) {
             $fractal->parseExcludes($excludes);
         }
 
@@ -244,11 +238,11 @@ class FractalResponse implements RestResponseFactory
 
 
     /**
-     * @param RestRequestInterface $request
+     * @param RestRequestAbstract $request
      *
      * @return \Closure
      */
-    protected function getPaginatorRouteGenerator($request)
+    protected function getPaginatorRouteGenerator(RestRequestAbstract $request)
     {
         return function(int $page) {
             return null;

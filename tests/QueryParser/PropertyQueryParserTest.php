@@ -4,7 +4,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use PHPUnit\Framework\TestCase;
 use Pz\Doctrine\Rest\QueryParser\PropertyQueryParser;
-use Pz\Doctrine\Rest\Request\IndexRequestInterface;
+use Pz\Doctrine\Rest\Request\IndexRequestAbstract;
 
 use Mockery as m;
 
@@ -12,7 +12,7 @@ class PropertyQueryParserTest extends TestCase
 {
     public function test_property_query_parser()
     {
-        $request = m::mock(IndexRequestInterface::class)
+        $request = m::mock(IndexRequestAbstract::class)
             ->shouldReceive('getQuery')->andReturn('queryString')
             ->getMock();
 

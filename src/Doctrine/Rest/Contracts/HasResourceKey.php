@@ -3,6 +3,8 @@
 interface HasResourceKey
 {
     /**
+     * Get fractal resource key.
+     *
      * @return string
      */
     public static function getResourceKey();

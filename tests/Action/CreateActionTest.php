@@ -4,7 +4,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Pz\Doctrine\Rest\Action\CreateAction;
 
 use Mockery as m;
-use Pz\Doctrine\Rest\Request\CreateRequestInterface;
+use Pz\Doctrine\Rest\Request\CreateRequestAbstract;
 use Pz\Doctrine\Rest\RestException;
 use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\Tests\Mocks\ClassMetadataMock;
@@ -27,7 +27,7 @@ class CreateActionTest extends AbstractActionTest
 
     protected function createEntity($request)
     {
-        $this->assertInstanceOf(CreateRequestInterface::class, $request);
+        $this->assertInstanceOf(CreateRequestAbstract::class, $request);
         $this->newEntity = new \stdClass();
 
         return $this->newEntity;
@@ -36,7 +36,7 @@ class CreateActionTest extends AbstractActionTest
     public function test_create_action_exception()
     {
         $errors = ['testing', 'fasdfasdfas'];
-        $request = m::mock(CreateRequestInterface::class)
+        $request = m::mock(CreateRequestAbstract::class)
             ->shouldReceive('authorize')->andThrow(new RestException(400, 'testing exception', $errors))
             ->getMock();
 
@@ -52,7 +52,7 @@ class CreateActionTest extends AbstractActionTest
     {
         $this->em->shouldReceive('persist')->withArgs([m::on(function($e) { return $e === $this->newEntity; })]);
 
-        $request = m::mock(CreateRequestInterface::class)
+        $request = m::mock(CreateRequestAbstract::class)
             ->shouldReceive('http')->andReturn($http = new Request())
             ->shouldReceive('authorize')->with(static::class)
             ->getMock();
