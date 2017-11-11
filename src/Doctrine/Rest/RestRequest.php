@@ -37,6 +37,14 @@ class RestRequest extends Request
     }
 
     /**
+     * @return bool
+     */
+    public function isContentJsonApi()
+    {
+        return $this->headers->get('CONTENT_TYPE') === static::JSON_API_CONTENT_TYPE;
+    }
+
+    /**
      * @return int|array
      */
     public function getId()

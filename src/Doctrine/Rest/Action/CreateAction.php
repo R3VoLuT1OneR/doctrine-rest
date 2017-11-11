@@ -14,7 +14,7 @@ class CreateAction extends RestActionAbstract
      *
      * @return RestResponse
      */
-    public function handle(RestRequest $request)
+    protected function handle(RestRequest $request)
     {
         $request->authorize($this->repository()->getClassName());
 
