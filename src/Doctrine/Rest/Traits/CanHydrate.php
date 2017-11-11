@@ -1,4 +1,4 @@
-<?php namespace Pz\Doctrine\Rest\Action;
+<?php namespace Pz\Doctrine\Rest\Traits;
 
 use App\JsonApiHydrator;
 use Doctrine\ORM\EntityManager;
@@ -17,8 +17,7 @@ trait CanHydrate
      */
     protected function hydrate($entity, EntityManager $em, RestRequest $request)
     {
-        $hydrator = $request->getContentType() === RestRequest::JSON_API_CONTENT_TYPE ?
-            new JsonApiHydrator($em) : new ArrayHydrator($em);
+        $hydrator = $request->isAcceptJsonApi() ? new JsonApiHydrator($em) : new ArrayHydrator($em);
 
         return $hydrator->hydrate($entity, $request->request->all());
     }

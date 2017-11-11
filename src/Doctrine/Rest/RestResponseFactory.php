@@ -19,7 +19,7 @@ interface RestResponseFactory
      * @return Response
      * @throws \Exception
      */
-    public function index(RestRequest $request, QueryBuilder $qb);
+    public function collection(RestRequest $request, QueryBuilder $qb);
 
     /**
      * @param RestRequest $request
@@ -28,7 +28,7 @@ interface RestResponseFactory
      * @return Response
      * @throws \Exception
      */
-    public function show(RestRequest$request, $entity);
+    public function item(RestRequest$request, $entity);
 
     /**
      * @param RestRequest $request
@@ -37,7 +37,7 @@ interface RestResponseFactory
      * @return Response
      * @throws \Exception
      */
-    public function create(RestRequest $request, $entity);
+    public function created(RestRequest $request, $entity);
 
     /**
      * @param RestRequest $request
@@ -46,7 +46,7 @@ interface RestResponseFactory
      * @return Response
      * @throws \Exception
      */
-    public function update(RestRequest $request, $entity);
+    public function updated(RestRequest $request, $entity);
 
     /**
      * @param RestRequest $request
@@ -55,7 +55,7 @@ interface RestResponseFactory
      * @return Response
      * @throws \Exception
      */
-    public function delete(RestRequest $request, $entity);
+    public function deleted(RestRequest $request, $entity);
 
     /**
      * @param RestRequest $request

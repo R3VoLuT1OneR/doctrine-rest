@@ -3,12 +3,13 @@
 use League\Fractal\ParamBag;
 use League\Fractal\TransformerAbstract;
 use Pz\Doctrine\Rest\Tests\Entities\Blog;
+use Pz\Doctrine\Rest\Tests\Entities\Role;
 use Pz\Doctrine\Rest\Tests\Entities\User;
 
 class UserTransformer extends TransformerAbstract
 {
     protected $availableIncludes = [
-        'blogs',
+        'blogs', 'role',
     ];
 
     /**
@@ -33,5 +34,19 @@ class UserTransformer extends TransformerAbstract
     public function includeBlogs(User $user)
     {
         return $this->collection($user->getBlogs(), new BlogTransformer(), Blog::getResourceKey());
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeRole(User $user)
+    {
+        if ($role = $user->getRole()) {
+            return $this->item($role, new RoleTransformer(), Role::getResourceKey());
+        }
+
+        return null;
     }
 }

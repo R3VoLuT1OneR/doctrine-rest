@@ -51,7 +51,7 @@ class RestRequest extends Request
      */
     public function getFields()
     {
-        return $this->get('fields', []);
+        return $this->get('fields');
     }
 
     /**

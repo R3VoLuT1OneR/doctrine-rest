@@ -1,10 +1,10 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
-use Pz\Doctrine\Rest\Action\RestActionAbstract;
+use Pz\Doctrine\Rest\RestActionAbstract;
 use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
 
-class ShowAction extends RestActionAbstract
+class ItemAction extends RestActionAbstract
 {
     /**
      * @param RestRequest $request
@@ -15,6 +15,6 @@ class ShowAction extends RestActionAbstract
     {
         $entity = $this->repository()->findByIdentifier($request);
         $request->authorize($entity);
-        return $this->response()->show($request, $entity);
+        return $this->response()->item($request, $entity);
     }
 }

@@ -44,6 +44,14 @@ class User implements JsonApiResource
     protected $blogs;
 
     /**
+     * @var Role
+     *
+     * @ORM\ManyToOne(targetEntity="Role")
+     * @ORM\JoinColumn(name="role_id")
+     */
+    protected $role;
+
+    /**
      * @return string
      */
     public static function getResourceKey()
@@ -119,5 +127,24 @@ class User implements JsonApiResource
     public function getBlogs()
     {
         return $this->blogs;
+    }
+
+    /**
+     * @param Role $role
+     *
+     * @return $this
+     */
+    public function setRole($role)
+    {
+        $this->role = $role;
+        return $this;
+    }
+
+    /**
+     * @return Role
+     */
+    public function getRole()
+    {
+        return $this->role;
     }
 }

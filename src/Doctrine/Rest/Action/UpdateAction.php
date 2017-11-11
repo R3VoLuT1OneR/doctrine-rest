@@ -1,7 +1,7 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
-use Pz\Doctrine\Rest\Action\CanHydrate;
-use Pz\Doctrine\Rest\Action\RestActionAbstract;
+use Pz\Doctrine\Rest\Traits\CanHydrate;
+use Pz\Doctrine\Rest\RestActionAbstract;
 use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
 
@@ -22,7 +22,7 @@ class UpdateAction extends RestActionAbstract
         $this->updateEntity($request, $entity);
         $this->repository()->em()->flush();
 
-        return $this->response()->update($request, $entity);
+        return $this->response()->updated($request, $entity);
     }
 
     /**

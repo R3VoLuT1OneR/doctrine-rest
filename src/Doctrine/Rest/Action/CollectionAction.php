@@ -4,10 +4,14 @@ use Doctrine\Common\Collections\Criteria;
 use Pz\Doctrine\Rest\BuilderChain\CriteriaChain;
 use Pz\Doctrine\Rest\QueryParser\FilterableQueryParser;
 use Pz\Doctrine\Rest\QueryParser\PropertyQueryParser;
+use Pz\Doctrine\Rest\RestActionAbstract;
 use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
 
-class IndexAction extends RestActionAbstract
+/**
+ * Action for providing collection (list or array) of data with API.
+ */
+class CollectionAction extends RestActionAbstract
 {
     /**
      * Field that can be filtered if filter is string.
@@ -65,7 +69,7 @@ class IndexAction extends RestActionAbstract
             ->createQueryBuilder($this->repository()->alias())
             ->addCriteria($chain->process($criteria));
 
-        return $this->response()->index($request, $qb);
+        return $this->response()->collection($request, $qb);
     }
 
     /**

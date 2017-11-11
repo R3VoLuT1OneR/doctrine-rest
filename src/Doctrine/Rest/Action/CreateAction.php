@@ -1,9 +1,9 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
-use Pz\Doctrine\Rest\Action\CanHydrate;
-use Pz\Doctrine\Rest\Action\RestActionAbstract;
+use Pz\Doctrine\Rest\RestActionAbstract;
 use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
+use Pz\Doctrine\Rest\Traits\CanHydrate;
 
 class CreateAction extends RestActionAbstract
 {
@@ -23,7 +23,7 @@ class CreateAction extends RestActionAbstract
         $this->repository()->em()->persist($entity);
         $this->repository()->em()->flush();
 
-        return $this->response()->create($request, $entity);
+        return $this->response()->created($request, $entity);
     }
 
     /**

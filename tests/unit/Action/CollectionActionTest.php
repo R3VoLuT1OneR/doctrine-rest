@@ -1,7 +1,7 @@
 <?php namespace Pz\Doctrine\Rest\Tests\Action;
 
 use Mockery as m;
-use Pz\Doctrine\Rest\Action\IndexAction;
+use Pz\Doctrine\Rest\Action\CollectionAction;
 use Pz\Doctrine\Rest\Response\FractalResponseFactory;
 use Pz\Doctrine\Rest\RestRepository;
 use Pz\Doctrine\Rest\RestRequest;
@@ -12,11 +12,11 @@ use Pz\Doctrine\Rest\Tests\Entities\Transformers\UserTransformer;
 use Pz\Doctrine\Rest\Tests\Entities\User;
 use Pz\Doctrine\Rest\Tests\TestCase;
 
-class IndexActionTestCase extends TestCase
+class CollectionActionTestCase extends TestCase
 {
-    protected function getIndexAction()
+    protected function getCollectionAction()
     {
-        return new IndexAction(
+        return new CollectionAction(
             new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
             new FractalResponseFactory('http://localhost/api', new UserTransformer())
         );
@@ -24,7 +24,7 @@ class IndexActionTestCase extends TestCase
 
     public function test_index_action_complex_include_and_fieldset()
     {
-        $action = new IndexAction(
+        $action = new CollectionAction(
             new RestRepository($this->em, $this->em->getClassMetadata(BlogComment::class)),
             new FractalResponseFactory('http://localhost/api', new BlogCommentTransformer())
         );
@@ -293,7 +293,7 @@ class IndexActionTestCase extends TestCase
     {
         $request = new RestRequest();
         $request->initialize(['include' => 'blogs']);
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getIndexAction()->dispatch($request));
+        $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(
             [
@@ -362,7 +362,7 @@ class IndexActionTestCase extends TestCase
         $request = new RestRequest();
         $request->initialize(['include' => 'blogs']);
         $request->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getIndexAction()->dispatch($request));
+        $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([
             'data' => [
@@ -538,7 +538,7 @@ class IndexActionTestCase extends TestCase
     {
         $request = new RestRequest();
         $request->initialize(['fields' => ['user' => 'email']]);
-        $response = $this->getIndexAction()->dispatch($request);
+        $response = $this->getCollectionAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(
@@ -557,7 +557,7 @@ class IndexActionTestCase extends TestCase
         $request = new RestRequest();
         $request->initialize(['fields' => ['user' => 'email']]);
         $request->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
-        $response = $this->getIndexAction()->dispatch($request);
+        $response = $this->getCollectionAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(
@@ -623,7 +623,7 @@ class IndexActionTestCase extends TestCase
     {
         $request = new RestRequest();
         $request->initialize(['filter' => '@gmail.com']);
-        $response = $this->getIndexAction()->setFilterProperty('email')->dispatch($request);
+        $response = $this->getCollectionAction()->setFilterProperty('email')->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(
@@ -642,7 +642,7 @@ class IndexActionTestCase extends TestCase
         $request = new RestRequest();
         $request->initialize(['filter' => '@gmail.com']);
         $request->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
-        $response = $this->getIndexAction()->setFilterProperty('email')->dispatch($request);
+        $response = $this->getCollectionAction()->setFilterProperty('email')->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(
@@ -665,7 +665,7 @@ class IndexActionTestCase extends TestCase
         $request = new RestRequest();
         $request->initialize(['filter' => json_encode(['id' => ['start' => 2, 'end' => 3]])]);
         $request->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
-        $response = $this->getIndexAction()->setFilterable(['id'])->dispatch($request);
+        $response = $this->getCollectionAction()->setFilterable(['id'])->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(
@@ -691,7 +691,7 @@ class IndexActionTestCase extends TestCase
     {
         $request = new RestRequest();
         $request->initialize(['page' => ['number' => 1, 'size' => 2]]);
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getIndexAction()->dispatch($request));
+        $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArraySubset(
             [
@@ -715,7 +715,7 @@ class IndexActionTestCase extends TestCase
 
         $request = new RestRequest();
         $request->initialize(['page' => ['number' => 2, 'size' => 2]]);
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getIndexAction()->dispatch($request));
+        $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArraySubset(
             [
@@ -739,7 +739,7 @@ class IndexActionTestCase extends TestCase
 
         $request = new RestRequest();
         $request->initialize(['page' => ['number' => 3, 'size' => 2]]);
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getIndexAction()->dispatch($request));
+        $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArraySubset(
             [
@@ -763,7 +763,7 @@ class IndexActionTestCase extends TestCase
         $request = new RestRequest();
         $request->initialize(['page' => ['number' => 1, 'size' => 2]]);
         $request->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getIndexAction()->dispatch($request));
+        $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArraySubset(
             [
@@ -792,7 +792,7 @@ class IndexActionTestCase extends TestCase
         $request = new RestRequest();
         $request->initialize(['page' => ['offset' => 2, 'limit' => 2]]);
         $request->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getIndexAction()->dispatch($request));
+        $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArraySubset(
             [
@@ -821,7 +821,7 @@ class IndexActionTestCase extends TestCase
         $request = new RestRequest();
         $request->initialize(['page' => ['offset' => 4, 'limit' => 2]]);
         $request->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getIndexAction()->dispatch($request));
+        $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArraySubset(
             [
@@ -854,7 +854,7 @@ class IndexActionTestCase extends TestCase
         $request->initialize(['sort' => '-id,name']);
         $request->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
 
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getIndexAction()->dispatch($request));
+        $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([
             'data' => [
@@ -918,7 +918,7 @@ class IndexActionTestCase extends TestCase
 
         $request = new RestRequest();
         $request->initialize(['sort' => '-id,name', 'page' => ['ofsset' => 0]]);
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getIndexAction()->dispatch($request));
+        $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([
             'data' => [

@@ -1,4 +1,4 @@
-<?php namespace Pz\Doctrine\Rest\Action;
+<?php namespace Pz\Doctrine\Rest;
 
 use Pz\Doctrine\Rest\RestRequest;
 

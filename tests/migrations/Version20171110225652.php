@@ -20,11 +20,11 @@ class Version20171110225652 extends AbstractMigration
         $em = TestCase::generateEntityManager();
 
         $users = [
-            ['email' => 'user1@test.com', 'name'    => 'User1Name'],
-            ['email' => 'user2@gmail.com', 'name'   => 'User2Name'],
-            ['email' => 'user3@test.com', 'name'    => 'User3Name'],
-            ['email' => 'user4@test.com', 'name'    => 'User4Name'],
-            ['email' => 'user5@test.com', 'name'    => 'User5Name'],
+            ['email' => 'user1@test.com',  'name'    => 'User1Name', 'role' => 1],
+            ['email' => 'user2@gmail.com', 'name'    => 'User2Name', 'role' => 2],
+            ['email' => 'user3@test.com',  'name'    => 'User3Name', 'role' => 2],
+            ['email' => 'user4@test.com',  'name'    => 'User4Name', 'role' => 2],
+            ['email' => 'user5@test.com',  'name'    => 'User5Name', 'role' => 1],
         ];
 
         $blogs = [
@@ -93,10 +93,14 @@ class Version20171110225652 extends AbstractMigration
             ],
         ];
 
+        $this->addSql("INSERT INTO `role` (name) VALUES ('Admin')");
+        $this->addSql("INSERT INTO `role` (name) VALUES ('User')");
+
         foreach ($users as $data) {
             $name = $data['name'];
             $email = $data['email'];
-            $this->addSql("INSERT INTO `user` (name, email) VALUES ('$name', '$email')");
+            $role = $data['role'];
+            $this->addSql("INSERT INTO `user` (name, email, role_id) VALUES ('$name', '$email', $role)");
         }
 
         foreach ($blogs as $blog) {

@@ -1,9 +1,4 @@
-<?php namespace Pz\Doctrine\Rest\Action;
-
-use Pz\Doctrine\Rest\RestRepository;
-use Pz\Doctrine\Rest\RestRequest;
-use Pz\Doctrine\Rest\RestResponse;
-use Pz\Doctrine\Rest\RestResponseFactory;
+<?php namespace Pz\Doctrine\Rest;
 
 abstract class RestActionAbstract
 {
