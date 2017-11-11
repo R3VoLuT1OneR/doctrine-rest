@@ -13,56 +13,56 @@ use Pz\Doctrine\Rest\RestResponse as Response;
 interface RestResponseFactory
 {
     /**
-     * @param RestRequestAbstract $request
-     * @param QueryBuilder         $qb
+     * @param RestRequest  $request
+     * @param QueryBuilder $qb
      *
      * @return Response
      * @throws \Exception
      */
-    public function index(RestRequestAbstract $request, QueryBuilder $qb);
+    public function index(RestRequest $request, QueryBuilder $qb);
 
     /**
-     * @param RestRequestAbstract $request
-     * @param object              $entity
+     * @param RestRequest $request
+     * @param object      $entity
      *
      * @return Response
      * @throws \Exception
      */
-    public function show(RestRequestAbstract$request, $entity);
+    public function show(RestRequest$request, $entity);
 
     /**
-     * @param RestRequestAbstract   $request
-     * @param object                $entity
+     * @param RestRequest $request
+     * @param object      $entity
      *
      * @return Response
      * @throws \Exception
      */
-    public function create(RestRequestAbstract $request, $entity);
+    public function create(RestRequest $request, $entity);
 
     /**
-     * @param RestRequestAbstract    $request
-     * @param object                 $entity
+     * @param RestRequest $request
+     * @param object      $entity
      *
      * @return Response
      * @throws \Exception
      */
-    public function update(RestRequestAbstract $request, $entity);
+    public function update(RestRequest $request, $entity);
 
     /**
-     * @param RestRequestAbstract    $request
-     * @param object                 $entity
+     * @param RestRequest $request
+     * @param object      $entity
      *
      * @return Response
      * @throws \Exception
      */
-    public function delete(RestRequestAbstract $request, $entity);
+    public function delete(RestRequest $request, $entity);
 
     /**
-     * @param RestRequestAbstract $request
+     * @param RestRequest $request
      *
      * @return Response
      */
-    public function notFound(RestRequestAbstract$request);
+    public function notFound(RestRequest$request);
 
     /**
      * @param \Exception|\Error|RestException $exception

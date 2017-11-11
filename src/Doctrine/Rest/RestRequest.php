@@ -2,7 +2,7 @@
 
 use Symfony\Component\HttpFoundation\Request;
 
-abstract class RestRequestAbstract extends Request
+class RestRequest extends Request
 {
     /**
      * Json API type.
@@ -23,7 +23,10 @@ abstract class RestRequestAbstract extends Request
      *
      * @return mixed
      */
-    abstract public function authorize($entity);
+    public function authorize($entity)
+    {
+        return true;
+    }
 
     /**
      * @return bool
@@ -72,7 +75,8 @@ abstract class RestRequestAbstract extends Request
      */
     public function getOrderBy()
     {
-        if ($fields = explode(',', $this->get('sort'))) {
+        if ($sort = $this->get('sort')) {
+            $fields = explode(',', $sort);
             $orderBy = [];
 
             foreach ($fields as $field) {
@@ -98,7 +102,11 @@ abstract class RestRequestAbstract extends Request
      */
     public function getStart()
     {
-        if ($page = $this->get('page')) {
+        if (($page = $this->get('page')) && $this->getLimit() !== null) {
+            if (isset($page['number']) && is_numeric($page['number'])) {
+                return ($page['number'] - 1) * $this->getLimit();
+            }
+
             return isset($page['offset']) && is_numeric($page['offset']) ? (int) $page['offset'] : 0;
         }
 
@@ -111,7 +119,13 @@ abstract class RestRequestAbstract extends Request
     public function getLimit()
     {
         if ($page = $this->get('page')) {
-            return isset($page['limit']) && is_numeric($page['limit']) ? (int) $page['limit'] : static::DEFAULT_LIMIT;
+            if (isset($page['number']) && is_numeric($page['number'])) {
+                return isset($page['size']) && is_numeric($page['size']) ?
+                    (int) $page['size'] : $this->getDefaultLimit();
+            }
+
+            return isset($page['limit']) && is_numeric($page['limit']) ?
+                (int) $page['limit'] : $this->getDefaultLimit();
         }
 
         return null;
@@ -131,5 +145,13 @@ abstract class RestRequestAbstract extends Request
     public function getExclude()
     {
         return $this->get('exclude');
+    }
+
+    /**
+     * @return int
+     */
+    protected function getDefaultLimit()
+    {
+        return static::DEFAULT_LIMIT;
     }
 }

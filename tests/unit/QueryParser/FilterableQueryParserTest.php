@@ -5,10 +5,9 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 use PHPUnit\Framework\TestCase;
 use Pz\Doctrine\Rest\QueryParser\FilterableQueryParser;
-use Pz\Doctrine\Rest\Request\IndexRequestAbstract;
 
 use Mockery as m;
-use Pz\Doctrine\Rest\RestRequestAbstract;
+use Pz\Doctrine\Rest\RestRequest;
 
 class FilterableQueryParserTest extends TestCase
 {
@@ -17,7 +16,7 @@ class FilterableQueryParserTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $request = m::mock(RestRequestAbstract::class)
+        $request = m::mock(RestRequest::class)
             ->shouldReceive('getFilter')->andReturn([
                 'field1' => ['operator' => 'not', 'value' => false],
                 'field2' => ['operator' => 'eq', 'value' => 'test2'],
@@ -30,7 +29,7 @@ class FilterableQueryParserTest extends TestCase
 
     public function test_filterable_query_parser_operator_filter()
     {
-        $request = m::mock(RestRequestAbstract::class)
+        $request = m::mock(RestRequest::class)
             ->shouldReceive('getFilter')->andReturn([
                 'field1' => ['operator' => 'neq', 'value' => false],
                 'field2' => ['operator' => 'eq', 'value' => 'test2'],
@@ -58,7 +57,7 @@ class FilterableQueryParserTest extends TestCase
 
     public function test_filterable_query_parser_between_filter()
     {
-        $request = m::mock(RestRequestAbstract::class)
+        $request = m::mock(RestRequest::class)
             ->shouldReceive('getFilter')->andReturn(['field1' => ['start' => 1, 'end' => 10]])
             ->getMock();
 
@@ -83,7 +82,7 @@ class FilterableQueryParserTest extends TestCase
 
     public function test_filterable_query_parser_equal_filter()
     {
-        $request = m::mock(RestRequestAbstract::class)
+        $request = m::mock(RestRequest::class)
             ->shouldReceive('getFilter')->andReturn(['field1' => 'test1', 'field2' => 'test2', 'field3' => 'test3'])
             ->getMock();
 

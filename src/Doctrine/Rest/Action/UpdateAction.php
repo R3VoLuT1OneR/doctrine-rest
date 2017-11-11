@@ -2,7 +2,7 @@
 
 use Pz\Doctrine\Rest\Action\CanHydrate;
 use Pz\Doctrine\Rest\Action\RestActionAbstract;
-use Pz\Doctrine\Rest\RestRequestAbstract;
+use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
 
 class UpdateAction extends RestActionAbstract
@@ -10,11 +10,11 @@ class UpdateAction extends RestActionAbstract
     use CanHydrate;
 
     /**
-     * @param RestRequestAbstract $request
+     * @param RestRequest $request
      *
      * @return RestResponse
      */
-    public function handle(RestRequestAbstract $request)
+    public function handle(RestRequest $request)
     {
         $entity = $this->repository()->findByIdentifier($request);
         $request->authorize($entity);
@@ -26,8 +26,8 @@ class UpdateAction extends RestActionAbstract
     }
 
     /**
-     * @param RestRequestAbstract $request
-     * @param object              $entity
+     * @param RestRequest $request
+     * @param object      $entity
      *
      * @return object
      */

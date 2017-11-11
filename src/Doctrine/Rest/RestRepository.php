@@ -40,12 +40,12 @@ class RestRepository extends EntityRepository
     }
 
     /**
-     * @param RestRequestAbstract $request
+     * @param RestRequest $request
      *
      * @return null|object
      * @throws EntityNotFoundException
      */
-    public function findByIdentifier(RestRequestAbstract $request)
+    public function findByIdentifier(RestRequest $request)
     {
         if (null === ($entity = $this->find($request->getId()))) {
             throw new EntityNotFoundException($this->getClassName(), $request->getId());

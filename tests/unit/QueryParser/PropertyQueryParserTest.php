@@ -4,16 +4,15 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use PHPUnit\Framework\TestCase;
 use Pz\Doctrine\Rest\QueryParser\PropertyQueryParser;
-use Pz\Doctrine\Rest\Request\IndexRequestAbstract;
 
 use Mockery as m;
-use Pz\Doctrine\Rest\RestRequestAbstract;
+use Pz\Doctrine\Rest\RestRequest;
 
 class PropertyQueryParserTest extends TestCase
 {
     public function test_property_query_parser()
     {
-        $request = m::mock(RestRequestAbstract::class)
+        $request = m::mock(RestRequest::class)
             ->shouldReceive('getFilter')->andReturn('queryString')
             ->getMock();
 

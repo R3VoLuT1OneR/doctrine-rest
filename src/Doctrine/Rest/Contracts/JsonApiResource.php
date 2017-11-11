@@ -4,6 +4,7 @@ interface JsonApiResource
 {
     /**
      * Get fractal resource key.
+     * JSON API `type`
      *
      * @return string
      */
@@ -15,11 +16,4 @@ interface JsonApiResource
      * @return int|mixed
      */
     public function getId();
-
-    /**
-     * JSON API `type`
-     *
-     * @return string
-     */
-    public function getType();
 }

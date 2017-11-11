@@ -1,7 +1,7 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
 use Pz\Doctrine\Rest\RestRepository;
-use Pz\Doctrine\Rest\RestRequestAbstract;
+use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\RestResponseFactory;
 
@@ -18,11 +18,11 @@ abstract class RestActionAbstract
     protected $response;
 
     /**
-     * @param RestRequestAbstract $request
+     * @param RestRequest $request
      *
      * @return RestResponse
      */
-    abstract public function handle(RestRequestAbstract $request);
+    abstract protected function handle(RestRequest $request);
 
     /**
      * RestActionAbstract constructor.
@@ -34,6 +34,20 @@ abstract class RestActionAbstract
     {
         $this->repository = $repository;
         $this->response = $response;
+    }
+
+    /**
+     * @param RestRequest $request
+     *
+     * @return RestResponse
+     */
+    public function dispatch(RestRequest $request)
+    {
+        try {
+            return $this->handle($request);
+        } catch (\Exception $e) {
+            return $this->response()->exception($e);
+        }
     }
 
     /**

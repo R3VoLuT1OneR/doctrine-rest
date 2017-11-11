@@ -1,17 +1,17 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
 use Pz\Doctrine\Rest\Action\RestActionAbstract;
-use Pz\Doctrine\Rest\RestRequestAbstract;
+use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
 
 class DeleteAction extends RestActionAbstract
 {
     /**
-     * @param RestRequestAbstract $request
+     * @param RestRequest $request
      *
      * @return RestResponse
      */
-    public function handle(RestRequestAbstract $request)
+    public function handle(RestRequest $request)
     {
         $entity = $this->repository()->findByIdentifier($request);
         $request->authorize($entity);

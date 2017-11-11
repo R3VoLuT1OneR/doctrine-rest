@@ -4,24 +4,53 @@ use Doctrine\Common\Collections\Criteria;
 use Pz\Doctrine\Rest\BuilderChain\CriteriaChain;
 use Pz\Doctrine\Rest\QueryParser\FilterableQueryParser;
 use Pz\Doctrine\Rest\QueryParser\PropertyQueryParser;
-use Pz\Doctrine\Rest\RestRequestAbstract;
+use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
 
 class IndexAction extends RestActionAbstract
 {
     /**
-     * Entity alias.
+     * Field that can be filtered if filter is string.
      *
      * @var string
      */
-    protected $rootAlias;
+    protected $filterProperty;
 
     /**
-     * @param RestRequestAbstract $request
+     * Get list of filterable entity fields.
+     *
+     * @var array
+     */
+    protected $filterable = [];
+
+    /**
+     * @param string $property
+     *
+     * @return $this
+     */
+    public function setFilterProperty($property)
+    {
+        $this->filterProperty = $property;
+        return $this;
+    }
+
+    /**
+     * @param array $filterable
+     *
+     * @return $this
+     */
+    public function setFilterable(array $filterable)
+    {
+        $this->filterable = $filterable;
+        return $this;
+    }
+
+    /**
+     * @param RestRequest $request
      *
      * @return RestResponse
      */
-    public function handle(RestRequestAbstract $request)
+    protected function handle(RestRequest $request)
     {
         $request->authorize($this->repository()->getClassName());
         $chain = CriteriaChain::create($this->criteriaBuilders($request));
@@ -40,11 +69,11 @@ class IndexAction extends RestActionAbstract
     }
 
     /**
-     * @param RestRequestAbstract $request
+     * @param RestRequest $request
      *
      * @return array
      */
-    protected function criteriaBuilders(RestRequestAbstract $request)
+    protected function criteriaBuilders(RestRequest $request)
     {
         return [
             new PropertyQueryParser($request, $this->getQueryProperty()),
@@ -59,7 +88,7 @@ class IndexAction extends RestActionAbstract
      */
     protected function getQueryProperty()
     {
-        return null;
+        return $this->filterProperty;
     }
 
     /**
@@ -69,6 +98,6 @@ class IndexAction extends RestActionAbstract
      */
     protected function getFilterable()
     {
-        return [];
+        return $this->filterable;
     }
 }

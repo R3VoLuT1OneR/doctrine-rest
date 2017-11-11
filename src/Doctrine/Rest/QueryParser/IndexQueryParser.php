@@ -2,7 +2,7 @@
 
 use Doctrine\Common\Collections\Criteria;
 use Pz\Doctrine\Rest\BuilderChain\MemberInterface;
-use Pz\Doctrine\Rest\RestRequestAbstract;
+use Pz\Doctrine\Rest\RestRequest;
 
 abstract class IndexQueryParser implements MemberInterface
 {
@@ -15,7 +15,7 @@ abstract class IndexQueryParser implements MemberInterface
     abstract public function processQuery(Criteria $criteria, $query);
 
     /**
-     * @var RestRequestAbstract
+     * @var RestRequest
      */
     protected $request;
 
@@ -32,9 +32,9 @@ abstract class IndexQueryParser implements MemberInterface
     /**
      * IndexQueryParser constructor.
      *
-     * @param RestRequestAbstract $request
+     * @param RestRequest $request
      */
-    public function __construct(RestRequestAbstract $request)
+    public function __construct(RestRequest $request)
     {
         $this->request = $request;
     }

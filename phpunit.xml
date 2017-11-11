@@ -20,12 +20,13 @@
         strict="false"
         verbose="false"
 >
-    <!--printerClass="PHPUnit_TextUI_ResultPrinter"-->
-    <!--testSuiteLoaderClass="PHPUnit_Runner_StandardTestSuiteLoader"-->
-
+    <logging>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
+    </logging>
     <testsuites>
         <testsuite name="Package Test Suit">
-            <directory suffix="Test.php">./tests/</directory>
+            <directory suffix="Test.php">./tests/unit</directory>
+            <exclude>./tests/unit/TestCase.php</exclude>
         </testsuite>
     </testsuites>
     <filter>

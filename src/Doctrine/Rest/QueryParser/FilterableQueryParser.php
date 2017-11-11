@@ -2,7 +2,7 @@
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Query\Expr;
-use Pz\Doctrine\Rest\RestRequestAbstract;
+use Pz\Doctrine\Rest\RestRequest;
 
 class FilterableQueryParser extends IndexQueryParser
 {
@@ -14,10 +14,10 @@ class FilterableQueryParser extends IndexQueryParser
     /**
      * StringParser constructor.
      *
-     * @param RestRequestAbstract $request
-     * @param bool|array           $filterable
+     * @param RestRequest $request
+     * @param bool|array  $filterable
      */
-    public function __construct(RestRequestAbstract $request, array $filterable)
+    public function __construct(RestRequest $request, array $filterable)
     {
         parent::__construct($request);
         $this->filterable = $filterable;
