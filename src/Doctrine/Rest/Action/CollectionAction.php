@@ -131,7 +131,7 @@ class CollectionAction extends RestAction
     protected function paginatorUrlGenerator(RestRequestContract $request, $resourceKey)
     {
         return function(int $page) use ($resourceKey, $request) {
-            return !$resourceKey ? null : "{$request->http()->getBaseUrl()}/$resourceKey?".http_build_query([
+            return !$resourceKey ? null : "{$request->getBaseUrl()}/$resourceKey?".http_build_query([
                 'page' => [
                     'number'    => $page,
                     'size'      => $request->getLimit()

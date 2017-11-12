@@ -107,7 +107,7 @@ abstract class RestAction
      */
     protected function linkJsonApiResource(RestRequestContract $request, JsonApiResource $resource)
     {
-        return sprintf('%s/%s/%s', $request->http()->getBaseUrl(), $resource->getResourceKey(), $resource->getId());
+        return sprintf('%s/%s/%s', $request->getBaseUrl(), $resource->getResourceKey(), $resource->getId());
     }
 
     /**

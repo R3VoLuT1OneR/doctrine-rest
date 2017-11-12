@@ -18,9 +18,9 @@ trait CanHydrate
     protected function hydrate($entity, EntityManager $em, RestRequestContract $request)
     {
         if ($request->isContentJsonApi()) {
-            return (new JsonApiHydrator($em))->hydrate($entity, $request->http()->request->get('data'));
+            return (new JsonApiHydrator($em))->hydrate($entity, $request->all()['data']);
         }
 
-        return (new ArrayHydrator($em))->hydrate($entity, $request->http()->request->all());
+        return (new ArrayHydrator($em))->hydrate($entity, $request->all());
     }
 }

@@ -13,6 +13,13 @@ interface RestRequestContract
     const DEFAULT_LIMIT = 1000;
 
     /**
+     * Provide base API url
+     *
+     * @return string
+     */
+    public function getBaseUrl();
+
+    /**
      * @return bool
      */
     public function isAcceptJsonApi();
@@ -21,6 +28,13 @@ interface RestRequestContract
      * @return bool
      */
     public function isContentJsonApi();
+
+    /**
+     * Return parser JSON body request.
+     *
+     * @return array
+     */
+    public function all();
 
     /**
      * @return int|array

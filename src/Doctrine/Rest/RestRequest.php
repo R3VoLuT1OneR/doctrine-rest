@@ -26,6 +26,14 @@ class RestRequest implements RestRequestContract
     }
 
     /**
+     * @return string
+     */
+    public function getBaseUrl()
+    {
+        return $this->http()->getBaseUrl();
+    }
+
+    /**
      * @return bool
      */
     public function isAcceptJsonApi()
@@ -39,6 +47,14 @@ class RestRequest implements RestRequestContract
     public function isContentJsonApi()
     {
         return $this->http()->headers->get('CONTENT_TYPE') === static::JSON_API_CONTENT_TYPE;
+    }
+
+    /**
+     * @return array
+     */
+    public function all()
+    {
+        return $this->http()->request->all();
     }
 
     /**
@@ -85,10 +101,6 @@ class RestRequest implements RestRequestContract
             $orderBy = [];
 
             foreach ($fields as $field) {
-                if (empty($field)) {
-                    continue;
-                }
-
                 $direction = 'ASC';
                 if ($field[0] === '-') {
                     $field = substr($field, 1);
