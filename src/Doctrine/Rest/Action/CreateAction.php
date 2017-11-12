@@ -3,7 +3,7 @@
 use League\Fractal\Resource\Item;
 use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use Pz\Doctrine\Rest\RestAction;
-use Pz\Doctrine\Rest\RestRequest;
+use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\Traits\CanHydrate;
 
@@ -12,11 +12,11 @@ class CreateAction extends RestAction
     use CanHydrate;
 
     /**
-     * @param RestRequest $request
+     * @param RestRequestContract $request
      *
      * @return RestResponse
      */
-    protected function handle(RestRequest $request)
+    protected function handle(RestRequestContract $request)
     {
         $headers = [];
         $this->authorize($request, $this->repository()->getClassName());
@@ -36,11 +36,11 @@ class CreateAction extends RestAction
     }
 
     /**
-     * @param RestRequest $request
+     * @param RestRequestContract $request
      *
      * @return object
      */
-    protected function createEntity(RestRequest $request)
+    protected function createEntity(RestRequestContract $request)
     {
         return $this->hydrate(
             $this->repository()->getClassName(),

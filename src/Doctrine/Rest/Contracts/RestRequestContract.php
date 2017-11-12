@@ -1,7 +1,5 @@
 <?php namespace Pz\Doctrine\Rest\Contracts;
 
-use Symfony\Component\HttpFoundation\Request;
-
 interface RestRequestContract
 {
     /**
@@ -13,11 +11,6 @@ interface RestRequestContract
      * Default limit for list.
      */
     const DEFAULT_LIMIT = 1000;
-
-    /**
-     * @return Request
-     */
-    public function http();
 
     /**
      * @return bool

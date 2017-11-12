@@ -2,17 +2,17 @@
 
 use League\Fractal\Resource\Item;
 use Pz\Doctrine\Rest\RestAction;
-use Pz\Doctrine\Rest\RestRequest;
+use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestResponse;
 
 class ItemAction extends RestAction
 {
     /**
-     * @param RestRequest $request
+     * @param RestRequestContract $request
      *
      * @return RestResponse
      */
-    public function handle(RestRequest $request)
+    public function handle(RestRequestContract $request)
     {
         $entity = $this->repository()->findByIdentifier($request);
 

@@ -8,7 +8,7 @@ use Pz\Doctrine\Rest\BuilderChain\CriteriaChain;
 use Pz\Doctrine\Rest\QueryParser\FilterableQueryParser;
 use Pz\Doctrine\Rest\QueryParser\PropertyQueryParser;
 use Pz\Doctrine\Rest\RestAction;
-use Pz\Doctrine\Rest\RestRequest;
+use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestResponse;
 
 /**
@@ -53,11 +53,11 @@ class CollectionAction extends RestAction
     }
 
     /**
-     * @param RestRequest $request
+     * @param RestRequestContract $request
      *
      * @return RestResponse
      */
-    protected function handle(RestRequest $request)
+    protected function handle(RestRequestContract $request)
     {
         $class = $this->repository()->getClassName();
         $resourceKey = $this->getResourceKey($class);
@@ -90,11 +90,11 @@ class CollectionAction extends RestAction
     }
 
     /**
-     * @param RestRequest $request
+     * @param RestRequestContract $request
      *
      * @return array
      */
-    protected function criteriaBuilders(RestRequest $request)
+    protected function criteriaBuilders(RestRequestContract $request)
     {
         return [
             new PropertyQueryParser($request, $this->getQueryProperty()),
@@ -123,12 +123,12 @@ class CollectionAction extends RestAction
     }
 
     /**
-     * @param RestRequest $request
+     * @param RestRequestContract $request
      * @param             $resourceKey
      *
      * @return \Closure
      */
-    protected function paginatorUrlGenerator(RestRequest $request, $resourceKey)
+    protected function paginatorUrlGenerator(RestRequestContract $request, $resourceKey)
     {
         return function(int $page) use ($resourceKey, $request) {
             return !$resourceKey ? null : "{$request->http()->getBaseUrl()}/$resourceKey?".http_build_query([

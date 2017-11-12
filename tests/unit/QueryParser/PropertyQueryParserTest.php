@@ -6,13 +6,13 @@ use PHPUnit\Framework\TestCase;
 use Pz\Doctrine\Rest\QueryParser\PropertyQueryParser;
 
 use Mockery as m;
-use Pz\Doctrine\Rest\RestRequest;
+use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 
 class PropertyQueryParserTest extends TestCase
 {
     public function test_property_query_parser()
     {
-        $request = m::mock(RestRequest::class)
+        $request = m::mock(RestRequestContract::class)
             ->shouldReceive('getFilter')->andReturn('queryString')
             ->getMock();
 

@@ -39,9 +39,13 @@ Change entity repository to `RestRepository` or create new one.
 
 Route request `http://localhost/api/{resourceKey}`. If you want to get JSON API response just add `Accept` header `application/vnd.api+json`
 
+Prepare `RestRequest` entity or implement `RestRequestContract` on your customer `RestRequest`
+
     // Get http request from framework or init yourself
     $httpRequest = Symfony\Component\HttpFoundation\Request::createFromGlobals();
     $restRequest = new RestRequest($httpRequest);
+
+Create and dispatch the action
 
     $action = new CollectionAction(
         $restRepository,

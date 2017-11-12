@@ -1,7 +1,7 @@
 <?php namespace Pz\Doctrine\Rest\QueryParser;
 
 use Doctrine\Common\Collections\Criteria;
-use Pz\Doctrine\Rest\RestRequest;
+use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 
 class PropertyQueryParser extends IndexQueryParser
 {
@@ -15,10 +15,10 @@ class PropertyQueryParser extends IndexQueryParser
     /**
      * StringParser constructor.
      *
-     * @param RestRequest $request
-     * @param string      $property Property name that will be filtered by query.
+     * @param RestRequestContract $request
+     * @param string              $property Property name that will be filtered by query.
      */
-    public function __construct(RestRequest $request, $property)
+    public function __construct(RestRequestContract $request, $property)
     {
         parent::__construct($request);
         $this->property = $property;

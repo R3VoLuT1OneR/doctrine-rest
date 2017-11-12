@@ -3,17 +3,18 @@
 use League\Fractal\Manager;
 use League\Fractal\Resource\ResourceInterface;
 use League\Fractal\Serializer\JsonApiSerializer;
+use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 
 class RestResponseFactory
 {
     /**
      * Return configured fractal by request format.
      *
-     * @param RestRequest $request
+     * @param RestRequestContract $request
      *
      * @return Manager
      */
-    public function fractal(RestRequest $request)
+    public function fractal(RestRequestContract $request)
     {
         $fractal = new Manager();
 
@@ -37,7 +38,7 @@ class RestResponseFactory
     }
 
     /**
-     * @param RestRequest            $request
+     * @param RestRequestContract    $request
      * @param ResourceInterface|null $resource
      * @param int                    $httStatus
      * @param array                  $headers
@@ -45,13 +46,13 @@ class RestResponseFactory
      * @return RestResponse
      */
     public function resource(
-        RestRequest         $request,
+        RestRequestContract         $request,
         ResourceInterface   $resource = null,
         int                 $httStatus = RestResponse::HTTP_OK,
         array               $headers = []
     ) {
         if ($request->isAcceptJsonApi()) {
-            $headers['Content-Type'] = RestRequest::JSON_API_CONTENT_TYPE;
+            $headers['Content-Type'] = RestRequestContract::JSON_API_CONTENT_TYPE;
         }
 
         $data = $resource ? $this->fractal($request)->createData($resource)->toArray() : null;

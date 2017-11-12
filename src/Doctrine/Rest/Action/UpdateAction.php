@@ -3,7 +3,7 @@
 use League\Fractal\Resource\Item;
 use Pz\Doctrine\Rest\Traits\CanHydrate;
 use Pz\Doctrine\Rest\RestAction;
-use Pz\Doctrine\Rest\RestRequest;
+use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestResponse;
 
 class UpdateAction extends RestAction
@@ -11,11 +11,11 @@ class UpdateAction extends RestAction
     use CanHydrate;
 
     /**
-     * @param RestRequest $request
+     * @param RestRequestContract $request
      *
      * @return RestResponse
      */
-    public function handle(RestRequest $request)
+    public function handle(RestRequestContract $request)
     {
         $entity = $this->repository()->findByIdentifier($request);
         $this->authorize($request, $entity);
@@ -29,8 +29,8 @@ class UpdateAction extends RestAction
     }
 
     /**
-     * @param RestRequest $request
-     * @param object      $entity
+     * @param RestRequestContract $request
+     * @param object              $entity
      *
      * @return object
      */

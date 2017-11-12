@@ -3,6 +3,7 @@
 use Doctrine\ORM\EntityNotFoundException;
 use League\Fractal\TransformerAbstract;
 use Pz\Doctrine\Rest\Contracts\JsonApiResource;
+use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 
 abstract class RestAction
 {
@@ -22,11 +23,11 @@ abstract class RestAction
     protected $transformer;
 
     /**
-     * @param RestRequest $request
+     * @param RestRequestContract $request
      *
      * @return RestResponse
      */
-    abstract protected function handle(RestRequest $request);
+    abstract protected function handle(RestRequestContract $request);
 
     /**
      * RestActionAbstract constructor.
@@ -42,11 +43,11 @@ abstract class RestAction
     }
 
     /**
-     * @param RestRequest $request
+     * @param RestRequestContract $request
      *
      * @return RestResponse
      */
-    public function dispatch(RestRequest $request)
+    public function dispatch(RestRequestContract $request)
     {
         try {
 
@@ -88,8 +89,8 @@ abstract class RestAction
      * Entity will be object for get,update,delete actions.
      * Entity will be string for index,create action.
      *
-     * @param RestRequest   $request
-     * @param object|string $entity
+     * @param RestRequestContract $request
+     * @param object|string       $entity
      *
      * @return mixed
      */
@@ -99,12 +100,12 @@ abstract class RestAction
     }
 
     /**
-     * @param RestRequest     $request
-     * @param JsonApiResource $resource
+     * @param RestRequestContract $request
+     * @param JsonApiResource     $resource
      *
      * @return string|null
      */
-    protected function linkJsonApiResource(RestRequest $request, JsonApiResource $resource)
+    protected function linkJsonApiResource(RestRequestContract $request, JsonApiResource $resource)
     {
         return sprintf('%s/%s/%s', $request->http()->getBaseUrl(), $resource->getResourceKey(), $resource->getId());
     }
