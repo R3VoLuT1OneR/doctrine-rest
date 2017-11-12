@@ -1,17 +1,22 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use League\Fractal\Pagination\DoctrinePaginatorAdapter;
+use League\Fractal\Resource\Collection;
 use Pz\Doctrine\Rest\BuilderChain\CriteriaChain;
+use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use Pz\Doctrine\Rest\QueryParser\FilterableQueryParser;
 use Pz\Doctrine\Rest\QueryParser\PropertyQueryParser;
-use Pz\Doctrine\Rest\RestActionAbstract;
+use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
 
 /**
  * Action for providing collection (list or array) of data with API.
  */
-class CollectionAction extends RestActionAbstract
+class CollectionAction extends RestAction
 {
     /**
      * Field that can be filtered if filter is string.
@@ -56,7 +61,9 @@ class CollectionAction extends RestActionAbstract
      */
     protected function handle(RestRequest $request)
     {
-        $request->authorize($this->repository()->getClassName());
+        $class = $this->repository()->getClassName();
+        $resourceKey = $this->getResourceKey($class);
+        $request->authorize($class);
         $chain = CriteriaChain::create($this->criteriaBuilders($request));
 
         $criteria = new Criteria(null,
@@ -69,7 +76,19 @@ class CollectionAction extends RestActionAbstract
             ->createQueryBuilder($this->repository()->alias())
             ->addCriteria($chain->process($criteria));
 
-        return $this->response()->collection($request, $qb);
+         $paginator = new Paginator($qb, false);
+         $collection = new Collection($paginator, $this->transformer(), $resourceKey);
+
+        if ($request->getLimit() !== null) {
+            $collection->setPaginator(
+                new DoctrinePaginatorAdapter(
+                    $paginator,
+                    $this->paginatorUrlGenerator($request, $resourceKey)
+                )
+            );
+        }
+
+        return $this->response()->resource($request, $collection);
     }
 
     /**
@@ -103,5 +122,23 @@ class CollectionAction extends RestActionAbstract
     protected function getFilterable()
     {
         return $this->filterable;
+    }
+
+    /**
+     * @param RestRequest $request
+     * @param             $resourceKey
+     *
+     * @return \Closure
+     */
+    protected function paginatorUrlGenerator(RestRequest $request, $resourceKey)
+    {
+        return function(int $page) use ($resourceKey, $request) {
+            return !$resourceKey ? null : "{$request->getBaseUrl()}/$resourceKey?".http_build_query([
+                'page' => [
+                    'number'    => $page,
+                    'size'      => $request->getLimit()
+                ]
+            ]);
+        };
     }
 }

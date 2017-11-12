@@ -1,7 +1,7 @@
 <?php namespace Pz\Doctrine\Rest\Tests\Action;
 
 use Pz\Doctrine\Rest\Action\UpdateAction;
-use Pz\Doctrine\Rest\Response\FractalResponseFactory;
+use Pz\Doctrine\Rest\RestResponseFactory;
 use Pz\Doctrine\Rest\RestRepository;
 use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
@@ -16,7 +16,8 @@ class UpdateActionTest extends TestCase
     {
         $action = new UpdateAction(
             new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
-            new FractalResponseFactory('http://localhost/api', new UserTransformer())
+            new RestResponseFactory(),
+            new UserTransformer()
         );
 
         $request = new RestRequest();
@@ -69,7 +70,7 @@ class UpdateActionTest extends TestCase
                         'email' => 'new2@email.com',
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/2',
+                        'self' => '/user/2',
                     ]
                 ],
             ],

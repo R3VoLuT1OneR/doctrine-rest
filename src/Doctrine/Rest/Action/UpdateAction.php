@@ -1,11 +1,12 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
+use League\Fractal\Resource\Item;
 use Pz\Doctrine\Rest\Traits\CanHydrate;
-use Pz\Doctrine\Rest\RestActionAbstract;
+use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
 
-class UpdateAction extends RestActionAbstract
+class UpdateAction extends RestAction
 {
     use CanHydrate;
 
@@ -22,7 +23,9 @@ class UpdateAction extends RestActionAbstract
         $this->updateEntity($request, $entity);
         $this->repository()->em()->flush();
 
-        return $this->response()->updated($request, $entity);
+        $resource = new Item($entity, $this->transformer(), $this->getResourceKey($entity));
+
+        return $this->response()->resource($request, $resource);
     }
 
     /**

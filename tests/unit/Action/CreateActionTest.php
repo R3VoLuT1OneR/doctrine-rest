@@ -1,7 +1,7 @@
 <?php namespace Pz\Doctrine\Rest\Tests\Action;
 
 use Pz\Doctrine\Rest\Action\CreateAction;
-use Pz\Doctrine\Rest\Response\FractalResponseFactory;
+use Pz\Doctrine\Rest\RestResponseFactory;
 use Pz\Doctrine\Rest\RestRepository;
 use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
@@ -18,7 +18,8 @@ class CreateActionTest extends TestCase
     {
         $action = new CreateAction(
             new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
-            new FractalResponseFactory('http://localhost/api', new UserTransformer())
+            new RestResponseFactory(),
+            new UserTransformer()
         );
 
         $request = new RestRequest();
@@ -61,13 +62,13 @@ class CreateActionTest extends TestCase
                                 'type' => 'role'
                             ],
                             'links' => [
-                                'self' => 'http://localhost/api/user/6/relationships/role',
-                                'related' => 'http://localhost/api/user/6/role',
+                                'self' => '/user/6/relationships/role',
+                                'related' => '/user/6/role',
                             ],
                         ],
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/6',
+                        'self' => '/user/6',
                     ]
                 ],
                 'included' => [
@@ -78,7 +79,7 @@ class CreateActionTest extends TestCase
                             'name' => 'Admin',
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/role/1',
+                            'self' => '/role/1',
                         ]
                     ]
                 ]
@@ -91,7 +92,8 @@ class CreateActionTest extends TestCase
     {
         $action = new CreateAction(
             new RestRepository($this->em, $this->em->getClassMetadata(Role::class)),
-            new FractalResponseFactory('http://localhost/api', new RoleTransformer())
+            new RestResponseFactory(),
+            new RoleTransformer()
         );
 
         $request = new RestRequest();
@@ -132,12 +134,12 @@ class CreateActionTest extends TestCase
             [
                 'data' => [
                     'id' => '4',
-                    'type' => 'role',
+                    'type' => null,
                     'attributes' => [
                         'name' => 'New Role',
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/role/4',
+                        'self' => '//4',
                     ]
                 ],
             ],

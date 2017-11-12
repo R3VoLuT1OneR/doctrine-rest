@@ -1,7 +1,7 @@
 <?php namespace Pz\Doctrine\Rest\Tests\Action;
 
 use Pz\Doctrine\Rest\Action\ItemAction;
-use Pz\Doctrine\Rest\Response\FractalResponseFactory;
+use Pz\Doctrine\Rest\RestResponseFactory;
 use Pz\Doctrine\Rest\RestRepository;
 use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
@@ -15,7 +15,8 @@ class ItemActionTest extends TestCase
     {
         return new ItemAction(
             new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
-            new FractalResponseFactory('http://localhost/api', new UserTransformer())
+            new RestResponseFactory(),
+            new UserTransformer()
         );
     }
 
@@ -59,8 +60,8 @@ class ItemActionTest extends TestCase
                                 ],
                             ],
                             'links' => [
-                                'self' => 'http://localhost/api/user/1/relationships/blogs',
-                                'related' => 'http://localhost/api/user/1/blogs',
+                                'self' => '/user/1/relationships/blogs',
+                                'related' => '/user/1/blogs',
                             ]
                         ],
                         'role' => [
@@ -69,13 +70,13 @@ class ItemActionTest extends TestCase
                                 'type' => 'role',
                             ],
                             'links' => [
-                                'self' => 'http://localhost/api/user/1/relationships/role',
-                                'related' => 'http://localhost/api/user/1/role',
+                                'self' => '/user/1/relationships/role',
+                                'related' => '/user/1/role',
                             ]
                         ]
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/1',
+                        'self' => '/user/1',
                     ]
                 ],
                 'included' => [
@@ -86,7 +87,7 @@ class ItemActionTest extends TestCase
                             'content' => 'User1 blog content 1',
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/blog/1',
+                            'self' => '/blog/1',
                         ]
                     ],
                     [
@@ -96,7 +97,7 @@ class ItemActionTest extends TestCase
                             'content' => 'User1 blog content 2',
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/blog/2',
+                            'self' => '/blog/2',
                         ]
                     ],
                     [
@@ -106,7 +107,7 @@ class ItemActionTest extends TestCase
                             'content' => 'User1 blog content 3',
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/blog/3',
+                            'self' => '/blog/3',
                         ]
                     ],
                     [
@@ -116,7 +117,7 @@ class ItemActionTest extends TestCase
                             'name' => 'Admin',
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/role/1',
+                            'self' => '/role/1',
                         ]
                     ]
                 ]
@@ -157,7 +158,7 @@ class ItemActionTest extends TestCase
                         'email' => 'user1@test.com',
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/1',
+                        'self' => '/user/1',
                     ]
                 ]
             ],

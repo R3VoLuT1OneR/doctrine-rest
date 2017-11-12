@@ -1,73 +1,61 @@
 <?php namespace Pz\Doctrine\Rest;
 
-use Doctrine\ORM\QueryBuilder;
-use Pz\Doctrine\Rest\RestResponse as Response;
+use League\Fractal\Manager;
+use League\Fractal\Resource\ResourceInterface;
+use League\Fractal\Serializer\JsonApiSerializer;
 
-/**
- * Rest Response Interface
- *
- * Used as api for all rest responses.
- *
- * @package Pz\Doctrine\Rest
- */
-interface RestResponseFactory
+class RestResponseFactory
 {
     /**
-     * @param RestRequest  $request
-     * @param QueryBuilder $qb
+     * Return configured fractal by request format.
      *
-     * @return Response
-     * @throws \Exception
-     */
-    public function collection(RestRequest $request, QueryBuilder $qb);
-
-    /**
-     * @param RestRequest $request
-     * @param object      $entity
-     *
-     * @return Response
-     * @throws \Exception
-     */
-    public function item(RestRequest$request, $entity);
-
-    /**
-     * @param RestRequest $request
-     * @param object      $entity
-     *
-     * @return Response
-     * @throws \Exception
-     */
-    public function created(RestRequest $request, $entity);
-
-    /**
-     * @param RestRequest $request
-     * @param object      $entity
-     *
-     * @return Response
-     * @throws \Exception
-     */
-    public function updated(RestRequest $request, $entity);
-
-    /**
-     * @param RestRequest $request
-     * @param object      $entity
-     *
-     * @return Response
-     * @throws \Exception
-     */
-    public function deleted(RestRequest $request, $entity);
-
-    /**
      * @param RestRequest $request
      *
-     * @return Response
+     * @return Manager
      */
-    public function notFound(RestRequest$request);
+    public function fractal(RestRequest $request)
+    {
+        $fractal = new Manager();
+
+        if ($request->isAcceptJsonApi()) {
+            $fractal->setSerializer(new JsonApiSerializer($request->getBaseUrl()));
+        }
+
+        if ($includes = $request->getInclude()) {
+            $fractal->parseIncludes($includes);
+        }
+
+        if ($excludes = $request->getExclude()) {
+            $fractal->parseExcludes($excludes);
+        }
+
+        if ($fields = $request->getFields()) {
+            $fractal->parseFieldsets($fields);
+        }
+
+        return $fractal;
+    }
 
     /**
-     * @param \Exception|\Error|RestException $exception
+     * @param RestRequest            $request
+     * @param ResourceInterface|null $resource
+     * @param int                    $httStatus
+     * @param array                  $headers
      *
-     * @return Response
+     * @return RestResponse
      */
-    public function exception($exception);
+    public function resource(
+        RestRequest         $request,
+        ResourceInterface   $resource = null,
+        int                 $httStatus = RestResponse::HTTP_OK,
+        array               $headers = []
+    ) {
+        if ($request->isAcceptJsonApi()) {
+            $headers['Content-Type'] = RestRequest::JSON_API_CONTENT_TYPE;
+        }
+
+        $data = $resource ? $this->fractal($request)->createData($resource)->toArray() : null;
+
+        return RestResponse::create($data, $httStatus, $headers);
+    }
 }

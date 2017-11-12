@@ -6,7 +6,7 @@ use Pz\Doctrine\Rest\Tests\Entities\User;
 
 class BlogTransformer extends TransformerAbstract
 {
-    protected $availableIncludes = [
+    protected $defaultIncludes = [
         'user',
     ];
 

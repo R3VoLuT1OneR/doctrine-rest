@@ -14,19 +14,15 @@ class RestException extends \RuntimeException
      */
     protected $errors = [];
 
-    /**
-     * RestException constructor.
-     *
-     * @param int             $httpStatus
-     * @param string          $message
-     * @param array           $errors
-     * @param \Exception|null $previous
-     */
-    public function __construct($httpStatus, $message, array $errors = [], \Exception $previous = null)
+    public function __construct(
+        array       $errors = [],
+        int         $httpStatus = Response::HTTP_INTERNAL_SERVER_ERROR,
+        \Exception  $previous = null
+    )
     {
-        parent::__construct($message, $httpStatus, $previous);
-        $this->httpStatus = $httpStatus;
+        parent::__construct('Rest exception', 0, $previous);
         $this->errors = $errors;
+        $this->httpStatus = $httpStatus;
     }
 
     /**

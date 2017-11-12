@@ -2,23 +2,54 @@
 
 use Mockery as m;
 use Pz\Doctrine\Rest\Action\CollectionAction;
-use Pz\Doctrine\Rest\Response\FractalResponseFactory;
+use Pz\Doctrine\Rest\RestResponseFactory;
 use Pz\Doctrine\Rest\RestRepository;
 use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\Tests\Entities\BlogComment;
+use Pz\Doctrine\Rest\Tests\Entities\Role;
 use Pz\Doctrine\Rest\Tests\Entities\Transformers\BlogCommentTransformer;
+use Pz\Doctrine\Rest\Tests\Entities\Transformers\RoleTransformer;
 use Pz\Doctrine\Rest\Tests\Entities\Transformers\UserTransformer;
 use Pz\Doctrine\Rest\Tests\Entities\User;
 use Pz\Doctrine\Rest\Tests\TestCase;
 
-class CollectionActionTestCase extends TestCase
+class CollectionActionTest extends TestCase
 {
     protected function getCollectionAction()
     {
         return new CollectionAction(
             new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
-            new FractalResponseFactory('http://localhost/api', new UserTransformer())
+            new RestResponseFactory(),
+            new UserTransformer()
+        );
+    }
+
+    public function test_collection_not_json_resource()
+    {
+        $action = new CollectionAction(
+            new RestRepository($this->em, $this->em->getClassMetadata(Role::class)),
+            new RestResponseFactory(),
+            new RoleTransformer()
+        );
+
+        $request = new RestRequest();
+        $this->assertInstanceOf(RestResponse::class, $response = $action->dispatch($request));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(
+            [
+                'data' => [
+                    [
+                        'id' => 1,
+                        'name' => 'Admin',
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => 'User',
+                    ]
+                ]
+            ],
+            json_decode($response->getContent(), true)
         );
     }
 
@@ -26,7 +57,8 @@ class CollectionActionTestCase extends TestCase
     {
         $action = new CollectionAction(
             new RestRepository($this->em, $this->em->getClassMetadata(BlogComment::class)),
-            new FractalResponseFactory('http://localhost/api', new BlogCommentTransformer())
+            new RestResponseFactory(),
+            new BlogCommentTransformer()
         );
 
         $request = new RestRequest();
@@ -99,13 +131,13 @@ class CollectionActionTestCase extends TestCase
                             'user' => [
                                 'data' => ['id' => 1, 'type' => 'user'],
                                 'links' => [
-                                    'self' => 'http://localhost/api/blog_comment/1/relationships/user',
-                                    'related' => 'http://localhost/api/blog_comment/1/user',
+                                    'self' => '/blog_comment/1/relationships/user',
+                                    'related' => '/blog_comment/1/user',
                                 ]
                             ]
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/blog_comment/1'
+                            'self' => '/blog_comment/1'
                         ],
                     ],
                     [
@@ -118,13 +150,13 @@ class CollectionActionTestCase extends TestCase
                             'user' => [
                                 'data' => ['id' => 1, 'type' => 'user'],
                                 'links' => [
-                                    'self' => 'http://localhost/api/blog_comment/2/relationships/user',
-                                    'related' => 'http://localhost/api/blog_comment/2/user',
+                                    'self' => '/blog_comment/2/relationships/user',
+                                    'related' => '/blog_comment/2/user',
                                 ]
                             ]
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/blog_comment/2'
+                            'self' => '/blog_comment/2'
                         ],
                     ],
                     [
@@ -137,13 +169,13 @@ class CollectionActionTestCase extends TestCase
                             'user' => [
                                 'data' => ['id' => 3, 'type' => 'user'],
                                 'links' => [
-                                    'self' => 'http://localhost/api/blog_comment/3/relationships/user',
-                                    'related' => 'http://localhost/api/blog_comment/3/user',
+                                    'self' => '/blog_comment/3/relationships/user',
+                                    'related' => '/blog_comment/3/user',
                                 ]
                             ]
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/blog_comment/3'
+                            'self' => '/blog_comment/3'
                         ],
                     ],
                     [
@@ -156,13 +188,13 @@ class CollectionActionTestCase extends TestCase
                             'user' => [
                                 'data' => ['id' => 2, 'type' => 'user'],
                                 'links' => [
-                                    'self' => 'http://localhost/api/blog_comment/4/relationships/user',
-                                    'related' => 'http://localhost/api/blog_comment/4/user',
+                                    'self' => '/blog_comment/4/relationships/user',
+                                    'related' => '/blog_comment/4/user',
                                 ]
                             ]
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/blog_comment/4'
+                            'self' => '/blog_comment/4'
                         ],
                     ],
                     [
@@ -175,13 +207,13 @@ class CollectionActionTestCase extends TestCase
                             'user' => [
                                 'data' => ['id' => 3, 'type' => 'user'],
                                 'links' => [
-                                    'self' => 'http://localhost/api/blog_comment/5/relationships/user',
-                                    'related' => 'http://localhost/api/blog_comment/5/user',
+                                    'self' => '/blog_comment/5/relationships/user',
+                                    'related' => '/blog_comment/5/user',
                                 ]
                             ]
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/blog_comment/5'
+                            'self' => '/blog_comment/5'
                         ],
                     ],
                     [
@@ -194,13 +226,13 @@ class CollectionActionTestCase extends TestCase
                             'user' => [
                                 'data' => ['id' => 1, 'type' => 'user'],
                                 'links' => [
-                                    'self' => 'http://localhost/api/blog_comment/6/relationships/user',
-                                    'related' => 'http://localhost/api/blog_comment/6/user',
+                                    'self' => '/blog_comment/6/relationships/user',
+                                    'related' => '/blog_comment/6/user',
                                 ]
                             ]
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/blog_comment/6'
+                            'self' => '/blog_comment/6'
                         ],
                     ],
                     [
@@ -213,13 +245,13 @@ class CollectionActionTestCase extends TestCase
                             'user' => [
                                 'data' => ['id' => 4, 'type' => 'user'],
                                 'links' => [
-                                    'self' => 'http://localhost/api/blog_comment/7/relationships/user',
-                                    'related' => 'http://localhost/api/blog_comment/7/user',
+                                    'self' => '/blog_comment/7/relationships/user',
+                                    'related' => '/blog_comment/7/user',
                                 ]
                             ]
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/blog_comment/7'
+                            'self' => '/blog_comment/7'
                         ],
                     ],
                     [
@@ -232,13 +264,13 @@ class CollectionActionTestCase extends TestCase
                             'user' => [
                                 'data' => ['id' => 4, 'type' => 'user'],
                                 'links' => [
-                                    'self' => 'http://localhost/api/blog_comment/8/relationships/user',
-                                    'related' => 'http://localhost/api/blog_comment/8/user',
+                                    'self' => '/blog_comment/8/relationships/user',
+                                    'related' => '/blog_comment/8/user',
                                 ]
                             ]
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/blog_comment/8'
+                            'self' => '/blog_comment/8'
                         ],
                     ],
                 ],
@@ -250,7 +282,7 @@ class CollectionActionTestCase extends TestCase
                             'name' => 'User1Name',
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/user/1',
+                            'self' => '/user/1',
                         ]
                     ],
                     [
@@ -260,7 +292,7 @@ class CollectionActionTestCase extends TestCase
                             'name' => 'User3Name',
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/user/3',
+                            'self' => '/user/3',
                         ]
                     ],
                     [
@@ -270,7 +302,7 @@ class CollectionActionTestCase extends TestCase
                             'name' => 'User2Name',
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/user/2',
+                            'self' => '/user/2',
                         ]
                     ],
                     [
@@ -280,7 +312,7 @@ class CollectionActionTestCase extends TestCase
                             'name' => 'User4Name',
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/user/4',
+                            'self' => '/user/4',
                         ]
                     ],
                 ]
@@ -292,7 +324,7 @@ class CollectionActionTestCase extends TestCase
     public function test_index_action_include()
     {
         $request = new RestRequest();
-        $request->initialize(['include' => 'blogs']);
+        $request->initialize(['include' => 'blogs', 'exclude' => 'blogs.user']);
         $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(
@@ -360,7 +392,7 @@ class CollectionActionTestCase extends TestCase
         );
 
         $request = new RestRequest();
-        $request->initialize(['include' => 'blogs']);
+        $request->initialize(['include' => 'blogs', 'exclude' => 'blogs.user']);
         $request->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
         $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
@@ -390,13 +422,13 @@ class CollectionActionTestCase extends TestCase
                                 ],
                             ],
                             'links' => [
-                                'self' => 'http://localhost/api/user/1/relationships/blogs',
-                                'related' => 'http://localhost/api/user/1/blogs',
+                                'self' => '/user/1/relationships/blogs',
+                                'related' => '/user/1/blogs',
                             ],
                         ]
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/1'
+                        'self' => '/user/1'
                     ]
                 ],
                 [
@@ -410,13 +442,13 @@ class CollectionActionTestCase extends TestCase
                         'blogs' => [
                             'data' => [],
                             'links' => [
-                                'self' => 'http://localhost/api/user/2/relationships/blogs',
-                                'related' => 'http://localhost/api/user/2/blogs',
+                                'self' => '/user/2/relationships/blogs',
+                                'related' => '/user/2/blogs',
                             ],
                         ]
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/2'
+                        'self' => '/user/2'
                     ]
                 ],
                 [
@@ -435,13 +467,13 @@ class CollectionActionTestCase extends TestCase
                                 ]
                             ],
                             'links' => [
-                                'self' => 'http://localhost/api/user/3/relationships/blogs',
-                                'related' => 'http://localhost/api/user/3/blogs',
+                                'self' => '/user/3/relationships/blogs',
+                                'related' => '/user/3/blogs',
                             ],
                         ]
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/3'
+                        'self' => '/user/3'
                     ]
                 ],
                 [
@@ -455,13 +487,13 @@ class CollectionActionTestCase extends TestCase
                         'blogs' => [
                             'data' => [],
                             'links' => [
-                                'self' => 'http://localhost/api/user/4/relationships/blogs',
-                                'related' => 'http://localhost/api/user/4/blogs',
+                                'self' => '/user/4/relationships/blogs',
+                                'related' => '/user/4/blogs',
                             ],
                         ]
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/4'
+                        'self' => '/user/4'
                     ]
                 ],
                 [
@@ -475,13 +507,13 @@ class CollectionActionTestCase extends TestCase
                         'blogs' => [
                             'data' => [],
                             'links' => [
-                                'self' => 'http://localhost/api/user/5/relationships/blogs',
-                                'related' => 'http://localhost/api/user/5/blogs',
+                                'self' => '/user/5/relationships/blogs',
+                                'related' => '/user/5/blogs',
                             ],
                         ]
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/5'
+                        'self' => '/user/5'
                     ]
                 ],
             ],
@@ -494,7 +526,7 @@ class CollectionActionTestCase extends TestCase
                         'content' => 'User1 blog content 1',
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/blog/1'
+                        'self' => '/blog/1'
                     ]
                 ],
                 [
@@ -505,7 +537,7 @@ class CollectionActionTestCase extends TestCase
                         'content' => 'User1 blog content 2',
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/blog/2'
+                        'self' => '/blog/2'
                     ]
                 ],
                 [
@@ -516,7 +548,7 @@ class CollectionActionTestCase extends TestCase
                         'content' => 'User1 blog content 3',
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/blog/3'
+                        'self' => '/blog/3'
                     ]
                 ],
                 [
@@ -527,7 +559,7 @@ class CollectionActionTestCase extends TestCase
                         'content' => 'User3 blog content 1',
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/blog/4'
+                        'self' => '/blog/4'
                     ]
                 ],
             ],
@@ -570,7 +602,7 @@ class CollectionActionTestCase extends TestCase
                             'email' => 'user1@test.com',
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/user/1',
+                            'self' => '/user/1',
                         ]
                     ],
                     [
@@ -580,7 +612,7 @@ class CollectionActionTestCase extends TestCase
                             'email' => 'user2@gmail.com',
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/user/2',
+                            'self' => '/user/2',
                         ]
                     ],
                     [
@@ -590,7 +622,7 @@ class CollectionActionTestCase extends TestCase
                             'email' => 'user3@test.com',
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/user/3',
+                            'self' => '/user/3',
                         ]
                     ],
                     [
@@ -600,7 +632,7 @@ class CollectionActionTestCase extends TestCase
                             'email' => 'user4@test.com',
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/user/4',
+                            'self' => '/user/4',
                         ]
                     ],
                     [
@@ -610,7 +642,7 @@ class CollectionActionTestCase extends TestCase
                             'email' => 'user5@test.com',
                         ],
                         'links' => [
-                            'self' => 'http://localhost/api/user/5',
+                            'self' => '/user/5',
                         ]
                     ],
                 ],
@@ -655,7 +687,7 @@ class CollectionActionTestCase extends TestCase
                         'email' => 'user2@gmail.com',
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/2',
+                        'self' => '/user/2',
                     ]
                 ]],
             ],
@@ -678,7 +710,7 @@ class CollectionActionTestCase extends TestCase
                         'email' => 'user2@gmail.com',
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/2',
+                        'self' => '/user/2',
                     ]
                 ]],
             ],
@@ -768,8 +800,8 @@ class CollectionActionTestCase extends TestCase
         $this->assertArraySubset(
             [
                 'data' => [
-                    ['id' => '1', 'type' => 'user', 'links' => ['self' => 'http://localhost/api/user/1']],
-                    ['id' => '2', 'type' => 'user', 'links' => ['self' => 'http://localhost/api/user/2']],
+                    ['id' => '1', 'type' => 'user', 'links' => ['self' => '/user/1']],
+                    ['id' => '2', 'type' => 'user', 'links' => ['self' => '/user/2']],
                 ],
                 'meta' => [
                     'pagination' => [
@@ -781,9 +813,9 @@ class CollectionActionTestCase extends TestCase
                     ],
                 ],
                 'links' => [
-                    'self' => 'http://localhost/api/user?page%5Bnumber%5D=1&page%5Bsize%5D=2',
-                    'first' => 'http://localhost/api/user?page%5Bnumber%5D=1&page%5Bsize%5D=2',
-                    'last' => 'http://localhost/api/user?page%5Bnumber%5D=3&page%5Bsize%5D=2',
+                    'self' => '/user?page%5Bnumber%5D=1&page%5Bsize%5D=2',
+                    'first' => '/user?page%5Bnumber%5D=1&page%5Bsize%5D=2',
+                    'last' => '/user?page%5Bnumber%5D=3&page%5Bsize%5D=2',
                 ],
             ],
             json_decode($response->getContent(), true)
@@ -797,8 +829,8 @@ class CollectionActionTestCase extends TestCase
         $this->assertArraySubset(
             [
                 'data' => [
-                    ['id' => '3', 'type' => 'user', 'links' => ['self' => 'http://localhost/api/user/3']],
-                    ['id' => '4', 'type' => 'user', 'links' => ['self' => 'http://localhost/api/user/4']],
+                    ['id' => '3', 'type' => 'user', 'links' => ['self' => '/user/3']],
+                    ['id' => '4', 'type' => 'user', 'links' => ['self' => '/user/4']],
                 ],
                 'meta' => [
                     'pagination' => [
@@ -810,9 +842,9 @@ class CollectionActionTestCase extends TestCase
                     ],
                 ],
                 'links' => [
-                    'self' => 'http://localhost/api/user?page%5Bnumber%5D=2&page%5Bsize%5D=2',
-                    'first' => 'http://localhost/api/user?page%5Bnumber%5D=1&page%5Bsize%5D=2',
-                    'last' => 'http://localhost/api/user?page%5Bnumber%5D=3&page%5Bsize%5D=2',
+                    'self' => '/user?page%5Bnumber%5D=2&page%5Bsize%5D=2',
+                    'first' => '/user?page%5Bnumber%5D=1&page%5Bsize%5D=2',
+                    'last' => '/user?page%5Bnumber%5D=3&page%5Bsize%5D=2',
                 ],
             ],
             json_decode($response->getContent(), true)
@@ -826,7 +858,7 @@ class CollectionActionTestCase extends TestCase
         $this->assertArraySubset(
             [
                 'data' => [
-                    ['id' => '5', 'type' => 'user', 'links' => ['self' => 'http://localhost/api/user/5']],
+                    ['id' => '5', 'type' => 'user', 'links' => ['self' => '/user/5']],
                 ],
                 'meta' => [
                     'pagination' => [
@@ -838,9 +870,9 @@ class CollectionActionTestCase extends TestCase
                     ],
                 ],
                 'links' => [
-                    'self' => 'http://localhost/api/user?page%5Bnumber%5D=3&page%5Bsize%5D=2',
-                    'first' => 'http://localhost/api/user?page%5Bnumber%5D=1&page%5Bsize%5D=2',
-                    'last' => 'http://localhost/api/user?page%5Bnumber%5D=3&page%5Bsize%5D=2',
+                    'self' => '/user?page%5Bnumber%5D=3&page%5Bsize%5D=2',
+                    'first' => '/user?page%5Bnumber%5D=1&page%5Bsize%5D=2',
+                    'last' => '/user?page%5Bnumber%5D=3&page%5Bsize%5D=2',
                 ],
             ],
             json_decode($response->getContent(), true)
@@ -866,7 +898,7 @@ class CollectionActionTestCase extends TestCase
                         'email' => 'user5@test.com',
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/5'
+                        'self' => '/user/5'
                     ]
                 ],
                 [
@@ -877,7 +909,7 @@ class CollectionActionTestCase extends TestCase
                         'email' => 'user4@test.com',
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/4'
+                        'self' => '/user/4'
                     ]
                 ],
                 [
@@ -888,7 +920,7 @@ class CollectionActionTestCase extends TestCase
                         'email' => 'user3@test.com',
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/3'
+                        'self' => '/user/3'
                     ]
                 ],
                 [
@@ -899,7 +931,7 @@ class CollectionActionTestCase extends TestCase
                         'email' => 'user2@gmail.com',
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/2'
+                        'self' => '/user/2'
                     ]
                 ],
                 [
@@ -910,7 +942,7 @@ class CollectionActionTestCase extends TestCase
                         'email' => 'user1@test.com',
                     ],
                     'links' => [
-                        'self' => 'http://localhost/api/user/1'
+                        'self' => '/user/1'
                     ]
                 ],
             ],

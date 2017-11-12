@@ -1,10 +1,10 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
-use Pz\Doctrine\Rest\RestActionAbstract;
+use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
 
-class DeleteAction extends RestActionAbstract
+class DeleteAction extends RestAction
 {
     /**
      * @param RestRequest $request
@@ -19,6 +19,6 @@ class DeleteAction extends RestActionAbstract
         $this->repository()->em()->remove($entity);
         $this->repository()->em()->flush();
 
-        return $this->response()->deleted($request, $entity);
+        return RestResponse::noContent();
     }
 }

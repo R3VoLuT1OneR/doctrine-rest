@@ -1,10 +1,11 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
-use Pz\Doctrine\Rest\RestActionAbstract;
+use League\Fractal\Resource\Item;
+use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
 
-class ItemAction extends RestActionAbstract
+class ItemAction extends RestAction
 {
     /**
      * @param RestRequest $request
@@ -15,6 +16,9 @@ class ItemAction extends RestActionAbstract
     {
         $entity = $this->repository()->findByIdentifier($request);
         $request->authorize($entity);
-        return $this->response()->item($request, $entity);
+
+        $resource = new Item($entity, $this->transformer(), $this->getResourceKey($entity));
+
+        return $this->response()->resource($request, $resource);
     }
 }

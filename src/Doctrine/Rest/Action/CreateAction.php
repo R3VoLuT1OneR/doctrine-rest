@@ -1,11 +1,13 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
-use Pz\Doctrine\Rest\RestActionAbstract;
+use League\Fractal\Resource\Item;
+use Pz\Doctrine\Rest\Contracts\JsonApiResource;
+use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\Traits\CanHydrate;
 
-class CreateAction extends RestActionAbstract
+class CreateAction extends RestAction
 {
     use CanHydrate;
 
@@ -16,6 +18,7 @@ class CreateAction extends RestActionAbstract
      */
     protected function handle(RestRequest $request)
     {
+        $headers = [];
         $request->authorize($this->repository()->getClassName());
 
         $entity = $this->createEntity($request);
@@ -23,7 +26,13 @@ class CreateAction extends RestActionAbstract
         $this->repository()->em()->persist($entity);
         $this->repository()->em()->flush();
 
-        return $this->response()->created($request, $entity);
+        $resource = new Item($entity, $this->transformer(), $this->getResourceKey($entity));
+
+        if ($entity instanceof JsonApiResource) {
+            $headers['Location'] = $this->linkJsonApiResource($request, $entity);
+        }
+
+        return $this->response()->resource($request, $resource, RestResponse::HTTP_CREATED, $headers);
     }
 
     /**
