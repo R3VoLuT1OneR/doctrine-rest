@@ -32,18 +32,13 @@ abstract class RestAction
      * RestActionAbstract constructor.
      *
      * @param RestRepository               $repository
-     * @param RestResponseFactory          $response
      * @param TransformerAbstract|\Closure $transformer
      */
-    public function __construct(
-        RestRepository $repository,
-        RestResponseFactory $response,
-        $transformer
-    )
+    public function __construct(RestRepository $repository, $transformer)
     {
         $this->repository = $repository;
         $this->transformer = $transformer;
-        $this->response = $response;
+        $this->response = new RestResponseFactory();
     }
 
     /**
@@ -86,6 +81,21 @@ abstract class RestAction
     public function transformer()
     {
         return $this->transformer;
+    }
+
+    /**
+     * Authorize rest request.
+     * Entity will be object for get,update,delete actions.
+     * Entity will be string for index,create action.
+     *
+     * @param RestRequest   $request
+     * @param object|string $entity
+     *
+     * @return mixed
+     */
+    public function authorize(/** @scrutinizer ignore-unused */$request, /** @scrutinizer ignore-unused */$entity)
+    {
+        return true;
     }
 
     /**

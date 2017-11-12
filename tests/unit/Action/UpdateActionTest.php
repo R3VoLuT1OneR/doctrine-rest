@@ -17,7 +17,6 @@ class UpdateActionTest extends TestCase
     {
         $action = new UpdateAction(
             new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
-            new RestResponseFactory(),
             new UserTransformer()
         );
 

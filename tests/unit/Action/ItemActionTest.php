@@ -16,7 +16,6 @@ class ItemActionTest extends TestCase
     {
         return new ItemAction(
             new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
-            new RestResponseFactory(),
             new UserTransformer()
         );
     }

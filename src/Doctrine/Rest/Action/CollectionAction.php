@@ -1,12 +1,10 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use League\Fractal\Pagination\DoctrinePaginatorAdapter;
 use League\Fractal\Resource\Collection;
 use Pz\Doctrine\Rest\BuilderChain\CriteriaChain;
-use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use Pz\Doctrine\Rest\QueryParser\FilterableQueryParser;
 use Pz\Doctrine\Rest\QueryParser\PropertyQueryParser;
 use Pz\Doctrine\Rest\RestAction;
@@ -63,7 +61,7 @@ class CollectionAction extends RestAction
     {
         $class = $this->repository()->getClassName();
         $resourceKey = $this->getResourceKey($class);
-        $request->authorize($class);
+        $this->authorize($request, $class);
         $chain = CriteriaChain::create($this->criteriaBuilders($request));
 
         $criteria = new Criteria(null,

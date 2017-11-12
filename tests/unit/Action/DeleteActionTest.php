@@ -16,7 +16,6 @@ class DeleteActionTest extends TestCase
     {
         $action = new DeleteAction(
             new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
-            new RestResponseFactory(),
             new UserTransformer()
         );
 

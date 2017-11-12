@@ -21,7 +21,6 @@ class CollectionActionTest extends TestCase
     {
         return new CollectionAction(
             new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
-            new RestResponseFactory(),
             new UserTransformer()
         );
     }
@@ -30,7 +29,6 @@ class CollectionActionTest extends TestCase
     {
         $action = new CollectionAction(
             new RestRepository($this->em, $this->em->getClassMetadata(Role::class)),
-            new RestResponseFactory(),
             new RoleTransformer()
         );
 
@@ -58,7 +56,6 @@ class CollectionActionTest extends TestCase
     {
         $action = new CollectionAction(
             new RestRepository($this->em, $this->em->getClassMetadata(BlogComment::class)),
-            new RestResponseFactory(),
             new BlogCommentTransformer()
         );
 

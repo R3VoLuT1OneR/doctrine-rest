@@ -15,7 +15,8 @@ class ItemAction extends RestAction
     public function handle(RestRequest $request)
     {
         $entity = $this->repository()->findByIdentifier($request);
-        $request->authorize($entity);
+
+        $this->authorize($request, $entity);
 
         $resource = new Item($entity, $this->transformer(), $this->getResourceKey($entity));
 

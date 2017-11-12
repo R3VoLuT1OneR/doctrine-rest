@@ -19,7 +19,6 @@ class CreateActionTest extends TestCase
     {
         $action = new CreateAction(
             new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
-            new RestResponseFactory(),
             new UserTransformer()
         );
 
@@ -92,7 +91,6 @@ class CreateActionTest extends TestCase
     {
         $action = new CreateAction(
             new RestRepository($this->em, $this->em->getClassMetadata(Role::class)),
-            new RestResponseFactory(),
             new RoleTransformer()
         );
 

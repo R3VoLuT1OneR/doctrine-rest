@@ -18,7 +18,6 @@ class ActionsWithErrorsTest extends TestCase
     {
         $action = new ItemAction(
             new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
-            new RestResponseFactory(),
             function () {
                 throw new RestException();
             }
@@ -34,7 +33,6 @@ class ActionsWithErrorsTest extends TestCase
     {
         $action = new ItemAction(
             new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
-            new RestResponseFactory(),
             new UserTransformer()
         );
 

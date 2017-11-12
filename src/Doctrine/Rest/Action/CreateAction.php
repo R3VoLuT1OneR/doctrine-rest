@@ -19,7 +19,7 @@ class CreateAction extends RestAction
     protected function handle(RestRequest $request)
     {
         $headers = [];
-        $request->authorize($this->repository()->getClassName());
+        $this->authorize($request, $this->repository()->getClassName());
 
         $entity = $this->createEntity($request);
 

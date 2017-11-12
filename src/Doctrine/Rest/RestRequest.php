@@ -26,20 +26,6 @@ class RestRequest implements RestRequestContract
     }
 
     /**
-     * Authorize rest request.
-     * Entity will be object for get,update,delete actions.
-     * Entity will be string for index,create action.
-     *
-     * @param object|string $entity
-     *
-     * @return mixed
-     */
-    public function authorize(/** @scrutinizer ignore-unused */$entity)
-    {
-        return true;
-    }
-
-    /**
      * @return bool
      */
     public function isAcceptJsonApi()
@@ -99,7 +85,9 @@ class RestRequest implements RestRequestContract
             $orderBy = [];
 
             foreach ($fields as $field) {
-                if (empty($field)) continue;
+                if (empty($field)) {
+                    continue;
+                }
 
                 $direction = 'ASC';
                 if ($field[0] === '-') {
