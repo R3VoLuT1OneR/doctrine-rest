@@ -34,7 +34,7 @@ class RestRequest implements RestRequestContract
      *
      * @return mixed
      */
-    public function authorize($entity)
+    public function authorize(/** @scrutinizer ignore-unused */$entity)
     {
         return true;
     }

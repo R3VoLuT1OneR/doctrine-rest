@@ -17,7 +17,7 @@ abstract class RestAction
     protected $response;
 
     /**
-     * @var TransformerAbstract
+     * @var TransformerAbstract|\Closure
      */
     protected $transformer;
 
@@ -33,7 +33,7 @@ abstract class RestAction
      *
      * @param RestRepository               $repository
      * @param RestResponseFactory          $response
-     * @param TransformerAbstract|callable $transformer
+     * @param TransformerAbstract|\Closure $transformer
      */
     public function __construct(
         RestRepository $repository,
@@ -81,7 +81,7 @@ abstract class RestAction
     }
 
     /**
-     * @return TransformerAbstract
+     * @return TransformerAbstract|\Closure
      */
     public function transformer()
     {

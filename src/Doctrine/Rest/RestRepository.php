@@ -48,7 +48,10 @@ class RestRepository extends EntityRepository
     public function findByIdentifier(RestRequest $request)
     {
         if (null === ($entity = $this->find($request->getId()))) {
-            throw new EntityNotFoundException($this->getClassName(), $request->getId());
+            throw EntityNotFoundException::fromClassNameAndIdentifier(
+                $this->getClassName(),
+                ['id' => $request->getId()]
+            );
         }
 
         return $entity;

@@ -22,7 +22,6 @@
 >
     <logging>
         <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
-        <log type="coverage-html" target="tests/coverage"/>
     </logging>
     <testsuites>
         <testsuite name="Package Test Suit">

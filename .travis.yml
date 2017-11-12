@@ -6,13 +6,9 @@ php:
   # using major version aliases
   - 7.0
   - 7.1
-  - 7.2
 
   # aliased to a recent hhvm version
   - nightly
 
 install:
   - composer install --ansi --prefer-dist --no-interaction --optimize-autoloader --no-suggest --no-progress
-
-allow_failures:
-  - php: nightly
