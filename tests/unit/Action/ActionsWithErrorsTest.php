@@ -9,6 +9,7 @@ use Pz\Doctrine\Rest\RestResponseFactory;
 use Pz\Doctrine\Rest\Tests\Entities\Transformers\UserTransformer;
 use Pz\Doctrine\Rest\Tests\Entities\User;
 use Pz\Doctrine\Rest\Tests\TestCase;
+use Symfony\Component\HttpFoundation\Request;
 
 class ActionsWithErrorsTest extends TestCase
 {
@@ -23,7 +24,8 @@ class ActionsWithErrorsTest extends TestCase
             }
         );
 
-        $response = $action->dispatch($request = new RestRequest(['id' => 1]));
+        $request = new RestRequest(new Request(['id' => 1]));
+        $response = $action->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(RestResponse::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
     }
@@ -36,7 +38,7 @@ class ActionsWithErrorsTest extends TestCase
             new UserTransformer()
         );
 
-        $response = $action->dispatch($request = new RestRequest(['id' => 666]));
+        $response = $action->dispatch($request = new RestRequest(new Request(['id' => 666])));
 
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(RestResponse::HTTP_NOT_FOUND, $response->getStatusCode());

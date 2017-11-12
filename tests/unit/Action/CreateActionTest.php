@@ -10,6 +10,7 @@ use Pz\Doctrine\Rest\Tests\Entities\Transformers\RoleTransformer;
 use Pz\Doctrine\Rest\Tests\Entities\Transformers\UserTransformer;
 use Pz\Doctrine\Rest\Tests\Entities\User;
 use Pz\Doctrine\Rest\Tests\TestCase;
+use Symfony\Component\HttpFoundation\Request;
 
 class CreateActionTest extends TestCase
 {
@@ -22,8 +23,7 @@ class CreateActionTest extends TestCase
             new UserTransformer()
         );
 
-        $request = new RestRequest();
-        $request->initialize(['include' => 'role'], [
+        $request = new RestRequest(new Request(['include' => 'role'], [
             'data' => [
                 'attributes' => [
                     'name' => 'New User',
@@ -38,10 +38,10 @@ class CreateActionTest extends TestCase
                     ]
                 ]
             ]
-        ]);
+        ]));
 
-        $request->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
-        $request->headers->set('CONTENT_TYPE', RestRequest::JSON_API_CONTENT_TYPE);
+        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
+        $request->http()->headers->set('CONTENT_TYPE', RestRequest::JSON_API_CONTENT_TYPE);
         $response = $action->dispatch($request);
 
         $this->assertInstanceOf(RestResponse::class, $response);
@@ -96,10 +96,9 @@ class CreateActionTest extends TestCase
             new RoleTransformer()
         );
 
-        $request = new RestRequest();
-        $request->initialize([], [
+        $request = new RestRequest(new Request([], [
             'name' => 'New Role',
-        ]);
+        ]));
 
         $response = $action->dispatch($request);
 
@@ -115,17 +114,16 @@ class CreateActionTest extends TestCase
             json_decode($response->getContent(), true)
         );
 
-        $request = new RestRequest();
-        $request->initialize([], [
+        $request = new RestRequest(new Request([], [
             'data' => [
                 'attributes' => [
                     'name' => 'New Role',
                 ]
             ]
-        ]);
+        ]));
 
-        $request->headers->set('CONTENT_TYPE', RestRequest::JSON_API_CONTENT_TYPE);
-        $request->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
+        $request->http()->headers->set('CONTENT_TYPE', RestRequest::JSON_API_CONTENT_TYPE);
+        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
         $response = $action->dispatch($request);
 
         $this->assertInstanceOf(RestResponse::class, $response);

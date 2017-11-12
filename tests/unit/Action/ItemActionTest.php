@@ -8,6 +8,7 @@ use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\Tests\Entities\Transformers\UserTransformer;
 use Pz\Doctrine\Rest\Tests\Entities\User;
 use Pz\Doctrine\Rest\Tests\TestCase;
+use Symfony\Component\HttpFoundation\Request;
 
 class ItemActionTest extends TestCase
 {
@@ -22,17 +23,16 @@ class ItemActionTest extends TestCase
 
     public function test_item_action_complex_json_api()
     {
-        $request = new RestRequest();
-        $request->initialize([
+        $request = new RestRequest(new Request([
             'id' => '1',
             'include' => 'role,blogs',
             'fields' => [
                 'user' => 'name,blogs,role',
                 'blog' => 'content',
             ],
-        ]);
+        ]));
 
-        $request->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
+        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
         $this->assertInstanceOf(RestResponse::class, $response = $this->getItemAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(
@@ -128,8 +128,7 @@ class ItemActionTest extends TestCase
 
     public function test_item_simple()
     {
-        $request = new RestRequest();
-        $request->initialize(['id' => 1]);
+        $request = new RestRequest(new Request(['id' => 1]));
         $this->assertInstanceOf(RestResponse::class, $response = $this->getItemAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(
@@ -143,9 +142,8 @@ class ItemActionTest extends TestCase
             json_decode($response->getContent(), true)
         );
 
-        $request = new RestRequest();
-        $request->initialize(['id' => 1]);
-        $request->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
+        $request = new RestRequest(new Request(['id' => 1]));
+        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
         $this->assertInstanceOf(RestResponse::class, $response = $this->getItemAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(

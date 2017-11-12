@@ -1,18 +1,29 @@
 <?php namespace Pz\Doctrine\Rest;
 
+use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Symfony\Component\HttpFoundation\Request;
 
-class RestRequest extends Request
+class RestRequest implements RestRequestContract
 {
     /**
-     * Json API type.
+     * @var Request
      */
-    const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
+    protected $http;
 
     /**
-     * Default limit for list.
+     * RestRequest constructor.
+     *
+     * @param Request $request
      */
-    const DEFAULT_LIMIT = 1000;
+    public function __construct(Request $request)
+    {
+        $this->http = $request;
+    }
+
+    public function http()
+    {
+        return $this->http;
+    }
 
     /**
      * Authorize rest request.
@@ -33,7 +44,7 @@ class RestRequest extends Request
      */
     public function isAcceptJsonApi()
     {
-        return in_array(static::JSON_API_CONTENT_TYPE, $this->getAcceptableContentTypes());
+        return in_array(static::JSON_API_CONTENT_TYPE, $this->http()->getAcceptableContentTypes());
     }
 
     /**
@@ -41,7 +52,7 @@ class RestRequest extends Request
      */
     public function isContentJsonApi()
     {
-        return $this->headers->get('CONTENT_TYPE') === static::JSON_API_CONTENT_TYPE;
+        return $this->http()->headers->get('CONTENT_TYPE') === static::JSON_API_CONTENT_TYPE;
     }
 
     /**
@@ -49,7 +60,7 @@ class RestRequest extends Request
      */
     public function getId()
     {
-        return $this->get('id');
+        return $this->http()->get('id');
     }
 
     /**
@@ -59,7 +70,7 @@ class RestRequest extends Request
      */
     public function getFields()
     {
-        return $this->get('fields');
+        return $this->http()->get('fields');
     }
 
     /**
@@ -67,7 +78,7 @@ class RestRequest extends Request
      */
     public function getFilter()
     {
-        if ($query = $this->get('filter')) {
+        if ($query = $this->http()->get('filter')) {
             if (is_string($query) && (null !== ($json = json_decode($query, true)))) {
                 return $json;
             }
@@ -83,7 +94,7 @@ class RestRequest extends Request
      */
     public function getOrderBy()
     {
-        if ($sort = $this->get('sort')) {
+        if ($sort = $this->http()->get('sort')) {
             $fields = explode(',', $sort);
             $orderBy = [];
 
@@ -110,7 +121,7 @@ class RestRequest extends Request
      */
     public function getStart()
     {
-        if (($page = $this->get('page')) && $this->getLimit() !== null) {
+        if (($page = $this->http()->get('page')) && $this->getLimit() !== null) {
             if (isset($page['number']) && is_numeric($page['number'])) {
                 return ($page['number'] - 1) * $this->getLimit();
             }
@@ -126,14 +137,14 @@ class RestRequest extends Request
      */
     public function getLimit()
     {
-        if ($page = $this->get('page')) {
+        if ($page = $this->http()->get('page')) {
             if (isset($page['number']) && is_numeric($page['number'])) {
                 return isset($page['size']) && is_numeric($page['size']) ?
-                    (int) $page['size'] : $this->getDefaultLimit();
+                    (int) $page['size'] : static::DEFAULT_LIMIT;
             }
 
             return isset($page['limit']) && is_numeric($page['limit']) ?
-                (int) $page['limit'] : $this->getDefaultLimit();
+                (int) $page['limit'] : static::DEFAULT_LIMIT;
         }
 
         return null;
@@ -144,7 +155,7 @@ class RestRequest extends Request
      */
     public function getInclude()
     {
-        return $this->get('include');
+        return $this->http()->get('include');
     }
 
     /**
@@ -152,14 +163,6 @@ class RestRequest extends Request
      */
     public function getExclude()
     {
-        return $this->get('exclude');
-    }
-
-    /**
-     * @return int
-     */
-    protected function getDefaultLimit()
-    {
-        return static::DEFAULT_LIMIT;
+        return $this->http()->get('exclude');
     }
 }

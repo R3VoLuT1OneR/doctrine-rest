@@ -18,7 +18,7 @@ class RestResponseFactory
         $fractal = new Manager();
 
         if ($request->isAcceptJsonApi()) {
-            $fractal->setSerializer(new JsonApiSerializer($request->getBaseUrl()));
+            $fractal->setSerializer(new JsonApiSerializer($request->http()->getBaseUrl()));
         }
 
         if ($includes = $request->getInclude()) {

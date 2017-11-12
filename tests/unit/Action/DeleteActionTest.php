@@ -8,6 +8,7 @@ use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\Tests\Entities\Transformers\UserTransformer;
 use Pz\Doctrine\Rest\Tests\Entities\User;
 use Pz\Doctrine\Rest\Tests\TestCase;
+use Symfony\Component\HttpFoundation\Request;
 
 class DeleteActionTest extends TestCase
 {
@@ -19,9 +20,7 @@ class DeleteActionTest extends TestCase
             new UserTransformer()
         );
 
-        $request = new RestRequest();
-        $request->initialize(['id' => 1]);
-
+        $request = new RestRequest(new Request(['id' => 1]));
         $response = $action->dispatch($request);
 
         $this->assertInstanceOf(RestResponse::class, $response);

@@ -8,6 +8,7 @@ use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\Tests\Entities\Transformers\UserTransformer;
 use Pz\Doctrine\Rest\Tests\Entities\User;
 use Pz\Doctrine\Rest\Tests\TestCase;
+use Symfony\Component\HttpFoundation\Request;
 
 class UpdateActionTest extends TestCase
 {
@@ -20,12 +21,11 @@ class UpdateActionTest extends TestCase
             new UserTransformer()
         );
 
-        $request = new RestRequest();
-        $request->initialize([
+        $request = new RestRequest(new Request([
             'id' => '1'
         ], [
             'email' => 'new@email.com',
-        ]);
+        ]));
 
         $response = $action->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
@@ -41,8 +41,7 @@ class UpdateActionTest extends TestCase
             json_decode($response->getContent(), true)
         );
 
-        $request = new RestRequest();
-        $request->initialize([
+        $request = new RestRequest(new Request([
             'id' => '2',
             'fields' => [
                 'user' => 'email',
@@ -53,10 +52,10 @@ class UpdateActionTest extends TestCase
                     'email' => 'new2@email.com',
                 ]
             ]
-        ]);
+        ]));
 
-        $request->headers->set('CONTENT_TYPE', RestRequest::JSON_API_CONTENT_TYPE);
-        $request->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
+        $request->http()->headers->set('CONTENT_TYPE', RestRequest::JSON_API_CONTENT_TYPE);
+        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
         $response = $action->dispatch($request);
 
         $this->assertInstanceOf(RestResponse::class, $response);
