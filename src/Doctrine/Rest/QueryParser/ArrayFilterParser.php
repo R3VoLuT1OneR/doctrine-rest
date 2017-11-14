@@ -4,7 +4,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Query\Expr;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 
-class FilterableQueryParser extends IndexQueryParser
+class ArrayFilterParser extends FilterParserAbstract
 {
     /**
      * @var bool|array
@@ -25,21 +25,21 @@ class FilterableQueryParser extends IndexQueryParser
 
     /**
      * @param Criteria $criteria
-     * @param          $query
+     * @param          $filter
      *
      * @return Criteria
      */
-    public function processQuery(Criteria $criteria, $query)
+    public function applyFilter(Criteria $criteria, $filter)
     {
-        if (!is_array($query) || !is_array($this->filterable)) {
+        if (!is_array($filter) || !is_array($this->filterable)) {
             return $criteria;
         }
 
         foreach ($this->filterable as $field) {
-            if (array_key_exists($field, $query)) {
-                $this->processEqualFilter($criteria, $field, $query[$field]);
-                $this->processBetweenFilter($criteria, $field, $query[$field]);
-                $this->processOperatorFilter($criteria, $field, $query[$field]);
+            if (array_key_exists($field, $filter)) {
+                $this->processEqualFilter($criteria, $field, $filter[$field]);
+                $this->processBetweenFilter($criteria, $field, $filter[$field]);
+                $this->processOperatorFilter($criteria, $field, $filter[$field]);
             }
         }
 

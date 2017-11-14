@@ -3,7 +3,7 @@
 use Doctrine\Common\Collections\Criteria;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 
-class PropertyQueryParser extends IndexQueryParser
+class StringFilterParser extends FilterParserAbstract
 {
     const PARAM_PREFIX = '';
 
@@ -28,15 +28,15 @@ class PropertyQueryParser extends IndexQueryParser
      * Assign LIKE operator on property if query is string.
      *
      * @param Criteria $criteria
-     * @param          $query
+     * @param          $filter
      *
      * @return Criteria
      */
-    public function processQuery(Criteria $criteria, $query)
+    public function applyFilter(Criteria $criteria, $filter)
     {
-        if (is_string($query) && is_string($this->property)) {
+        if (is_string($filter) && is_string($this->property)) {
             $criteria->andWhere(
-                $criteria->expr()->contains($this->property, $query)
+                $criteria->expr()->contains($this->property, $filter)
             );
         }
 

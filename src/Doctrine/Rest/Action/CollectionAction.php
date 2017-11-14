@@ -1,12 +1,14 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use League\Fractal\Pagination\DoctrinePaginatorAdapter;
 use League\Fractal\Resource\Collection;
 use Pz\Doctrine\Rest\BuilderChain\CriteriaChain;
-use Pz\Doctrine\Rest\QueryParser\FilterableQueryParser;
-use Pz\Doctrine\Rest\QueryParser\PropertyQueryParser;
+use Pz\Doctrine\Rest\QueryParser\ArrayFilterParser;
+use Pz\Doctrine\Rest\QueryParser\FilterParserAbstract;
+use Pz\Doctrine\Rest\QueryParser\StringFilterParser;
 use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestResponse;
@@ -53,31 +55,43 @@ class CollectionAction extends RestAction
     }
 
     /**
+     * Param that can be filtered if query is string.
+     *
+     * @return null|string
+     */
+    public function getStringFilterField()
+    {
+        return $this->filterProperty;
+    }
+
+    /**
+     * Get list of filterable entity properties.
+     *
+     * @return array
+     */
+    public function getArrayFilterFields()
+    {
+        return $this->filterable;
+    }
+
+    /**
      * @param RestRequestContract $request
      *
      * @return RestResponse
      */
     protected function handle(RestRequestContract $request)
     {
-        $class = $this->repository()->getClassName();
-        $resourceKey = $this->getResourceKey($class);
-        $this->authorize($request, $class);
-        $chain = CriteriaChain::create($this->criteriaBuilders($request));
+        $resourceKey = $this->repository()->getResourceKey();
+        $this->authorize($request, $this->repository()->getClassName());
 
-        $criteria = new Criteria(null,
-            $request->getOrderBy(),
-            $request->getStart(),
-            $request->getLimit()
-        );
-
-        $qb = $this->repository()
-            ->createQueryBuilder($this->repository()->alias())
-            ->addCriteria($chain->process($criteria));
+        $qb = $this->repository()->sourceQueryBuilder();
+        $this->applyPagination($request, $qb);
+        $this->applyFilter($request, $qb);
 
          $paginator = new Paginator($qb, false);
          $collection = new Collection($paginator, $this->transformer(), $resourceKey);
 
-        if ($request->getLimit() !== null) {
+        if ($qb->getMaxResults()) {
             $collection->setPaginator(
                 new DoctrinePaginatorAdapter(
                     $paginator,
@@ -91,35 +105,49 @@ class CollectionAction extends RestAction
 
     /**
      * @param RestRequestContract $request
+     * @param QueryBuilder        $qb
      *
-     * @return array
+     * @return $this
      */
-    protected function criteriaBuilders(RestRequestContract $request)
+    protected function applyPagination(RestRequestContract $request, QueryBuilder $qb)
+    {
+        $qb->addCriteria(
+            new Criteria(null,
+                $request->getOrderBy(),
+                $request->getStart(),
+                $request->getLimit()
+            )
+        );
+
+        return $this;
+    }
+
+    /**
+     * @param RestRequestContract $request
+     * @param QueryBuilder        $qb
+     *
+     * @return $this
+     */
+    protected function applyFilter(RestRequestContract $request, QueryBuilder $qb)
+    {
+        $qb->addCriteria(
+            CriteriaChain::create($this->filterParsers($request))->process()
+        );
+
+        return $this;
+    }
+
+    /**
+     * @param RestRequestContract $request
+     *
+     * @return array|FilterParserAbstract[]
+     */
+    protected function filterParsers(RestRequestContract $request)
     {
         return [
-            new PropertyQueryParser($request, $this->getQueryProperty()),
-            new FilterableQueryParser($request, $this->getFilterable()),
+            new StringFilterParser($request, $this->getStringFilterField()),
+            new ArrayFilterParser($request, $this->getArrayFilterFields()),
         ];
-    }
-
-    /**
-     * Param that can be filtered if query is string.
-     *
-     * @return null|string
-     */
-    protected function getQueryProperty()
-    {
-        return $this->filterProperty;
-    }
-
-    /**
-     * Get list of filterable entity properties.
-     *
-     * @return array
-     */
-    protected function getFilterable()
-    {
-        return $this->filterable;
     }
 
     /**

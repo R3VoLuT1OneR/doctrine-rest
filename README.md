@@ -4,7 +4,7 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/R3VoLuT1OneR/doctrine-rest/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/R3VoLuT1OneR/doctrine-rest?branch=master)
 [![Scrutinizer Code Coverage](https://scrutinizer-ci.com/g/R3VoLuT1OneR/doctrine-rest/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/R3VoLuT1OneR/doctrine-rest?branch=master)
 
-Framework agnostic, library provides basic tools for implementation of [JSON API](http://jsonapi.org/format/) 
+Framework agnostic, library provides basic tools for implementation of [JSON API](http://jsonapi.org/format/) over Doctrine library
 
 Using by default [`symfony/http-foundation`](https://symfony.com/doc/current/components/http_foundation.html) for requests/responses and [`league/fractal`](https://fractal.thephpleague.com/) for Rest response build.
 
@@ -38,7 +38,7 @@ Change entity repository to `RestRepository` or create new one.
     // Repository that action will work with
     $restRepository = new RestRepository($entityManager, $entityManager->getClassMetadata($entityClass));
 
-Prepare `RestRequest` entity or implement `RestRequestContract` on your customer `RestRequest`
+Prepare `RestRequest` entity or implement `RestRequestContract` on your custom `RestRequest` implementation.
 
     // Get http request from framework or init yourself
     $httpRequest = Symfony\Component\HttpFoundation\Request::createFromGlobals();

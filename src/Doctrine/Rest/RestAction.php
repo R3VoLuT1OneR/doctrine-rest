@@ -98,33 +98,4 @@ abstract class RestAction
     {
         return true;
     }
-
-    /**
-     * @param RestRequestContract $request
-     * @param JsonApiResource     $resource
-     *
-     * @return string|null
-     */
-    protected function linkJsonApiResource(RestRequestContract $request, JsonApiResource $resource)
-    {
-        return sprintf('%s/%s/%s', $request->getBaseUrl(), $resource->getResourceKey(), $resource->getId());
-    }
-
-    /**
-     * @param $entity
-     *
-     * @return null|string
-     */
-    protected function getResourceKey($entity)
-    {
-        if (is_string($entity) && isset(class_implements($entity)[JsonApiResource::class])) {
-            return call_user_func("$entity::getResourceKey");
-        }
-
-        if (is_object($entity) && $entity instanceof JsonApiResource) {
-            return $entity->getResourceKey();
-        }
-
-        return null;
-    }
 }

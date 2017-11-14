@@ -18,7 +18,7 @@ class ItemAction extends RestAction
 
         $this->authorize($request, $entity);
 
-        $resource = new Item($entity, $this->transformer(), $this->getResourceKey($entity));
+        $resource = new Item($entity, $this->transformer(), $this->repository()->getResourceKey());
 
         return $this->response()->resource($request, $resource);
     }

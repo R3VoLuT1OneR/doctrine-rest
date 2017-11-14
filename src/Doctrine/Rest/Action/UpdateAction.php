@@ -23,7 +23,7 @@ class UpdateAction extends RestAction
         $this->updateEntity($request, $entity);
         $this->repository()->em()->flush();
 
-        $resource = new Item($entity, $this->transformer(), $this->getResourceKey($entity));
+        $resource = new Item($entity, $this->transformer(), $this->repository()->getResourceKey());
 
         return $this->response()->resource($request, $resource);
     }

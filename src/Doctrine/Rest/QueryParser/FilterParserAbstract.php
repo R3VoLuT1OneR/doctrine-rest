@@ -4,20 +4,20 @@ use Doctrine\Common\Collections\Criteria;
 use Pz\Doctrine\Rest\BuilderChain\MemberInterface;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 
-abstract class IndexQueryParser implements MemberInterface
+abstract class FilterParserAbstract implements MemberInterface
 {
     /**
      * @param Criteria $criteria
-     * @param          $query
+     * @param mixed    $filter
      *
-     * @return mixed
+     * @return Criteria
      */
-    abstract public function processQuery(Criteria $criteria, $query);
+    abstract public function applyFilter(Criteria $criteria, $filter);
 
     /**
-     * @var RestRequestContract
+     * @var mixed
      */
-    protected $request;
+    protected $filter;
 
     /**
      * @param Criteria $object
@@ -26,7 +26,7 @@ abstract class IndexQueryParser implements MemberInterface
      */
     public function handle($object)
     {
-        return $this->processQuery($object, $this->request->getFilter());
+        return $this->applyFilter($object, $this->filter);
     }
 
     /**
@@ -36,6 +36,6 @@ abstract class IndexQueryParser implements MemberInterface
      */
     public function __construct(RestRequestContract $request)
     {
-        $this->request = $request;
+        $this->filter = $request->getFilter();
     }
 }

@@ -20,6 +20,9 @@ class RestRequest implements RestRequestContract
         $this->http = $request;
     }
 
+    /**
+     * @return Request
+     */
     public function http()
     {
         return $this->http;

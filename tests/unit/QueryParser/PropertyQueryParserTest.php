@@ -3,7 +3,7 @@
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use PHPUnit\Framework\TestCase;
-use Pz\Doctrine\Rest\QueryParser\PropertyQueryParser;
+use Pz\Doctrine\Rest\QueryParser\StringFilterParser;
 
 use Mockery as m;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
@@ -16,7 +16,7 @@ class PropertyQueryParserTest extends TestCase
             ->shouldReceive('getFilter')->andReturn('queryString')
             ->getMock();
 
-        $parser = new PropertyQueryParser($request, 'testField');
+        $parser = new StringFilterParser($request, 'testField');
         $criteria = Criteria::create();
         $parser->handle($criteria);
 

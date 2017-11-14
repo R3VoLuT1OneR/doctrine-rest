@@ -4,7 +4,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 use PHPUnit\Framework\TestCase;
-use Pz\Doctrine\Rest\QueryParser\FilterableQueryParser;
+use Pz\Doctrine\Rest\QueryParser\ArrayFilterParser;
 
 use Mockery as m;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
@@ -23,7 +23,7 @@ class FilterableQueryParserTest extends TestCase
             ])
             ->getMock();
 
-        $parser = new FilterableQueryParser($request, ['field1', 'field2']);
+        $parser = new ArrayFilterParser($request, ['field1', 'field2']);
         $parser->handle(Criteria::create());
     }
 
@@ -36,7 +36,7 @@ class FilterableQueryParserTest extends TestCase
             ])
             ->getMock();
 
-        $parser = new FilterableQueryParser($request, ['field1', 'field2']);
+        $parser = new ArrayFilterParser($request, ['field1', 'field2']);
         $criteria = Criteria::create();
         $parser->handle($criteria);
 
@@ -61,7 +61,7 @@ class FilterableQueryParserTest extends TestCase
             ->shouldReceive('getFilter')->andReturn(['field1' => ['start' => 1, 'end' => 10]])
             ->getMock();
 
-        $parser = new FilterableQueryParser($request, ['field1', 'field2']);
+        $parser = new ArrayFilterParser($request, ['field1', 'field2']);
         $criteria = Criteria::create();
         $parser->handle($criteria);
 
@@ -86,7 +86,7 @@ class FilterableQueryParserTest extends TestCase
             ->shouldReceive('getFilter')->andReturn(['field1' => 'test1', 'field2' => 'test2', 'field3' => 'test3'])
             ->getMock();
 
-        $parser = new FilterableQueryParser($request, ['field1', 'field2']);
+        $parser = new ArrayFilterParser($request, ['field1', 'field2']);
         $criteria = Criteria::create();
         $parser->handle($criteria);
 

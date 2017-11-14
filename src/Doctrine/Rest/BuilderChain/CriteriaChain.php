@@ -1,6 +1,7 @@
 <?php namespace Pz\Doctrine\Rest\BuilderChain;
 
 use Doctrine\Common\Collections\Criteria;
+use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 
 class CriteriaChain extends Chain
 {
@@ -17,8 +18,12 @@ class CriteriaChain extends Chain
      *
      * @return Criteria
      */
-    public function process($object)
+    public function process($object = null)
     {
+        if ($object === null) {
+            $object = new Criteria();
+        }
+
         return parent::process($object);
     }
 }
