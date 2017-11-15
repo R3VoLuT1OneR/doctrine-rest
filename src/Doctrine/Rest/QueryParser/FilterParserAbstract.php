@@ -24,7 +24,7 @@ abstract class FilterParserAbstract implements MemberInterface
      *
      * @return Criteria
      */
-    public function handle($object)
+    public function __invoke($object)
     {
         return $this->applyFilter($object, $this->filter);
     }

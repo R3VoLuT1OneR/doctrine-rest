@@ -2,5 +2,5 @@
 
 class InvalidChainMember extends \RuntimeException
 {
-    protected $message = 'Chain member should be or `ChainMemberInterface` or callable';
+    protected $message = 'Chain member should be or `MemberInterface` or `Closure`';
 }

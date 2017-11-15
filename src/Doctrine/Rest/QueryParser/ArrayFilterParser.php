@@ -3,6 +3,7 @@
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Query\Expr;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
+use Pz\Doctrine\Rest\Exceptions\RestException;
 
 class ArrayFilterParser extends FilterParserAbstract
 {
@@ -98,7 +99,7 @@ class ArrayFilterParser extends FilterParserAbstract
             $operator = $value['operator'];
 
             if (!method_exists($criteria->expr(), $operator)) {
-                throw new \InvalidArgumentException(sprintf('Unknown operator: %s', $value['operator']));
+                throw RestException::createFilterError(['field' => $field, 'filter' => $value], 'Unknown operator.');
             }
 
             $criteria->andWhere(

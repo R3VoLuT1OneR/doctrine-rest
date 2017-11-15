@@ -4,6 +4,7 @@ use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
 use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
+use Pz\Doctrine\Rest\Exceptions\RestException;
 
 class RestRepository extends EntityRepository
 {
@@ -75,10 +76,9 @@ class RestRepository extends EntityRepository
     public function findByIdentifier(RestRequestContract $request)
     {
         if (null === ($entity = $this->find($request->getId()))) {
-            throw EntityNotFoundException::fromClassNameAndIdentifier(
-                $this->getClassName(),
-                ['id' => $request->getId()]
-            );
+            throw RestException::createNotFound($request->getId(), $this->getResourceKey(), sprintf(
+                'Entity of type `%s` not found.', $this->getClassName()
+            ));
         }
 
         return $entity;

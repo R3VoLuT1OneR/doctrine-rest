@@ -4,41 +4,50 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 use PHPUnit\Framework\TestCase;
+use Pz\Doctrine\Rest\Exceptions\RestException;
 use Pz\Doctrine\Rest\QueryParser\ArrayFilterParser;
 
 use Mockery as m;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
+use Pz\Doctrine\Rest\RestRequest;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-class FilterableQueryParserTest extends TestCase
+class ArrayParserTest extends TestCase
 {
 
     public function test_filterable_query_parser_operator_filter_exception()
     {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $request = m::mock(RestRequestContract::class)
-            ->shouldReceive('getFilter')->andReturn([
+        try {
+            $request = new RestRequest(new Request(['filter' => [
                 'field1' => ['operator' => 'not', 'value' => false],
                 'field2' => ['operator' => 'eq', 'value' => 'test2'],
-            ])
-            ->getMock();
+            ]]));
 
-        $parser = new ArrayFilterParser($request, ['field1', 'field2']);
-        $parser->handle(Criteria::create());
+            $parser = new ArrayFilterParser($request, ['field1', 'field2']);
+            $parser(Criteria::create());
+        } catch (RestException $e) {
+            $this->assertEquals(Response::HTTP_BAD_REQUEST, $e->getCode());
+            $this->assertEquals([
+                [
+                    'code' => 'filter-input',
+                    'source' => ['field' => 'field1', 'filter' => ['operator' => 'not', 'value' => false]],
+                    'detail' => 'Unknown operator.',
+                ]
+            ], $e->errors());
+        }
     }
 
     public function test_filterable_query_parser_operator_filter()
     {
-        $request = m::mock(RestRequestContract::class)
-            ->shouldReceive('getFilter')->andReturn([
-                'field1' => ['operator' => 'neq', 'value' => false],
-                'field2' => ['operator' => 'eq', 'value' => 'test2'],
-            ])
-            ->getMock();
-
+        $request = new RestRequest(new Request(['filter' => [
+            'field1' => ['operator' => 'neq', 'value' => false],
+            'field2' => ['operator' => 'eq', 'value' => 'test2'],
+        ]]));
         $parser = new ArrayFilterParser($request, ['field1', 'field2']);
-        $criteria = Criteria::create();
-        $parser->handle($criteria);
+
+        /** @var Criteria $criteria */
+        $criteria = $parser(Criteria::create());
 
         /** @var CompositeExpression $where */
         $where = $criteria->getWhereExpression();
@@ -57,13 +66,11 @@ class FilterableQueryParserTest extends TestCase
 
     public function test_filterable_query_parser_between_filter()
     {
-        $request = m::mock(RestRequestContract::class)
-            ->shouldReceive('getFilter')->andReturn(['field1' => ['start' => 1, 'end' => 10]])
-            ->getMock();
-
+        $request = new RestRequest(new Request(['filter' => ['field1' => ['start' => 1, 'end' => 10]]]));
         $parser = new ArrayFilterParser($request, ['field1', 'field2']);
-        $criteria = Criteria::create();
-        $parser->handle($criteria);
+
+        /** @var Criteria $criteria */
+        $criteria = $parser(Criteria::create());
 
         /** @var CompositeExpression $where */
         $where = $criteria->getWhereExpression();
@@ -82,13 +89,11 @@ class FilterableQueryParserTest extends TestCase
 
     public function test_filterable_query_parser_equal_filter()
     {
-        $request = m::mock(RestRequestContract::class)
-            ->shouldReceive('getFilter')->andReturn(['field1' => 'test1', 'field2' => 'test2', 'field3' => 'test3'])
-            ->getMock();
-
+        $request = new RestRequest(new Request(['filter' => ['field1' => 'test1', 'field2' => 'test2', 'field3' => 'test3']]));
         $parser = new ArrayFilterParser($request, ['field1', 'field2']);
-        $criteria = Criteria::create();
-        $parser->handle($criteria);
+
+        /** @var Criteria $criteria */
+        $criteria = $parser(Criteria::create());
 
         /** @var CompositeExpression $where */
         $where = $criteria->getWhereExpression();

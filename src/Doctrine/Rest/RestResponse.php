@@ -1,19 +1,10 @@
 <?php namespace Pz\Doctrine\Rest;
 
+use Pz\Doctrine\Rest\Exceptions\RestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class RestResponse extends JsonResponse
 {
-    /**
-     * @param string $message
-     *
-     * @return static
-     */
-    public static function notFound($message)
-    {
-        return static::create($message, static::HTTP_NOT_FOUND);
-    }
-
     /**
      * @return static
      */
@@ -28,8 +19,12 @@ class RestResponse extends JsonResponse
      * @return RestResponse
      * @throws \Error|\Exception|RestException
      */
-    public static function exception(RestException $exception)
+    public static function exception(\Exception $exception)
     {
-        return RestResponse::create(['errors' => $exception->errors()], $exception->httpStatus());
+        if (!$exception instanceof RestException) {
+            $exception = RestException::createFromException($exception);
+        }
+
+        return RestResponse::create(['errors' => $exception->errors()], $exception->getCode());
     }
 }

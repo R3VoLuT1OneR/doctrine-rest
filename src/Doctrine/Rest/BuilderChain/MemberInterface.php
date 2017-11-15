@@ -9,5 +9,5 @@ interface MemberInterface
      *
      * @return object
      */
-    public function handle($object);
+    public function __invoke($object);
 }

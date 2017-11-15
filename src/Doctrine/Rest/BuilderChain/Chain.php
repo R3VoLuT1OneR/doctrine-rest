@@ -56,7 +56,10 @@ class Chain
             return $this;
         }
 
-        $this->verifyChainMember($member);
+        if (!is_callable($member)) {
+            throw new InvalidChainMember();
+        }
+
         $this->members[] = $member;
 
         return $this;
@@ -74,31 +77,17 @@ class Chain
     {
         /** @var callable|MemberInterface $member */
         foreach ($this->members as $member) {
-            $this->verifyChainMember($member);
+            if (!is_callable($member)) {
+                throw new InvalidChainMember();
+            }
 
-            $qb = ($member instanceof MemberInterface) ?
-                $member->handle($object) : call_user_func($member, $object);
+            $qb = call_user_func($member, $object);
 
             if (($class = $this->buildClass()) && !($qb instanceof $class)) {
-                throw new InvalidChainMemberResponse();
+                throw new InvalidChainMemberResponse($class);
             }
         }
 
         return $object;
-    }
-
-    /**
-     * @param callable|MemberInterface $member
-     *
-     * @return $this
-     * @throws InvalidChainMember
-     */
-    protected function verifyChainMember($member)
-    {
-        if (!(is_callable($member) || $member instanceof MemberInterface)) {
-            throw new InvalidChainMember();
-        }
-
-        return $this;
     }
 }

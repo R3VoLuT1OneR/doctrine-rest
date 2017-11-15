@@ -23,7 +23,7 @@ class ChainTest extends \PHPUnit\Framework\TestCase
             ->getMock();
 
         $chain->add(m::mock(MemberInterface::class)
-            ->shouldReceive('handle')->with($object)->andReturn('fsasfs')
+            ->shouldReceive('__invoke')->with($object)->andReturn('fsasfs')
             ->getMock());
 
         $chain->process($object);
@@ -54,10 +54,10 @@ class ChainTest extends \PHPUnit\Framework\TestCase
         $object = new stdClass();
 
         $member1 = m::mock(MemberInterface::class)
-            ->shouldReceive('handle')->with($object)->andReturn($object)
+            ->shouldReceive('__invoke')->with($object)->andReturn($object)
             ->getMock();
         $member2 = m::mock(MemberInterface::class)
-            ->shouldReceive('handle')->with($object)->andReturn($object)
+            ->shouldReceive('__invoke')->with($object)->andReturn($object)
             ->getMock();
         $member3 = function($qb) { return $qb; };
 

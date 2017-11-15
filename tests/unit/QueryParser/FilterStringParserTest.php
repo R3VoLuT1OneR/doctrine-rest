@@ -7,18 +7,18 @@ use Pz\Doctrine\Rest\QueryParser\StringFilterParser;
 
 use Mockery as m;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
+use Pz\Doctrine\Rest\RestRequest;
+use Symfony\Component\HttpFoundation\Request;
 
-class PropertyQueryParserTest extends TestCase
+class FilterStringParserTest extends TestCase
 {
     public function test_property_query_parser()
     {
-        $request = m::mock(RestRequestContract::class)
-            ->shouldReceive('getFilter')->andReturn('queryString')
-            ->getMock();
-
+        $request = new RestRequest(new Request(['filter' => 'queryString']));
         $parser = new StringFilterParser($request, 'testField');
-        $criteria = Criteria::create();
-        $parser->handle($criteria);
+
+        /** @var Criteria $criteria */
+        $criteria = $parser(Criteria::create());
 
         /** @var Comparison $where */
         $where = $criteria->getWhereExpression();

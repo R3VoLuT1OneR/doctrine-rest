@@ -1,7 +1,8 @@
 <?php namespace Pz\Doctrine\Rest\Tests\Action;
 
+use Pz\Doctrine\Rest\Action\CollectionAction;
 use Pz\Doctrine\Rest\Action\ItemAction;
-use Pz\Doctrine\Rest\RestException;
+use Pz\Doctrine\Rest\Exceptions\RestException;
 use Pz\Doctrine\Rest\RestRepository;
 use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;

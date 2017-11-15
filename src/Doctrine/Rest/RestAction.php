@@ -1,8 +1,6 @@
 <?php namespace Pz\Doctrine\Rest;
 
-use Doctrine\ORM\EntityNotFoundException;
 use League\Fractal\TransformerAbstract;
-use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 
 abstract class RestAction
@@ -53,9 +51,7 @@ abstract class RestAction
 
             return $this->handle($request);
 
-        } catch (EntityNotFoundException $e) {
-            return RestResponse::notFound($e->getMessage());
-        } catch (RestException $e) {
+        } catch (\Exception $e) {
             return RestResponse::exception($e);
         }
     }
