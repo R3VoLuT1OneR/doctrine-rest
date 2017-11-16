@@ -24,6 +24,16 @@ class RestException extends \Exception
     }
 
     /**
+     * @param string $message
+     *
+     * @return RestException
+     */
+    public static function createForbidden($message = 'Forbidden.')
+    {
+        return static::create(Response::HTTP_FORBIDDEN, $message);
+    }
+
+    /**
      * @param int|array $id
      * @param string    $resourceKey
      * @param string    $message

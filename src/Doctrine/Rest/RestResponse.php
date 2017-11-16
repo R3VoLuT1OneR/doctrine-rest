@@ -14,6 +14,14 @@ class RestResponse extends JsonResponse
     }
 
     /**
+     * @return static
+     */
+    public static function createForbidden()
+    {
+        return static::create(null, static::HTTP_FORBIDDEN);
+    }
+
+    /**
      * @param \Error|\Exception|RestException $exception
      *
      * @return RestResponse
