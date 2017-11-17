@@ -14,7 +14,7 @@ class RestResponseFactory
      *
      * @return Manager
      */
-    public function fractal(RestRequestContract $request)
+    protected static function fractal(RestRequestContract $request)
     {
         $fractal = new Manager();
 

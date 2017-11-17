@@ -40,7 +40,7 @@ class CreateAction extends RestAction
      *
      * @return object
      */
-    protected function createEntity(RestRequestContract $request)
+    protected function createEntity($request)
     {
         return $this->hydrate(
             $this->repository()->getClassName(),
