@@ -25,7 +25,7 @@ abstract class RestAction
      *
      * @return RestResponse
      */
-    abstract protected function handle(RestRequestContract $request);
+    abstract protected function handle($request);
 
     /**
      * RestActionAbstract constructor.

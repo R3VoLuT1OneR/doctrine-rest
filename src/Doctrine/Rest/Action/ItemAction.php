@@ -12,7 +12,7 @@ class ItemAction extends RestAction
      *
      * @return RestResponse
      */
-    public function handle(RestRequestContract $request)
+    public function handle($request)
     {
         $entity = $this->repository()->findByIdentifier($request);
 

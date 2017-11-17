@@ -16,7 +16,7 @@ class CreateAction extends RestAction
      *
      * @return RestResponse
      */
-    protected function handle(RestRequestContract $request)
+    protected function handle($request)
     {
         $headers = [];
         $this->authorize($request, $this->repository()->getClassName());

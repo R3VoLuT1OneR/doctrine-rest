@@ -79,7 +79,7 @@ class CollectionAction extends RestAction
      *
      * @return RestResponse
      */
-    protected function handle(RestRequestContract $request)
+    protected function handle($request)
     {
         $resourceKey = $this->repository()->getResourceKey();
         $this->authorize($request, $this->repository()->getClassName());
