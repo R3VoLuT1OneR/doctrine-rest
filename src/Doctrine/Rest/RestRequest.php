@@ -1,6 +1,7 @@
 <?php namespace Pz\Doctrine\Rest;
 
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
+use Pz\Doctrine\Rest\Exceptions\RestException;
 use Symfony\Component\HttpFoundation\Request;
 
 class RestRequest implements RestRequestContract
@@ -65,7 +66,34 @@ class RestRequest implements RestRequestContract
      */
     public function getId()
     {
+        if ($this->http()->isMethod(Request::METHOD_POST)) {
+            return $this->http()->request->get('data', [])['id'] ?? null;
+        }
+
         return $this->http()->get('id');
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getType()
+    {
+        return $this->http()->request->get('data', [])['type'] ?? null;
+    }
+
+    /**
+     * @return array
+     * @throws RestException
+     */
+    public function getData()
+    {
+        $request = $this->http()->request;
+
+        if ($request->has('data')) {
+            return $request->get('data');
+        }
+
+        throw RestException::missingRootData();
     }
 
     /**

@@ -95,24 +95,6 @@ class CreateActionTest extends TestCase
         );
 
         $request = new RestRequest(new Request([], [
-            'name' => 'New Role',
-        ]));
-
-        $response = $action->dispatch($request);
-
-        $this->assertInstanceOf(RestResponse::class, $response);
-        $this->assertEquals(201, $response->getStatusCode());
-        $this->assertEquals(
-            [
-                'data' => [
-                    'id' => 3,
-                    'name' => 'New Role',
-                ],
-            ],
-            json_decode($response->getContent(), true)
-        );
-
-        $request = new RestRequest(new Request([], [
             'data' => [
                 'attributes' => [
                     'name' => 'New Role',
@@ -129,13 +111,13 @@ class CreateActionTest extends TestCase
         $this->assertEquals(
             [
                 'data' => [
-                    'id' => '4',
+                    'id' => '3',
                     'type' => null,
                     'attributes' => [
                         'name' => 'New Role',
                     ],
                     'links' => [
-                        'self' => '//4',
+                        'self' => '//3',
                     ]
                 ],
             ],

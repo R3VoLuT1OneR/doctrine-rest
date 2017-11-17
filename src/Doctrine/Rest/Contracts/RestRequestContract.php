@@ -37,9 +37,18 @@ interface RestRequestContract
     public function all();
 
     /**
+     * JSON API id ( got from query sting for GET and PUT and from data id for POST
+     *
      * @return int|array
      */
     public function getId();
+
+    /**
+     * JSON API data
+     *
+     * @return array
+     */
+    public function getData();
 
     /**
      * Get jsonapi fieldsets.

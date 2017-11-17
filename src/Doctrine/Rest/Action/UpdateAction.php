@@ -20,22 +20,12 @@ class UpdateAction extends RestAction
         $entity = $this->repository()->findByIdentifier($request);
         $this->authorize($request, $entity);
 
-        $this->updateEntity($request, $entity);
-        $this->repository()->em()->flush();
+        $entity = $this->hydrateRelationData($entity, $request->getData());
+
+        $this->repository()->getEntityManager()->flush();
 
         $resource = new Item($entity, $this->transformer(), $this->repository()->getResourceKey());
 
         return $this->response()->resource($request, $resource);
-    }
-
-    /**
-     * @param RestRequestContract $request
-     * @param object              $entity
-     *
-     * @return object
-     */
-    protected function updateEntity($request, $entity)
-    {
-        return $this->hydrate($entity, $this->repository()->em(), $request);
     }
 }

@@ -1,34 +1,140 @@
 <?php namespace Pz\Doctrine\Rest\Traits;
 
-use Doctrine\ORM\EntityManager;
-use pmill\Doctrine\Hydrator\ArrayHydrator;
-use pmill\Doctrine\Hydrator\JsonApiHydrator;
-use Pz\Doctrine\Rest\Contracts\RestRequestContract;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Pz\Doctrine\Rest\Exceptions\RestException;
-use Symfony\Component\HttpFoundation\Response;
+use Pz\Doctrine\Rest\RestRepository;
 
 trait CanHydrate
 {
     /**
-     * @param string|object       $entity
-     * @param EntityManager       $em
-     * @param RestRequestContract $request
+     * @return RestRepository
+     */
+    abstract public function repository();
+
+    /**
+     * @param string|object $entity
+     * @param array         $data
+     * @param string        $scope
      *
      * @return object
-     * @throws \Exception
+     * @throws RestException
      */
-    protected function hydrate($entity, EntityManager $em, RestRequestContract $request)
+    protected function hydrateData($entity, array $data, $scope = 'root')
     {
-        $all = $request->all();
+        $entity = is_object($entity) ? $entity : new $entity;
 
-        if ($request->isContentJsonApi()) {
-            if (!isset($all['data']) || !is_array($all['data'])) {
-                throw RestException::missingRootData();
-            }
-
-            return (new JsonApiHydrator($em))->hydrate($entity, $all['data']);
+        if (!isset($data['attributes']) || !is_array($data['attributes'])) {
+            throw RestException::missingAttributes($scope);
         }
 
-        return (new ArrayHydrator($em))->hydrate($entity, $all);
+        $entity = $this->hydrateAttributes($entity, $data['attributes'], $scope);
+
+        if (isset($data['relationships']) && is_array($data['relationships'])) {
+            $entity = $this->hydrateRelationships($entity, $data['relationships'], $scope);
+        }
+
+        return $entity;
+    }
+
+    /**
+     * @param        $entity
+     * @param array  $attributes
+     * @param string $scope
+     *
+     * @return mixed
+     * @throws RestException
+     */
+    protected function hydrateAttributes($entity, array $attributes, $scope = 'root')
+    {
+        $metadata = $this->repository()->getClassMetadata();
+        foreach ($attributes as $name => $value) {
+            if (!isset($metadata->columnNames[$name])) {
+                throw RestException::unknownAttribute(sprintf('%s.attribute.%s', $scope, $name));
+            }
+
+            $metadata->reflFields[$name]->setValue($entity, $value);
+        }
+
+        return $entity;
+    }
+
+    /**
+     * @param       $entity
+     * @param array $relationships
+     * @param       $scope
+     *
+     * @return mixed
+     * @throws RestException
+     */
+    protected function hydrateRelationships($entity, array $relationships, $scope)
+    {
+        $metadata = $this->repository()->getClassMetadata();
+
+        foreach ($relationships as $name => $data) {
+            $relationScope = sprintf('%s.relation.%s', $scope, $name);
+
+            if (!isset($metadata->associationMappings[$name])) {
+                throw RestException::unknownRelation($relationScope);
+            }
+
+            $mapping = $metadata->associationMappings[$name];
+            $mappingClass = $mapping['targetEntity'];
+
+            if (!isset($data['data'])) {
+                throw RestException::missingData($relationScope);
+            }
+
+            if (in_array($mapping['type'], [ClassMetadataInfo::ONE_TO_ONE, ClassMetadataInfo::MANY_TO_ONE])) {
+                $metadata->reflFields[$name]->setValue($entity,
+                    $this->hydrateRelationData($mappingClass, $data['data'], $relationScope)
+                );
+            }
+
+            if (in_array($mapping['type'], [ClassMetadataInfo::ONE_TO_MANY, ClassMetadataInfo::MANY_TO_MANY])) {
+                if (!is_array($data['data'])) {
+                    throw RestException::missingData($relationScope);
+                }
+
+                $metadata->reflFields[$name]->setValue($entity,
+                    new ArrayCollection(array_map(
+                        function($data, $index) use ($mappingClass, $relationScope) {
+                            return $this->hydrateRelationData(
+                                $mappingClass, $data, sprintf('%s.%s', $relationScope, $index)
+                            );
+                        },
+                        $data['data']
+                    ))
+                );
+            }
+        }
+
+        return $entity;
+    }
+
+    /**
+     * @param        $class
+     * @param        $data
+     * @param string $scope
+     *
+     * @return object
+     * @throws RestException
+     * @throws \Doctrine\ORM\ORMException
+     */
+    protected function hydrateRelationData($class, $data, $scope = 'root')
+    {
+        if (is_scalar($data)) {
+            return $this->repository()->getEntityManager()->getReference($class, $data);
+        }
+
+        if (!is_array($data)) {
+            throw RestException::missingData($scope);
+        }
+
+        if (isset($data['id']) && isset($data['type'])) {
+            return $this->repository()->getEntityManager()->getReference($class, $data['id']);
+        } else {
+            return $this->hydrateData($class, $data, $scope);
+        }
     }
 }

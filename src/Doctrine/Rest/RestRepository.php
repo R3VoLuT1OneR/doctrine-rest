@@ -18,9 +18,17 @@ class RestRepository extends EntityRepository
     /**
      * @return \Doctrine\ORM\EntityManager
      */
-    public function em()
+    public function getEntityManager()
     {
-        return $this->getEntityManager();
+        return parent::getEntityManager();
+    }
+
+    /**
+     * @return \Doctrine\ORM\Mapping\ClassMetadata
+     */
+    public function getClassMetadata()
+    {
+        return parent::getClassMetadata();
     }
 
     /**

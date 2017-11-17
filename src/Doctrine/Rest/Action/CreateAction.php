@@ -21,10 +21,10 @@ class CreateAction extends RestAction
         $headers = [];
         $this->authorize($request, $this->repository()->getClassName());
 
-        $entity = $this->createEntity($request);
+        $entity = $this->hydrateData($this->repository()->getClassName(), $request->getData());
 
-        $this->repository()->em()->persist($entity);
-        $this->repository()->em()->flush();
+        $this->repository()->getEntityManager()->persist($entity);
+        $this->repository()->getEntityManager()->flush();
 
         $resource = new Item($entity, $this->transformer(), $this->repository()->getResourceKey());
 
@@ -33,19 +33,5 @@ class CreateAction extends RestAction
         }
 
         return $this->response()->resource($request, $resource, RestResponse::HTTP_CREATED, $headers);
-    }
-
-    /**
-     * @param RestRequestContract $request
-     *
-     * @return object
-     */
-    protected function createEntity($request)
-    {
-        return $this->hydrate(
-            $this->repository()->getClassName(),
-            $this->repository()->em(),
-            $request
-        );
     }
 }

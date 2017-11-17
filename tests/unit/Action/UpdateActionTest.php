@@ -21,26 +21,6 @@ class UpdateActionTest extends TestCase
         );
 
         $request = new RestRequest(new Request([
-            'id' => '1'
-        ], [
-            'email' => 'new@email.com',
-        ]));
-
-        $response = $action->dispatch($request);
-        $this->assertInstanceOf(RestResponse::class, $response);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(
-            [
-                'data' => [
-                    'id' => 1,
-                    'name' => 'User1Name',
-                    'email' => 'new@email.com',
-                ]
-            ],
-            json_decode($response->getContent(), true)
-        );
-
-        $request = new RestRequest(new Request([
             'id' => '2',
             'fields' => [
                 'user' => 'email',

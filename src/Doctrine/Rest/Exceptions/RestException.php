@@ -68,6 +68,50 @@ class RestException extends \Exception
     }
 
     /**
+     * @param string $pointer
+     *
+     * @return $this
+     */
+    public static function missingData($pointer)
+    {
+        return static::create(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->error('missing-data', ['pointer' => $pointer], "Missing `data` member at pointer scope.");
+    }
+
+    /**
+     * @param string $pointer
+     *
+     * @return $this
+     */
+    public static function missingAttributes($pointer)
+    {
+        return static::create(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->error('missing-attributes', ['pointer' => $pointer], "Missing `data.attributes` at pointer level.");
+    }
+
+    /**
+     * @param string $pointer
+     *
+     * @return $this
+     */
+    public static function unknownAttribute($pointer)
+    {
+        return static::create(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->error('unknown-attribute', ['pointer' => $pointer], 'Unknown attribute, please see source.');
+    }
+
+    /**
+     * @param string $pointer
+     *
+     * @return static
+     */
+    public static function unknownRelation($pointer)
+    {
+        return static::create(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->error('unknown-relation', ['pointer' => $pointer], 'Unknown relation, please see source.');
+    }
+
+    /**
      * @param int             $httpStatus
      * @param string          $message
      * @param \Exception|null $previous
