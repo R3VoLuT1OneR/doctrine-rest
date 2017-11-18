@@ -34,11 +34,13 @@ class RestException extends \Exception
     }
 
     /**
+     * @param string $message
+     *
      * @return RestException
      */
-    public static function createUnprocessable()
+    public static function createUnprocessable($message = '')
     {
-        return static::create(Response::HTTP_UNPROCESSABLE_ENTITY);
+        return static::create(Response::HTTP_UNPROCESSABLE_ENTITY, $message);
     }
 
     /**

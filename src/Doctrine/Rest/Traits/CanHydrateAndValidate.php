@@ -84,11 +84,11 @@ trait CanHydrateAndValidate
     {
         $metadata = $this->repository()->getClassMetadata();
         foreach ($attributes as $name => $value) {
-            if (!isset($metadata->columnNames[$name])) {
+            if (!isset($metadata->reflFields[$name])) {
                 throw RestException::unknownAttribute(sprintf('%s.attribute.%s', $scope, $name));
             }
 
-            $metadata->reflFields[$name]->setValue($entity, $value);
+            $this->setProperty($entity, $name, $value);
         }
 
         return $entity;
@@ -121,7 +121,7 @@ trait CanHydrateAndValidate
             }
 
             if (in_array($mapping['type'], [ClassMetadataInfo::ONE_TO_ONE, ClassMetadataInfo::MANY_TO_ONE])) {
-                $metadata->reflFields[$name]->setValue($entity,
+                $this->setProperty($entity, $name,
                     $this->hydrateRelationData($mappingClass, $data['data'], $relationScope)
                 );
             }
@@ -131,7 +131,7 @@ trait CanHydrateAndValidate
                     throw RestException::missingData($relationScope);
                 }
 
-                $metadata->reflFields[$name]->setValue($entity,
+                $this->setProperty($entity, $name,
                     new ArrayCollection(array_map(
                         function($data, $index) use ($mappingClass, $relationScope) {
                             return $this->hydrateRelationData(
@@ -145,6 +145,24 @@ trait CanHydrateAndValidate
         }
 
         return $entity;
+    }
+
+    /**
+     * @param object $entity
+     * @param string $name
+     * @param mixed  $value
+     *
+     * @return object
+     * @throws RestException
+     */
+    protected function setProperty($entity, $name, $value)
+    {
+        $setter = 'set' . ucfirst($name);
+        if (!method_exists($entity, $setter)) {
+            throw RestException::createUnprocessable(sprintf('Setter not found for entity'));
+        }
+
+        return $entity->$setter($value);
     }
 
     /**
