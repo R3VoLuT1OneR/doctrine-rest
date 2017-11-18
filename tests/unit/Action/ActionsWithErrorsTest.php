@@ -31,12 +31,12 @@ class ActionsWithErrorsTest extends TestCase
                 'errors' => [
                     [
                         'code' => 'validation',
-                        'source' => ['pointer' => 'root', 'field' => 'email'],
+                        'source' => ['pointer' => 'email'],
                         'detail' => 'This value should not be null.'
                     ],
                     [
                         'code' => 'validation',
-                        'source' => ['pointer' => 'root', 'field' => 'name'],
+                        'source' => ['pointer' => 'name'],
                         'detail' => 'This value should not be null.'
                     ],
                 ]
@@ -55,7 +55,7 @@ class ActionsWithErrorsTest extends TestCase
                 'errors' => [
                     [
                         'code' => 'validation',
-                        'source' => ['pointer' => 'root', 'field' => 'email'],
+                        'source' => ['pointer' => 'email'],
                         'detail' => 'This value is not a valid email address.'
                     ],
                 ]

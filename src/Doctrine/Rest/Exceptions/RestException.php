@@ -1,6 +1,9 @@
 <?php namespace Pz\Doctrine\Rest\Exceptions;
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationInterface;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class RestException extends \Exception
 {
@@ -21,6 +24,23 @@ class RestException extends \Exception
 
         return static::create(Response::HTTP_INTERNAL_SERVER_ERROR, 'Internal Server Error', $exception)
             ->error('internal-error', [], $exception->getMessage(), $extra);
+    }
+
+    /**
+     * @param ConstraintViolationListInterface $errors
+     *
+     * @return RestException
+     */
+    public static function createFromConstraintViolationList(ConstraintViolationListInterface $errors)
+    {
+        $exception = static::createUnprocessable('Input validation errors.');
+
+        /** @var ConstraintViolationInterface $error */
+        foreach ($errors as $error) {
+            $exception->errorValidation($error->getPropertyPath(), $error->getMessage());
+        }
+
+        return $exception;
     }
 
     /**
@@ -174,6 +194,18 @@ class RestException extends \Exception
     }
 
     /**
+     * @param string $pointer
+     * @param string $detail
+     * @param array  $extra
+     *
+     * @return RestException
+     */
+    public function errorValidation($pointer, $detail, array $extra = [])
+    {
+        return $this->error('validation', ['pointer' => $pointer], $detail, $extra);
+    }
+
+    /**
      * @param string $applicationCode
      * @param array  $source
      * @param string $detail
@@ -181,7 +213,7 @@ class RestException extends \Exception
      *
      * @return $this
      */
-    public function error($applicationCode, $source, $detail, $extra = [])
+    public function error($applicationCode, $source, $detail, array $extra = [])
     {
         $this->errors[] = array_merge(['code' => $applicationCode, 'source' => $source, 'detail' => $detail] + $extra);
 

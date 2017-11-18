@@ -1,14 +1,16 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
 use League\Fractal\Resource\Item;
-use Pz\Doctrine\Rest\Traits\CanHydrateAndValidate;
+use Pz\Doctrine\Rest\Traits\CanHydrate;
 use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestResponse;
+use Pz\Doctrine\Rest\Traits\CanValidate;
 
 class UpdateAction extends RestAction
 {
-    use CanHydrateAndValidate;
+    use CanHydrate;
+    use CanValidate;
 
     /**
      * @param RestRequestContract $request
@@ -22,6 +24,7 @@ class UpdateAction extends RestAction
 
         $entity = $this->hydrateRelationData($entity, $request->getData());
 
+        $this->validateEntity($entity);
         $this->repository()->getEntityManager()->flush();
 
         $resource = new Item($entity, $this->transformer(), $this->repository()->getResourceKey());

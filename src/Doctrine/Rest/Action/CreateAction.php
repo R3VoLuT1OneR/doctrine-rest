@@ -5,11 +5,13 @@ use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestResponse;
-use Pz\Doctrine\Rest\Traits\CanHydrateAndValidate;
+use Pz\Doctrine\Rest\Traits\CanHydrate;
+use Pz\Doctrine\Rest\Traits\CanValidate;
 
 class CreateAction extends RestAction
 {
-    use CanHydrateAndValidate;
+    use CanHydrate;
+    use CanValidate;
 
     /**
      * @param RestRequestContract $request
@@ -21,8 +23,9 @@ class CreateAction extends RestAction
         $headers = [];
         $this->authorize($request, $this->repository()->getClassName());
 
-        $entity = $this->hydrateData($this->repository()->getClassName(), $request->getData());
+        $entity = $this->hydrateRelationData($this->repository()->getClassName(), $request->getData());
 
+        $this->validateEntity($entity);
         $this->repository()->getEntityManager()->persist($entity);
         $this->repository()->getEntityManager()->flush();
 
