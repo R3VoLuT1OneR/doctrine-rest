@@ -20,9 +20,10 @@ class UpdateAction extends RestAction
     public function handle($request)
     {
         $entity = $this->repository()->findByIdentifier($request);
+
         $this->authorize($request, $entity);
 
-        $entity = $this->hydrateRelationData($entity, $request->getData());
+        $entity = $this->hydrateEntity($entity, $request->getData());
 
         $this->validateEntity($entity);
         $this->repository()->getEntityManager()->flush();

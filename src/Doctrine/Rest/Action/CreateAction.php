@@ -21,11 +21,12 @@ class CreateAction extends RestAction
     protected function handle($request)
     {
         $headers = [];
-        $this->authorize($request, $this->repository()->getClassName());
+        $class = $this->repository()->getClassName();
 
-        $entity = $this->hydrateRelationData($this->repository()->getClassName(), $request->getData());
+        $this->authorize($request, $class);
 
-        $this->validateEntity($entity);
+        $entity = $this->validateEntity($this->hydrateEntity($class, $request->getData()));
+
         $this->repository()->getEntityManager()->persist($entity);
         $this->repository()->getEntityManager()->flush();
 
