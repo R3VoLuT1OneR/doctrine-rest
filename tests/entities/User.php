@@ -134,6 +134,17 @@ class User implements JsonApiResource
     }
 
     /**
+     * @param array $blogs
+     *
+     * @return $this
+     */
+    public function setBlogs($blogs)
+    {
+        $this->blogs = $blogs;
+        return $this;
+    }
+
+    /**
      * @param Role $role
      *
      * @return $this

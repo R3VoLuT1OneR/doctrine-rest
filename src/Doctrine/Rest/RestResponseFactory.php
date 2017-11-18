@@ -17,10 +17,7 @@ class RestResponseFactory
     protected static function fractal(RestRequestContract $request)
     {
         $fractal = new Manager();
-
-        if ($request->isAcceptJsonApi()) {
-            $fractal->setSerializer(new JsonApiSerializer($request->getBaseUrl()));
-        }
+        $fractal->setSerializer(new JsonApiSerializer($request->getBaseUrl()));
 
         if ($includes = $request->getInclude()) {
             $fractal->parseIncludes($includes);
@@ -51,10 +48,6 @@ class RestResponseFactory
         int                 $httStatus = RestResponse::HTTP_OK,
         array               $headers = []
     ) {
-        if ($request->isAcceptJsonApi()) {
-            $headers['Content-Type'] = RestRequestContract::JSON_API_CONTENT_TYPE;
-        }
-
         $data = $resource ? $this->fractal($request)->createData($resource)->toArray() : null;
 
         return RestResponse::create($data, $httStatus, $headers);

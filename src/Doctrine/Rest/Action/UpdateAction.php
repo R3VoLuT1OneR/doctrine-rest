@@ -22,14 +22,12 @@ class UpdateAction extends RestAction
         $entity = $this->repository()->findByIdentifier($request);
 
         $this->authorize($request, $entity);
-
         $entity = $this->hydrateEntity($entity, $request->getData());
-
         $this->validateEntity($entity);
         $this->repository()->getEntityManager()->flush();
 
-        $resource = new Item($entity, $this->transformer(), $this->repository()->getResourceKey());
-
-        return $this->response()->resource($request, $resource);
+        return $this->response()->resource($request,
+            new Item($entity, $this->transformer(), $this->repository()->getResourceKey())
+        );
     }
 }

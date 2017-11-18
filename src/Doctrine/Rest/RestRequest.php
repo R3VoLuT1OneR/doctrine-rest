@@ -38,47 +38,11 @@ class RestRequest implements RestRequestContract
     }
 
     /**
-     * @return bool
-     */
-    public function isAcceptJsonApi()
-    {
-        return in_array(static::JSON_API_CONTENT_TYPE, $this->http()->getAcceptableContentTypes());
-    }
-
-    /**
-     * @return bool
-     */
-    public function isContentJsonApi()
-    {
-        return $this->http()->headers->get('CONTENT_TYPE') === static::JSON_API_CONTENT_TYPE;
-    }
-
-    /**
-     * @return array
-     */
-    public function all()
-    {
-        return $this->http()->request->all();
-    }
-
-    /**
      * @return int|array
      */
     public function getId()
     {
-        if ($this->http()->isMethod(Request::METHOD_POST)) {
-            return $this->http()->request->get('data', [])['id'] ?? null;
-        }
-
         return $this->http()->get('id');
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getType()
-    {
-        return $this->http()->request->get('data', [])['type'] ?? null;
     }
 
     /**

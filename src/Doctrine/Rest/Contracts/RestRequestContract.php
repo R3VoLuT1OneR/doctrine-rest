@@ -20,23 +20,6 @@ interface RestRequestContract
     public function getBaseUrl();
 
     /**
-     * @return bool
-     */
-    public function isAcceptJsonApi();
-
-    /**
-     * @return bool
-     */
-    public function isContentJsonApi();
-
-    /**
-     * Return parser JSON body request.
-     *
-     * @return array
-     */
-    public function all();
-
-    /**
      * JSON API id ( got from query sting for GET and PUT and from data id for POST
      *
      * @return int|array

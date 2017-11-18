@@ -124,42 +124,4 @@ class ItemActionTest extends TestCase
             json_decode($response->getContent(), true)
         );
     }
-
-    public function test_item_simple()
-    {
-        $request = new RestRequest(new Request(['id' => 1]));
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getItemAction()->dispatch($request));
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(
-            [
-                'data' => [
-                    'id' => 1,
-                    'name' => 'User1Name',
-                    'email' => 'user1@test.com',
-                ]
-            ],
-            json_decode($response->getContent(), true)
-        );
-
-        $request = new RestRequest(new Request(['id' => 1]));
-        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getItemAction()->dispatch($request));
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(
-            [
-                'data' => [
-                    'id' => 1,
-                    'type' => 'user',
-                    'attributes' => [
-                        'name' => 'User1Name',
-                        'email' => 'user1@test.com',
-                    ],
-                    'links' => [
-                        'self' => '/user/1',
-                    ]
-                ]
-            ],
-            json_decode($response->getContent(), true)
-        );
-    }
 }

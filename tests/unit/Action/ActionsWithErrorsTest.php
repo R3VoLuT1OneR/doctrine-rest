@@ -12,9 +12,16 @@ use Pz\Doctrine\Rest\Tests\Entities\Transformers\UserTransformer;
 use Pz\Doctrine\Rest\Tests\Entities\User;
 use Pz\Doctrine\Rest\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ActionsWithErrorsTest extends TestCase
 {
+
+    public function test_forbidden()
+    {
+        $this->assertEquals(Response::HTTP_FORBIDDEN, RestResponse::createForbidden()->getStatusCode());
+        $this->assertEquals(Response::HTTP_FORBIDDEN, RestException::createForbidden()->getCode());
+    }
 
     public function test_validation()
     {
@@ -62,7 +69,6 @@ class ActionsWithErrorsTest extends TestCase
             ],
             json_decode($response->getContent(), true)
         );
-
     }
 
     public function test_exception()
@@ -70,7 +76,7 @@ class ActionsWithErrorsTest extends TestCase
         $action = new ItemAction(
             new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
             function () {
-                throw new RestException();
+                throw new \Exception();
             }
         );
 
@@ -78,6 +84,28 @@ class ActionsWithErrorsTest extends TestCase
         $response = $action->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(RestResponse::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
+
+        $action = new CreateAction(
+            new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
+            function() {}
+        );
+
+        $request = new RestRequest(new Request([]));
+        $response = $action->dispatch($request);
+        $this->assertInstanceOf(RestResponse::class, $response);
+        $this->assertEquals(422, $response->getStatusCode());
+        $this->assertEquals(
+            [
+                'errors' => [
+                    [
+                        'code' => 'missing-root-data',
+                        'source' => ['pointer' => ''],
+                        'detail' => 'Missing `data` member at document top level.'
+                    ],
+                ]
+            ],
+            json_decode($response->getContent(), true)
+        );
     }
 
     public function test_not_found()

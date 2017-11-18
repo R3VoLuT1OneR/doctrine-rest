@@ -94,7 +94,7 @@ class RestException extends \Exception
     public static function missingRootData()
     {
         return static::create(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->error('missing-root-data', [], "Missing `data` Member at document top level.");
+            ->error('missing-root-data', ['pointer' => ''], "Missing `data` member at document top level.");
     }
 
     /**
@@ -105,7 +105,7 @@ class RestException extends \Exception
     public static function missingData($pointer)
     {
         return static::create(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->error('missing-data', ['pointer' => $pointer], "Missing `data` member at pointer scope.");
+            ->error('missing-data', ['pointer' => $pointer], "Missing `data` member at pointer level.");
     }
 
     /**
@@ -113,10 +113,12 @@ class RestException extends \Exception
      *
      * @return $this
      */
-    public static function missingAttributes($pointer)
+    public static function missingDataMembers($pointer)
     {
         return static::create(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->error('missing-attributes', ['pointer' => $pointer], "Missing `data.attributes` at pointer level.");
+            ->error('missing-data-members', ['pointer' => $pointer],
+                'Missing or not array `data.attributes` or `data.relationships` at pointer level.'
+            );
     }
 
     /**
@@ -127,7 +129,7 @@ class RestException extends \Exception
     public static function unknownAttribute($pointer)
     {
         return static::create(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->error('unknown-attribute', ['pointer' => $pointer], 'Unknown attribute, please see source.');
+            ->error('unknown-attribute', ['pointer' => $pointer], 'Unknown attribute.');
     }
 
     /**
@@ -138,7 +140,7 @@ class RestException extends \Exception
     public static function unknownRelation($pointer)
     {
         return static::create(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->error('unknown-relation', ['pointer' => $pointer], 'Unknown relation, please see source.');
+            ->error('unknown-relation', ['pointer' => $pointer], 'Unknown relation.');
     }
 
     /**
@@ -169,28 +171,6 @@ class RestException extends \Exception
         \Exception  $previous = null
     ) {
         parent::__construct($message, $httpStatus, $previous);
-    }
-
-    /**
-     * @param $attribute
-     * @param $detail
-     *
-     * @return $this
-     */
-    public function errorAttribute($attribute, $detail)
-    {
-        return $this->error('attribute-error', ['attribute' => $attribute], $detail);
-    }
-
-    /**
-     * @param $relation
-     * @param $detail
-     *
-     * @return RestException
-     */
-    public function errorRelation($relation, $detail)
-    {
-        return $this->error('relation-error', ['relation' => $relation], $detail);
     }
 
     /**

@@ -25,33 +25,6 @@ class CollectionActionTest extends TestCase
         );
     }
 
-    public function test_collection_not_json_resource()
-    {
-        $action = new CollectionAction(
-            new RestRepository($this->em, $this->em->getClassMetadata(Role::class)),
-            new RoleTransformer()
-        );
-
-        $request = new RestRequest(new Request());
-        $this->assertInstanceOf(RestResponse::class, $response = $action->dispatch($request));
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(
-            [
-                'data' => [
-                    [
-                        'id' => 1,
-                        'name' => 'Admin',
-                    ],
-                    [
-                        'id' => 2,
-                        'name' => 'User',
-                    ]
-                ]
-            ],
-            json_decode($response->getContent(), true)
-        );
-    }
-
     public function test_index_action_complex_include_and_fieldset()
     {
         $action = new CollectionAction(
@@ -60,58 +33,6 @@ class CollectionActionTest extends TestCase
         );
 
         $request = new RestRequest(new Request(['include' => 'user', 'fields' => ['user' => 'id,name']]));
-        $this->assertInstanceOf(RestResponse::class, $response = $action->dispatch($request));
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(
-            [
-                'data' => [
-                    [
-                        'id' => 1,
-                        'content' => 'Comment content 1',
-                        'user' => ['data' => ['id' => 1, 'name' => 'User1Name']],
-                    ],
-                    [
-                        'id' => 2,
-                        'content' => 'Comment content 2',
-                        'user' => ['data' => ['id' => 1, 'name' => 'User1Name']],
-                    ],
-                    [
-                        'id' => 3,
-                        'content' => 'Comment content 3',
-                        'user' => ['data' => ['id' => 3, 'name' => 'User3Name']],
-                    ],
-                    [
-                        'id' => 4,
-                        'content' => 'Comment content 4',
-                        'user' => ['data' => ['id' => 2, 'name' => 'User2Name']],
-                    ],
-                    [
-                        'id' => 5,
-                        'content' => 'Comment content 5',
-                        'user' => ['data' => ['id' => 3, 'name' => 'User3Name']],
-                    ],
-                    [
-                        'id' => 6,
-                        'content' => 'Comment content 6',
-                        'user' => ['data' => ['id' => 1, 'name' => 'User1Name']],
-                    ],
-                    [
-                        'id' => 7,
-                        'content' => 'Comment content 7',
-                        'user' => ['data' => ['id' => 4, 'name' => 'User4Name']],
-                    ],
-                    [
-                        'id' => 8,
-                        'content' => 'Comment content 8',
-                        'user' => ['data' => ['id' => 4, 'name' => 'User4Name']],
-                    ],
-                ],
-            ],
-            json_decode($response->getContent(), true)
-        );
-
-        $request = new RestRequest(new Request(['include' => 'user', 'fields' => ['user' => 'id,name']]));
-        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
         $this->assertInstanceOf(RestResponse::class, $response = $action->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(
@@ -322,74 +243,6 @@ class CollectionActionTest extends TestCase
         $request = new RestRequest(new Request(['include' => 'blogs', 'exclude' => 'blogs.user']));
         $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(
-            [
-                'data' => [
-                    [
-                        'id' => 1,
-                        'name' => 'User1Name',
-                        'email' => 'user1@test.com',
-                        'blogs' => [
-                            'data' => [
-                                [
-                                    'id' => 1,
-                                    'title' => 'User1 blog title 1',
-                                    'content' => 'User1 blog content 1',
-                                ],
-                                [
-                                    'id' => 2,
-                                    'title' => 'User1 blog title 2',
-                                    'content' => 'User1 blog content 2',
-                                ],
-                                [
-                                    'id' => 3,
-                                    'title' => 'User1 blog title 3',
-                                    'content' => 'User1 blog content 3',
-                                ],
-                            ]
-                        ]
-                    ],
-                    [
-                        'id' => 2,
-                        'name' => 'User2Name',
-                        'email' => 'user2@gmail.com',
-                        'blogs' => ['data' => []],
-                    ],
-                    [
-                        'id' => 3,
-                        'name' => 'User3Name',
-                        'email' => 'user3@test.com',
-                        'blogs' => [
-                            'data' => [
-                                [
-                                    'id' => 4,
-                                    'title' => 'User3 blog title 1',
-                                    'content' => 'User3 blog content 1',
-                                ],
-                            ]
-                        ],
-                    ],
-                    [
-                        'id' => 4,
-                        'name' => 'User4Name',
-                        'email' => 'user4@test.com',
-                        'blogs' => ['data' => []],
-                    ],
-                    [
-                        'id' => 5,
-                        'name' => 'User5Name',
-                        'email' => 'user5@test.com',
-                        'blogs' => ['data' => []],
-                    ],
-                ],
-            ],
-            json_decode($response->getContent(), true)
-        );
-
-        $request = new RestRequest(new Request(['include' => 'blogs', 'exclude' => 'blogs.user']));
-        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
-        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([
             'data' => [
                 [
@@ -569,24 +422,6 @@ class CollectionActionTest extends TestCase
         $this->assertEquals(
             [
                 'data' => [
-                    ['email' => 'user1@test.com'],
-                    ['email' => 'user2@gmail.com'],
-                    ['email' => 'user3@test.com'],
-                    ['email' => 'user4@test.com'],
-                    ['email' => 'user5@test.com'],
-                ],
-            ],
-            json_decode($response->getContent(), true)
-        );
-
-        $request = new RestRequest(new Request(['fields' => ['user' => 'email']]));
-        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
-        $response = $this->getCollectionAction()->dispatch($request);
-        $this->assertInstanceOf(RestResponse::class, $response);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(
-            [
-                'data' => [
                     [
                         'id' => '1',
                         'type' => 'user',
@@ -651,24 +486,6 @@ class CollectionActionTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(
             [
-                'data' => [
-                    [
-                        'id' => '2',
-                        'name' => 'User2Name',
-                        'email' => 'user2@gmail.com',
-                    ],
-                ],
-            ],
-            json_decode($response->getContent(), true)
-        );
-
-        $request = new RestRequest(new Request(['filter' => '@gmail.com']));
-        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
-        $response = $this->getCollectionAction()->setFilterProperty('email')->dispatch($request);
-        $this->assertInstanceOf(RestResponse::class, $response);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(
-            [
                 'data' => [[
                     'id' => '2',
                     'type' => 'user',
@@ -685,7 +502,6 @@ class CollectionActionTest extends TestCase
         );
 
         $request = new RestRequest(new Request(['filter' => json_encode(['id' => ['start' => 2, 'end' => 3]])]));
-        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
         $response = $this->getCollectionAction()->setFilterable(['id'])->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -726,7 +542,6 @@ class CollectionActionTest extends TestCase
                         'per_page' => 2,
                         'current_page' => 1,
                         'total_pages' => 3,
-                        'links' => [],
                     ],
                 ],
             ],
@@ -749,7 +564,6 @@ class CollectionActionTest extends TestCase
                         'per_page' => 2,
                         'current_page' => 2,
                         'total_pages' => 3,
-                        'links' => [],
                     ],
                 ],
             ],
@@ -771,7 +585,6 @@ class CollectionActionTest extends TestCase
                         'per_page' => 2,
                         'current_page' => 3,
                         'total_pages' => 3,
-                        'links' => [],
                     ],
                 ],
             ],
@@ -779,7 +592,6 @@ class CollectionActionTest extends TestCase
         );
 
         $request = new RestRequest(new Request(['page' => ['number' => 1, 'size' => 2]]));
-        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
         $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArraySubset(
@@ -807,7 +619,6 @@ class CollectionActionTest extends TestCase
         );
 
         $request = new RestRequest(new Request(['page' => ['offset' => 2, 'limit' => 2]]));
-        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
         $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArraySubset(
@@ -835,7 +646,6 @@ class CollectionActionTest extends TestCase
         );
 
         $request = new RestRequest(new Request(['page' => ['offset' => 4, 'limit' => 2]]));
-        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
         $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArraySubset(
@@ -860,13 +670,11 @@ class CollectionActionTest extends TestCase
             ],
             json_decode($response->getContent(), true)
         );
-
     }
 
     public function test_index_action_sorting()
     {
         $request = new RestRequest(new Request(['sort' => '-id,name']));
-        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
 
         $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
@@ -928,49 +736,6 @@ class CollectionActionTest extends TestCase
                     ]
                 ],
             ],
-        ], json_decode($response->getContent(), true));
-
-        $request = new RestRequest(new Request(['sort' => '-id,name', 'page' => ['ofsset' => 0]]));
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals([
-            'data' => [
-                [
-                    'id' => '5',
-                    'name' => 'User5Name',
-                    'email' => 'user5@test.com',
-                ],
-                [
-                    'id' => '4',
-                    'name' => 'User4Name',
-                    'email' => 'user4@test.com',
-                ],
-                [
-                    'id' => '3',
-                    'name' => 'User3Name',
-                    'email' => 'user3@test.com',
-                ],
-                [
-                    'id' => '2',
-                    'name' => 'User2Name',
-                    'email' => 'user2@gmail.com',
-                ],
-                [
-                    'id' => '1',
-                    'name' => 'User1Name',
-                    'email' => 'user1@test.com',
-                ],
-            ],
-            'meta' => [
-                'pagination' => [
-                    'total' => 5,
-                    'count' => 5,
-                    'per_page' => 1000,
-                    'current_page' => 1,
-                    'total_pages' => 1,
-                    'links' => [],
-                ]
-            ]
         ], json_decode($response->getContent(), true));
     }
 }

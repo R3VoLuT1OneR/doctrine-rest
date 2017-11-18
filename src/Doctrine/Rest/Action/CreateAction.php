@@ -24,18 +24,16 @@ class CreateAction extends RestAction
         $class = $this->repository()->getClassName();
 
         $this->authorize($request, $class);
-
-        $entity = $this->validateEntity($this->hydrateEntity($class, $request->getData()));
-
+        $entity = $this->hydrateEntity($class, $request->getData());
+        $this->validateEntity($entity);
         $this->repository()->getEntityManager()->persist($entity);
         $this->repository()->getEntityManager()->flush();
-
-        $resource = new Item($entity, $this->transformer(), $this->repository()->getResourceKey());
 
         if ($entity instanceof JsonApiResource) {
             $headers['Location'] = $this->repository()->linkJsonApiResource($request, $entity);
         }
 
+        $resource = new Item($entity, $this->transformer(), $this->repository()->getResourceKey());
         return $this->response()->resource($request, $resource, RestResponse::HTTP_CREATED, $headers);
     }
 }

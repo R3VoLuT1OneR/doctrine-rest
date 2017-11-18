@@ -1,6 +1,7 @@
 <?php namespace Pz\Doctrine\Rest\Traits;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Pz\Doctrine\Rest\Exceptions\RestException;
 use Pz\Doctrine\Rest\RestRepository;
@@ -20,18 +21,24 @@ trait CanHydrate
      * @return object
      * @throws RestException
      */
-    public function hydrateEntity($entity, array $data, $scope = 'root')
+    public function hydrateEntity($entity, array $data, $scope = '')
     {
+        $hydrated = false;
         $entity = is_object($entity) ? $entity : new $entity;
 
-        if (!isset($data['attributes']) || !is_array($data['attributes'])) {
-            throw RestException::missingAttributes($scope);
+        if (isset($data['attributes']) && is_array($data['attributes'])) {
+            $entity = $this->hydrateAttributes($entity, $data['attributes'], $scope);
+            $hydrated = true;
         }
 
-        $entity = $this->hydrateAttributes($entity, $data['attributes'], $scope);
 
         if (isset($data['relationships']) && is_array($data['relationships'])) {
             $entity = $this->hydrateRelationships($entity, $data['relationships'], $scope);
+            $hydrated = true;
+        }
+
+        if (!$hydrated) {
+            throw RestException::missingDataMembers($scope);
         }
 
         return $entity;
@@ -45,12 +52,13 @@ trait CanHydrate
      * @return mixed
      * @throws RestException
      */
-    private function hydrateAttributes($entity, array $attributes, $scope = 'root')
+    private function hydrateAttributes($entity, array $attributes, $scope = '')
     {
-        $metadata = $this->repository()->getClassMetadata();
+        $metadata = $this->repository()->getEntityManager()->getClassMetadata(ClassUtils::getClass($entity));
+
         foreach ($attributes as $name => $value) {
             if (!isset($metadata->reflFields[$name])) {
-                throw RestException::unknownAttribute(sprintf('%s.attribute.%s', $scope, $name));
+                throw RestException::unknownAttribute($scope.$name);
             }
 
             $this->setProperty($entity, $name, $value);
@@ -69,22 +77,28 @@ trait CanHydrate
      */
     private function hydrateRelationships($entity, array $relationships, $scope)
     {
-        $metadata = $this->repository()->getClassMetadata();
+        $metadata = $this->repository()->getEntityManager()->getClassMetadata(ClassUtils::getClass($entity));
 
         foreach ($relationships as $name => $data) {
-            $relationScope = sprintf('%s.relation.%s', $scope, $name);
-
             if (!isset($metadata->associationMappings[$name])) {
-                throw RestException::unknownRelation($relationScope);
+                throw RestException::unknownRelation($scope.$name);
             }
 
             $mapping = $metadata->associationMappings[$name];
 
             if (!isset($data['data'])) {
-                throw RestException::missingData($relationScope);
+                throw RestException::missingData($scope.$name);
             }
 
-            $this->hydrateRelation($entity, $name, $mapping, $data['data'], $relationScope);
+            if (in_array($mapping['type'], [ClassMetadataInfo::ONE_TO_ONE, ClassMetadataInfo::MANY_TO_ONE])) {
+                $this->setProperty($entity, $name,
+                    $this->hydrateRelationData($mapping['targetEntity'], $data['data'], $scope.$name)
+                );
+            }
+
+            if (in_array($mapping['type'], [ClassMetadataInfo::ONE_TO_MANY, ClassMetadataInfo::MANY_TO_MANY])) {
+                $this->hydrateToManyRelation($entity, $name, $mapping['targetEntity'], $data['data'], $scope.$name);
+            }
         }
 
         return $entity;
@@ -94,42 +108,29 @@ trait CanHydrate
      * Hydrate one relation.
      *
      * @param object $entity
-     * @param string $name      Relation name
-     * @param array  $mapping   Doctrine relation target mapping
+     * @param string $name          Relation name
+     * @param string $targetEntity  Doctrine relation class name
      * @param mixed  $data
      * @param string $scope
      *
      * @return object
      * @throws RestException
      */
-    private function hydrateRelation($entity, $name, $mapping, $data, $scope)
+    private function hydrateToManyRelation($entity, $name, $targetEntity, $data, $scope)
     {
-        $mappingClass = $mapping['targetEntity'];
-
-        if (in_array($mapping['type'], [ClassMetadataInfo::ONE_TO_ONE, ClassMetadataInfo::MANY_TO_ONE])) {
-            $this->setProperty($entity, $name,
-                $this->hydrateRelationData($mappingClass, $data, $scope)
-            );
+        if (!is_array($data)) {
+            throw RestException::missingData($scope);
         }
 
-        if (in_array($mapping['type'], [ClassMetadataInfo::ONE_TO_MANY, ClassMetadataInfo::MANY_TO_MANY])) {
-            if (!is_array($data)) {
-                throw RestException::missingData($scope);
-            }
-
-            $this->setProperty($entity, $name,
-                new ArrayCollection(array_map(
-                    function($data, $index) use ($mappingClass, $scope) {
-                        return $this->hydrateRelationData(
-                            $mappingClass, $data, sprintf('%s.%s', $scope, $index)
-                        );
-                    },
-                    $data
-                ))
-            );
-        }
-
-        return $entity;
+        $this->setProperty($entity, $name,
+            new ArrayCollection(array_map(
+                function($item, $index) use ($targetEntity, $scope) {
+                    return $this->hydrateRelationData($targetEntity, $item, $scope.'['.$index.']');
+                },
+                $data,
+                array_keys($data)
+            ))
+        );
     }
 
     /**
@@ -154,7 +155,7 @@ trait CanHydrate
         if (isset($data['id']) && isset($data['type'])) {
             return $this->repository()->getEntityManager()->getReference($class, $data['id']);
         } else {
-            return $this->hydrateEntity($class, $data, $scope);
+            return $this->hydrateEntity($class, $data, $scope.'.');
         }
     }
 
@@ -170,11 +171,16 @@ trait CanHydrate
      */
     private function setProperty($entity, $name, $value)
     {
-        $setter = 'set' . ucfirst($name);
+        $setter = 'set'.ucfirst($name);
+
         if (!method_exists($entity, $setter)) {
-            throw RestException::createUnprocessable(sprintf('Setter not found for entity'));
+            $source = ['pointer' => $name, 'entity' => ClassUtils::getClass($entity), 'setter' => $setter];
+            throw RestException::createUnprocessable('Setter not found for entity')
+                ->error('missing-setter', $source, 'Missing field setter.');
         }
 
-        return $entity->$setter($value);
+        $entity->$setter($value);
+
+        return $entity;
     }
 }

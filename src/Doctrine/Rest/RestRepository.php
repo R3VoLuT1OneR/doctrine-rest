@@ -24,14 +24,6 @@ class RestRepository extends EntityRepository
     }
 
     /**
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
-     */
-    public function getClassMetadata()
-    {
-        return parent::getClassMetadata();
-    }
-
-    /**
      * @return \Doctrine\ORM\QueryBuilder
      */
     public function sourceQueryBuilder()
@@ -59,17 +51,12 @@ class RestRepository extends EntityRepository
     public function alias()
     {
         if ($this->alias === null) {
-            if ($resourceKey = $this->getResourceKey()) {
-                $this->alias = $resourceKey;
-            } else {
-                // Camel case to underscore-case
-                $this->alias = strtolower(
+            $this->alias = strtolower(
                     preg_replace(
-                        '/(?<!^)[A-Z]/', '_$0',
-                        $this->getClassMetadata()->getReflectionClass()->getShortName()
-                    )
-                );
-            }
+                    '/(?<!^)[A-Z]/', '_$0',
+                    $this->getClassMetadata()->getReflectionClass()->getShortName()
+                )
+            );
         }
 
         return $this->alias;
