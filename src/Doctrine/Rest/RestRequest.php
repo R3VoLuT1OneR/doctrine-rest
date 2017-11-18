@@ -89,8 +89,8 @@ class RestRequest implements RestRequestContract
     {
         $request = $this->http()->request;
 
-        if ($request->has('data')) {
-            return $request->get('data');
+        if (is_array($data = $request->get('data'))) {
+            return $data;
         }
 
         throw RestException::missingRootData();

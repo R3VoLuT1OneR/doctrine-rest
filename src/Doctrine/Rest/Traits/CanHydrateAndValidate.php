@@ -4,13 +4,46 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Pz\Doctrine\Rest\Exceptions\RestException;
 use Pz\Doctrine\Rest\RestRepository;
+use Pz\Doctrine\Rest\RestResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Validation;
 
-trait CanHydrate
+trait CanHydrateAndValidate
 {
     /**
      * @return RestRepository
      */
     abstract public function repository();
+
+    /**
+     * @param object $entity
+     * @param string $scope
+     *
+     * @return mixed
+     * @throws RestException
+     */
+    protected function validateEntity($entity, $scope)
+    {
+        $errors = Validation::createValidatorBuilder()
+            ->enableAnnotationMapping()
+            ->getValidator()
+            ->validate($entity);
+
+        if (count($errors) > 0) {
+            $exception = RestException::createUnprocessable();
+
+            /** @var ConstraintViolation $error */
+            foreach ($errors as $error) {
+                $source = ['pointer' => $scope, 'field' => $error->getPropertyPath()];
+                $exception->error('validation', $source, $error->getMessage());
+            }
+
+            throw $exception;
+        }
+
+        return $entity;
+    }
 
     /**
      * @param string|object $entity
@@ -33,6 +66,8 @@ trait CanHydrate
         if (isset($data['relationships']) && is_array($data['relationships'])) {
             $entity = $this->hydrateRelationships($entity, $data['relationships'], $scope);
         }
+
+        $this->validateEntity($entity, $scope);
 
         return $entity;
     }

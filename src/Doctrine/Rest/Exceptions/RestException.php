@@ -34,6 +34,14 @@ class RestException extends \Exception
     }
 
     /**
+     * @return RestException
+     */
+    public static function createUnprocessable()
+    {
+        return static::create(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    /**
      * @param int|array $id
      * @param string    $resourceKey
      * @param string    $message
@@ -64,7 +72,7 @@ class RestException extends \Exception
     public static function missingRootData()
     {
         return static::create(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->error('missing-root-data', [], "Missing `data` Member at document's top level.");
+            ->error('missing-root-data', [], "Missing `data` Member at document top level.");
     }
 
     /**

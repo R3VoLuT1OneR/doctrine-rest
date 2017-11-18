@@ -1,14 +1,14 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
 use League\Fractal\Resource\Item;
-use Pz\Doctrine\Rest\Traits\CanHydrate;
+use Pz\Doctrine\Rest\Traits\CanHydrateAndValidate;
 use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestResponse;
 
 class UpdateAction extends RestAction
 {
-    use CanHydrate;
+    use CanHydrateAndValidate;
 
     /**
      * @param RestRequestContract $request
