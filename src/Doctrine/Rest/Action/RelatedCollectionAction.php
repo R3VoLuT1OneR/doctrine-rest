@@ -18,7 +18,7 @@ class RelatedCollectionAction extends CollectionAction
 	*
 	* @var RestRepository
 	*/
-	protected $relatedrepository;
+	protected $relatedRepository;
 
 	/**
 	* Field that contains the related resourse key
@@ -70,6 +70,6 @@ class RelatedCollectionAction extends CollectionAction
 	*/
 	public function relatedRepository()
 	{
-	return $this->relatedRepository;
+		return $this->relatedRepository;
 	}
 }
