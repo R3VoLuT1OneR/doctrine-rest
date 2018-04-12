@@ -150,7 +150,13 @@ class RestRequest implements RestRequestContract
      */
     public function getInclude()
     {
-        return $this->http()->get('include');
+        $include = $this->http()->get('include');
+
+        if (!is_array($include)) {
+            RestException::invalidInclude();
+        }
+
+        return $include;
     }
 
     /**

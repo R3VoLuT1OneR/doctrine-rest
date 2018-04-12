@@ -1,11 +1,12 @@
 <?php namespace Pz\Doctrine\Rest\Exceptions;
 
+use Doctrine\ORM\ORMInvalidArgumentException;
+use Exception;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class RestException extends \Exception
+class RestException extends Exception
 {
     /**
      * @var array
@@ -141,6 +142,15 @@ class RestException extends \Exception
     {
         return static::create(Response::HTTP_UNPROCESSABLE_ENTITY)
             ->error('unknown-relation', ['pointer' => $pointer], 'Unknown relation.');
+    }
+
+    /**
+     * @return static
+     */
+    public static function invalidInclude()
+    {
+        return static::create(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->error('invalid-include', ['pointer' => 'include'], 'Invalid `include` param.');
     }
 
     /**
