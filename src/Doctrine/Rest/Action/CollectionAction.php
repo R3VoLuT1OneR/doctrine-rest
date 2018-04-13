@@ -4,11 +4,11 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use League\Fractal\Pagination\DoctrinePaginatorAdapter;
-use League\Fractal\Resource\Collection;
 use Pz\Doctrine\Rest\BuilderChain\CriteriaChain;
 use Pz\Doctrine\Rest\QueryParser\ArrayFilterParser;
 use Pz\Doctrine\Rest\QueryParser\FilterParserAbstract;
 use Pz\Doctrine\Rest\QueryParser\StringFilterParser;
+use Pz\Doctrine\Rest\Resource\Collection;
 use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestResponse;
@@ -81,15 +81,14 @@ class CollectionAction extends RestAction
      */
     protected function handle($request)
     {
-        $resourceKey = $this->repository()->getResourceKey();
         $this->authorize($request, $this->repository()->getClassName());
 
         $qb = $this->repository()->sourceQueryBuilder();
         $this->applyPagination($request, $qb);
         $this->applyFilter($request, $qb);
 
-         $paginator = new Paginator($qb, false);
-         $collection = new Collection($paginator, $this->transformer(), $resourceKey);
+        $paginator = new Paginator($qb, false);
+        $collection = new Collection($paginator, $this->transformer(), $this->repository()->getResourceKey());
 
         if ($qb->getMaxResults()) {
             $collection->setPaginator(

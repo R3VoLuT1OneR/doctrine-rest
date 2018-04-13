@@ -153,6 +153,24 @@ class RestException extends \Exception
     }
 
     /**
+     * @param mixed $entity
+     *
+     * @return $this
+     */
+    public static function notJsonApiResource($entity)
+    {
+        $source = [];
+        $message = 'Got not JsonApiResource entity.';
+
+        if (is_object($entity)) {
+            $source['class'] = get_class($entity);
+        }
+
+        return static::create(Response::HTTP_UNPROCESSABLE_ENTITY, $message)
+            ->error('invalid-entity', $source, $message);
+    }
+
+    /**
      * @param int             $httpStatus
      * @param string          $message
      * @param \Exception|null $previous

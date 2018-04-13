@@ -14,6 +14,7 @@ class DeleteAction extends RestAction
     public function handle($request)
     {
         $entity = $this->repository()->findByIdentifier($request);
+
         $this->authorize($request, $entity);
 
         $this->repository()->getEntityManager()->remove($entity);

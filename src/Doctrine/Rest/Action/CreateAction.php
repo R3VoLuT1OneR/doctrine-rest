@@ -1,7 +1,7 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
-use League\Fractal\Resource\Item;
 use Pz\Doctrine\Rest\Contracts\JsonApiResource;
+use Pz\Doctrine\Rest\Resource\Item;
 use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestResponse;
@@ -33,7 +33,7 @@ class CreateAction extends RestAction
             $headers['Location'] = $this->repository()->linkJsonApiResource($request, $entity);
         }
 
-        $resource = new Item($entity, $this->transformer(), $this->repository()->getResourceKey());
+        $resource = new Item($entity, $this->transformer());
         return $this->response()->resource($request, $resource, RestResponse::HTTP_CREATED, $headers);
     }
 }

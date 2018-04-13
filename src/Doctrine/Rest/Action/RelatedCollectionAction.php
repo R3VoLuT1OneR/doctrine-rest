@@ -5,9 +5,11 @@ use Doctrine\ORM\QueryBuilder;
 
 use League\Fractal\TransformerAbstract;
 
+use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
+use Pz\Doctrine\Rest\Exceptions\RestException;
 use Pz\Doctrine\Rest\RestRepository;
-use Pz\LaravelDoctrine\Rest\Tests\App\Entities\User;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
 * Action for providing collection (list or array) of data with API.
@@ -62,7 +64,6 @@ class RelatedCollectionAction extends CollectionAction
      */
     protected function applyFilter(RestRequestContract $request, QueryBuilder $qb)
     {
-        /** @var User $entity */
         $entity = $this->base()->findByIdentifier($request);
 
         $relateCriteria = Criteria::create();

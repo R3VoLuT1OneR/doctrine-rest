@@ -1,10 +1,9 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
-use League\Fractal\Resource\Item;
-use League\Fractal\Resource\NullResource;
-use League\Fractal\TransformerAbstract;
 use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
+use Pz\Doctrine\Rest\Resource\Item;
+use Pz\Doctrine\Rest\Resource\NullResource;
 use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\RestRepository;
 
@@ -44,8 +43,7 @@ class RelatedItemAction extends ItemAction
 		$method = 'get' . ucfirst($this->relatedField);
 
 		if ($relatedEntity = $entity->{$method}()) {
-            $resourceKey = ($relatedEntity instanceof JsonApiResource) ? $relatedEntity->getResourceKey() : null;
-            $resource = new Item($relatedEntity, $this->transformer(), $resourceKey);
+            $resource = new Item($relatedEntity, $this->transformer());
             return $this->response()->resource($request, $resource);
         }
 
