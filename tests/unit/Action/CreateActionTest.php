@@ -112,12 +112,12 @@ class CreateActionTest extends TestCase
             [
                 'data' => [
                     'id' => '3',
-                    'type' => null,
+                    'type' => 'role',
                     'attributes' => [
                         'name' => 'New Role',
                     ],
                     'links' => [
-                        'self' => '//3',
+                        'self' => '/role/3',
                     ]
                 ],
             ],

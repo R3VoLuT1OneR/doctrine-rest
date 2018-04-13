@@ -1,12 +1,11 @@
 <?php namespace Pz\Doctrine\Rest\Exceptions;
 
-use Doctrine\ORM\ORMInvalidArgumentException;
-use Exception;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class RestException extends Exception
+class RestException extends \Exception
 {
     /**
      * @var array

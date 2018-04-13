@@ -591,8 +591,10 @@ class CollectionActionTest extends TestCase
             json_decode($response->getContent(), true)
         );
 
-        $request = new RestRequest(new Request(['page' => ['number' => 1, 'size' => 2]]));
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
+        $request = new Request(['page' => ['number' => 1, 'size' => 2]]);
+        $request->server->set('REQUEST_URI', '/user');
+        $response = $this->getCollectionAction()->dispatch(new RestRequest($request));
+        $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArraySubset(
             [
@@ -618,8 +620,10 @@ class CollectionActionTest extends TestCase
             json_decode($response->getContent(), true)
         );
 
-        $request = new RestRequest(new Request(['page' => ['offset' => 2, 'limit' => 2]]));
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
+        $request = new Request(['page' => ['offset' => 2, 'limit' => 2]]);
+        $request->server->set('REQUEST_URI', '/user');
+        $response = $this->getCollectionAction()->dispatch(new RestRequest($request));
+        $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArraySubset(
             [
@@ -645,8 +649,10 @@ class CollectionActionTest extends TestCase
             json_decode($response->getContent(), true)
         );
 
-        $request = new RestRequest(new Request(['page' => ['offset' => 4, 'limit' => 2]]));
-        $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
+        $request = new Request(['page' => ['offset' => 4, 'limit' => 2]]);
+        $request->server->set('REQUEST_URI', '/user');
+        $response = $this->getCollectionAction()->dispatch(new RestRequest($request));
+        $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArraySubset(
             [

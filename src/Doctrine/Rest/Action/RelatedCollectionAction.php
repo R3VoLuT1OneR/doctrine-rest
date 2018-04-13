@@ -1,9 +1,11 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use League\Fractal\Pagination\DoctrinePaginatorAdapter;
 use League\Fractal\Resource\Collection;
+use League\Fractal\TransformerAbstract;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\RestRepository;
@@ -14,62 +16,41 @@ use Pz\Doctrine\Rest\RestRepository;
 class RelatedCollectionAction extends CollectionAction
 {
 	/**
-	* Field that contains the related repository
-	*
-	* @var RestRepository
-	*/
-	protected $relatedRepository;
-
-	/**
 	* Field that contains the related resourse key
 	*
 	* @var string
 	*/
-	protected $relatedKey;
+	protected $relatedField;
 
-	public function __construct(RestRepository $repository, RestRepository $relatedRepository, $transformer, $relatedKey)
+    /**
+     * RelatedCollectionAction constructor.
+     *
+     * @param string              $relatedField Relation property on related entity
+     * @param RestRepository      $repository
+     * @param TransformerAbstract $transformer
+     */
+	public function __construct($relatedField, RestRepository $repository, $transformer)
 	{
 		parent::__construct($repository, $transformer);
-		$this->relatedRepository = $relatedRepository;
-		$this->relatedKey = $relatedKey;
+		$this->relatedField = $relatedField;
 	}
 
-	/**
-	* @param RestRequestContract $request
-	*
-	* @return RestResponse
-	*/
-	protected function handle($request)
-	{
-		$resourceKey = $this->relatedRepository()->getResourceKey();
-		$this->authorize($request, $this->repository()->getClassName());
+    /**
+     * Add filter by relation entity.
+     *
+     * @param RestRequestContract $request
+     * @param QueryBuilder        $qb
+     *
+     * @return $this
+     * @throws \Pz\Doctrine\Rest\Exceptions\RestException
+     */
+    protected function applyFilter(RestRequestContract $request, QueryBuilder $qb)
+    {
+        $entity = $this->repository()->findByIdentifier($request);
 
-		$entity = $this->repository()->findByIdentifier($request);
-		$qb = $this->relatedRepository()->sourceQueryBuilder();
-		$qb->andWhere($this->relatedRepository()->alias() . '.' . $this->relatedKey . ' = ' . ((int)$request->getId()));
-		$this->applyPagination($request, $qb);
-		$this->applyFilter($request, $qb);
+        $relateCriteria = Criteria::create();
+        $relateCriteria->andWhere($relateCriteria->expr()->eq($this->relatedField, $entity));
 
-		$paginator = new Paginator($qb, false);
-		$collection = new Collection($paginator, $this->transformer(), $resourceKey);
-
-		if ($qb->getMaxResults()) {
-			$collection->setPaginator(
-				new DoctrinePaginatorAdapter(
-					$paginator,
-					$this->paginatorUrlGenerator($request, $resourceKey)
-				)
-			);
-		}
-
-		return $this->response()->resource($request, $collection);
-	}
-
-	/**
-	* @return RestRepository
-	*/
-	public function relatedRepository()
-	{
-		return $this->relatedRepository;
-	}
+        return parent::applyFilter($request, $qb->addCriteria($relateCriteria));
+    }
 }

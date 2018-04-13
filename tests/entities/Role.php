@@ -7,7 +7,7 @@ use Pz\Doctrine\Rest\Contracts\JsonApiResource;
  * @ORM\Entity()
  * @ORM\Table(name="role")
  */
-class Role
+class Role implements JsonApiResource
 {
     /**
      * @return string

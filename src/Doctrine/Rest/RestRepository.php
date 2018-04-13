@@ -1,7 +1,9 @@
 <?php namespace Pz\Doctrine\Rest;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\Exceptions\RestException;

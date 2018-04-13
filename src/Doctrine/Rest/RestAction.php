@@ -2,7 +2,6 @@
 
 use League\Fractal\TransformerAbstract;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
-use Pz\Doctrine\Rest\Exceptions\RestException;
 
 abstract class RestAction
 {

@@ -1,6 +1,9 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
 use League\Fractal\Resource\Item;
+use League\Fractal\Resource\NullResource;
+use League\Fractal\TransformerAbstract;
+use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\RestRepository;
@@ -12,15 +15,22 @@ class RelatedItemAction extends ItemAction
 	*
 	* @var string
 	*/
-	protected $relatedKey;
+	protected $relatedField;
 
-	public function __construct(RestRepository $repository, $transformer, $relatedKey)
+    /**
+     * RelatedCollectionAction constructor.
+     *
+     * @param string              $relatedField Relation property on related entity
+     * @param RestRepository      $repository
+     * @param TransformerAbstract $transformer
+     */
+	public function __construct($relatedField, RestRepository $repository, $transformer)
 	{
 		parent::__construct($repository, $transformer);
-		$this->relatedKey = $relatedKey;
+		$this->relatedField = $relatedField;
 	}
 
-	/**
+    /**
 	* @param RestRequestContract $request
 	*
 	* @return RestResponse
@@ -28,13 +38,17 @@ class RelatedItemAction extends ItemAction
 	public function handle($request)
 	{
 		$entity = $this->repository()->findByIdentifier($request);
-		$method = 'get' . ucfirst($this->relatedKey);
-		$relatedEntity = $entity->{$method}();
 
-		$this->authorize($request, $relatedEntity);
+        $this->authorize($request, $entity);
 
-		$resource = new Item($relatedEntity, $this->transformer(), $this->relatedKey);
+		$method = 'get' . ucfirst($this->relatedField);
 
-		return $this->response()->resource($request, $resource);
+		if ($relatedEntity = $entity->{$method}()) {
+            $resourceKey = ($relatedEntity instanceof JsonApiResource) ? $relatedEntity->getResourceKey() : null;
+            $resource = new Item($relatedEntity, $this->transformer(), $resourceKey);
+            return $this->response()->resource($request, $resource);
+        }
+
+        return $this->response()->resource($request, new NullResource());
 	}
 }

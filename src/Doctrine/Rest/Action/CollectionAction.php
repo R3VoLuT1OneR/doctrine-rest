@@ -95,7 +95,7 @@ class CollectionAction extends RestAction
             $collection->setPaginator(
                 new DoctrinePaginatorAdapter(
                     $paginator,
-                    $this->paginatorUrlGenerator($request, $resourceKey)
+                    $this->paginatorUrlGenerator($request)
                 )
             );
         }
@@ -152,14 +152,14 @@ class CollectionAction extends RestAction
 
     /**
      * @param RestRequestContract $request
-     * @param             $resourceKey
      *
      * @return \Closure
      */
-    protected function paginatorUrlGenerator(RestRequestContract $request, $resourceKey)
+    protected function paginatorUrlGenerator(RestRequestContract $request)
     {
-        return function(int $page) use ($resourceKey, $request) {
-            return !$resourceKey ? null : "{$request->getBaseUrl()}/$resourceKey?".http_build_query([
+        return function(int $page) use ($request) {
+            // return !$resourceKey ? null : "{$request->getBaseUrl()}/$resourceKey?".http_build_query([
+            return $request->getBasePath().'?'.http_build_query([
                 'page' => [
                     'number'    => $page,
                     'size'      => $request->getLimit()

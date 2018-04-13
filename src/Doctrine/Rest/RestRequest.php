@@ -32,6 +32,14 @@ class RestRequest implements RestRequestContract
     /**
      * @return string
      */
+    public function getBasePath()
+    {
+        return $this->http()->getPathInfo();
+    }
+
+    /**
+     * @return string
+     */
     public function getBaseUrl()
     {
         return $this->http()->getBaseUrl();

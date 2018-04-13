@@ -13,6 +13,13 @@ interface RestRequestContract
     const DEFAULT_LIMIT = 1000;
 
     /**
+     * Get base path of request without query params.
+     *
+     * @return string
+     */
+    public function getBasePath();
+
+    /**
      * Provide base API url
      *
      * @return string
