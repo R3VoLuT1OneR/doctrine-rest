@@ -19,7 +19,7 @@ class RelatedCollectionActionTest extends TestCase
     protected function getRelatedCollectionAction()
     {
         return new RelatedCollectionAction(
-            User::getResourceKey(),
+            new RestRepository($this->em, $this->em->getClassMetadata(User::class)), 'user',
             new RestRepository($this->em, $this->em->getClassMetadata(Blog::class)),
             new BlogTransformer()
         );

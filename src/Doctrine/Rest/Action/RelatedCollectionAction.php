@@ -2,19 +2,25 @@
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Tools\Pagination\Paginator;
-use League\Fractal\Pagination\DoctrinePaginatorAdapter;
-use League\Fractal\Resource\Collection;
+
 use League\Fractal\TransformerAbstract;
+
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
-use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\RestRepository;
+use Pz\LaravelDoctrine\Rest\Tests\App\Entities\User;
 
 /**
 * Action for providing collection (list or array) of data with API.
 */
 class RelatedCollectionAction extends CollectionAction
 {
+    /**
+     * Repository of basic class.
+     *
+     * @var RestRepository
+     */
+    protected $base;
+
 	/**
 	* Field that contains the related resourse key
 	*
@@ -25,15 +31,25 @@ class RelatedCollectionAction extends CollectionAction
     /**
      * RelatedCollectionAction constructor.
      *
+     * @param RestRepository      $base
      * @param string              $relatedField Relation property on related entity
      * @param RestRepository      $repository
      * @param TransformerAbstract $transformer
      */
-	public function __construct($relatedField, RestRepository $repository, $transformer)
+	public function __construct(RestRepository $base, $relatedField, RestRepository $repository, $transformer)
 	{
 		parent::__construct($repository, $transformer);
 		$this->relatedField = $relatedField;
+        $this->base = $base;
 	}
+
+    /**
+     * @return RestRepository
+     */
+    protected function base()
+    {
+        return $this->base;
+    }
 
     /**
      * Add filter by relation entity.
@@ -46,11 +62,15 @@ class RelatedCollectionAction extends CollectionAction
      */
     protected function applyFilter(RestRequestContract $request, QueryBuilder $qb)
     {
-        $entity = $this->repository()->findByIdentifier($request);
+        /** @var User $entity */
+        $entity = $this->base()->findByIdentifier($request);
 
         $relateCriteria = Criteria::create();
-        $relateCriteria->andWhere($relateCriteria->expr()->eq($this->relatedField, $entity));
+        $relateCriteria->andWhere($relateCriteria->expr()->eq($this->relatedField, $entity->getId()));
 
-        return parent::applyFilter($request, $qb->addCriteria($relateCriteria));
+        $qb->innerJoin($qb->getRootAliases()[0].'.'.$this->relatedField, $this->relatedField);
+        $qb->addCriteria($relateCriteria);
+
+        parent::applyFilter($request, $qb);
     }
 }
