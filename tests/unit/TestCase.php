@@ -6,10 +6,19 @@ use Doctrine\DBAL\Migrations\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Setup;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 
+use Pz\Doctrine\Rest\Action\Related\RelatedItemAction;
+use Pz\Doctrine\Rest\Action\Relationships\RelationshipsItemAction;
+use Pz\Doctrine\Rest\Action\Relationships\RelationshipsItemDeleteAction;
+use Pz\Doctrine\Rest\Action\Relationships\RelationshipsItemUpdateAction;
+
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
 
 use Mockery as m;
+use Pz\Doctrine\Rest\RestRepository;
+use Pz\Doctrine\Rest\Tests\Entities\Role;
+use Pz\Doctrine\Rest\Tests\Entities\Transformers\RoleTransformer;
+use Pz\Doctrine\Rest\Tests\Entities\User;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\StringInput;
@@ -77,4 +86,41 @@ abstract class TestCase extends PHPUnitTestCase
         parent::tearDown();
         static::migrations()->run(new StringInput('migrations:migrate first --quiet'));
     }
+    
+    protected function getUserRelationshipsRoleUpdateAction()
+    {
+        return new RelationshipsItemUpdateAction(
+            RestRepository::create($this->em, User::class), 'role',
+            RestRepository::create($this->em, Role::class),
+            new RoleTransformer()
+        );
+    }
+
+    protected function getUserRelationshipsRoleItemDeleteAction()
+    {
+        return new RelationshipsItemDeleteAction(
+            RestRepository::create($this->em, User::class), 'role',
+            RestRepository::create($this->em, Role::class),
+            new RoleTransformer()
+        );
+    }
+
+    protected function getUserRelationshipsRoleItemAction()
+    {
+        return new RelationshipsItemAction(
+            RestRepository::create($this->em, User::class), 'role',
+            RestRepository::create($this->em, Role::class),
+            new RoleTransformer()
+        );
+    }
+
+    protected function getUserRelatedRoleItemAction()
+    {
+        return new RelatedItemAction(
+            RestRepository::create($this->em, User::class), Role::getResourceKey(),
+            RestRepository::create($this->em, Role::class),
+            new RoleTransformer()
+        );
+    }
+
 }

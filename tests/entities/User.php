@@ -52,7 +52,6 @@ class User implements JsonApiResource
      *
      * @ORM\ManyToMany(
      *     targetEntity="Tag",
-     *     orphanRemoval=true,
      *     fetch="EXTRA_LAZY",
      *     cascade={"persist", "remove"}
      * )
@@ -214,9 +213,9 @@ class User implements JsonApiResource
      *
      * @return $this
      */
-    public function setTags(array $tags)
+    public function setTags($tags)
     {
-        $this->tags = new ArrayCollection($tags);
+        $this->tags = $tags;
         return $this;
     }
 

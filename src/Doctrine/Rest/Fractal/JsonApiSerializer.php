@@ -21,14 +21,6 @@ class JsonApiSerializer extends \League\Fractal\Serializer\JsonApiSerializer
     }
 
     /**
-     * @return RestRequestContract
-     */
-    public function request()
-    {
-        return $this->request;
-    }
-
-    /**
      * @param string $resourceKey
      * @param array  $data
      * @param bool   $includeAttributes

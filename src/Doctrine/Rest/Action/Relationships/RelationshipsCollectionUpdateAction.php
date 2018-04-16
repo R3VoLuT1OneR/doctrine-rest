@@ -1,8 +1,11 @@
 <?php namespace Pz\Doctrine\Rest\Action\Relationships;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use League\Fractal\TransformerAbstract;
 use Pz\Doctrine\Rest\Action\Related\RelatedCollectionAction;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
+use Pz\Doctrine\Rest\Exceptions\RestException;
 use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\RestRepository;
 use Pz\Doctrine\Rest\RestResponse;
@@ -42,12 +45,26 @@ class RelationshipsCollectionUpdateAction extends RestAction
 
         $this->authorize($request, $entity);
 
-        $items = array_map(
+        $items = $this->getProperty($entity, $this->field());
+
+        $replace = new ArrayCollection(array_map(
             function($raw) use ($entity) {
                 return $this->getRelatedEntity($raw);
             },
             $request->getData()
-        );
+        ));
+
+        foreach ($items as $key => $item) {
+            if (!$replace->contains($item)) {
+                $items->remove($key);
+            }
+        }
+
+        foreach ($replace as $item) {
+            if (!$items->contains($item)) {
+                $items->add($item);
+            }
+        }
 
         $this->setProperty($entity, $this->field(), $items);
 

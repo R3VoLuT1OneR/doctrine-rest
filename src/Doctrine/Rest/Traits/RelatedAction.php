@@ -57,11 +57,11 @@ trait RelatedAction
     protected function getRelatedEntity($item)
     {
         if (!isset($item['id']) || !isset($item['type'])) {
-            throw RestException::createUnprocessable('Delete item without identifiers.')
+            throw RestException::createUnprocessable('Relation item without identifiers.')
                 ->error(
                     'invalid-data',
                     ['pointer' => $this->field()],
-                    'Delete item without `id` or `type`.'
+                    'Relation item without `id` or `type`.'
                 );
         }
 
