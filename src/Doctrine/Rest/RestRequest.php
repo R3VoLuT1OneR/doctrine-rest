@@ -12,6 +12,11 @@ class RestRequest implements RestRequestContract
     protected $http;
 
     /**
+     * @var bool
+     */
+    protected $isRelationships = false;
+
+    /**
      * RestRequest constructor.
      *
      * @param Request $request
@@ -173,5 +178,19 @@ class RestRequest implements RestRequestContract
     public function getExclude()
     {
         return $this->http()->get('exclude');
+    }
+
+    /**
+     * @param null|bool $value
+     *
+     * @return bool|null
+     */
+    public function isRelationships($value = null)
+    {
+        if ($value !== null) {
+            $this->isRelationships = $value;
+        }
+
+        return $this->isRelationships;
     }
 }

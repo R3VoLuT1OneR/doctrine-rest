@@ -15,7 +15,7 @@ class BlogTransformer extends TransformerAbstract
      *
      * @return array
      */
-    public function transform(Blog $blog)
+    public function transform($blog)
     {
         return [
             'id' => $blog->getId(),

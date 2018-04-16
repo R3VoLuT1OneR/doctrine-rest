@@ -3,6 +3,7 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use Pz\Doctrine\Rest\Exceptions\RestException;
 use Pz\Doctrine\Rest\RestRepository;
 
@@ -61,7 +62,7 @@ trait CanHydrate
                 throw RestException::unknownAttribute($scope.$name);
             }
 
-            $this->setProperty($entity, $name, $value);
+            $this->setObjectProperty($entity, $name, $value);
         }
 
         return $entity;
@@ -91,7 +92,7 @@ trait CanHydrate
             }
 
             if (in_array($mapping['type'], [ClassMetadataInfo::ONE_TO_ONE, ClassMetadataInfo::MANY_TO_ONE])) {
-                $this->setProperty($entity, $name,
+                $this->setObjectProperty($entity, $name,
                     $this->hydrateRelationData($mapping['targetEntity'], $data['data'], $scope.$name)
                 );
             }
@@ -122,7 +123,7 @@ trait CanHydrate
             throw RestException::missingData($scope);
         }
 
-        $this->setProperty($entity, $name,
+        $this->setObjectProperty($entity, $name,
             new ArrayCollection(array_map(
                 function($item, $index) use ($targetEntity, $scope) {
                     return $this->hydrateRelationData($targetEntity, $item, $scope.'['.$index.']');
@@ -169,18 +170,14 @@ trait CanHydrate
      * @return object
      * @throws RestException
      */
-    private function setProperty($entity, $name, $value)
+    private function setObjectProperty($entity, $name, $value)
     {
         $setter = 'set'.ucfirst($name);
 
         if (!method_exists($entity, $setter)) {
-            $source = ['pointer' => $name, 'entity' => ClassUtils::getClass($entity), 'setter' => $setter];
-            throw RestException::createUnprocessable('Setter not found for entity')
-                ->error('missing-setter', $source, 'Missing field setter.');
+            throw RestException::missingSetter($entity, $name, $setter);
         }
 
-        $entity->$setter($value);
-
-        return $entity;
+        return $entity->$setter($value);
     }
 }

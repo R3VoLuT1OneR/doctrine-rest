@@ -36,6 +36,6 @@ class RestRepositoryTest extends TestCase
 
         $repository = new RestRepository($emMock, $classMetadata);
         $this->assertEquals('', $repository->getResourceKey());
-        $repository->findByIdentifier(new RestRequest($request));
+        $repository->findById((new RestRequest($request))->getId());
     }
 }

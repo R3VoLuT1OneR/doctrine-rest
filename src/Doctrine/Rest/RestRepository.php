@@ -1,5 +1,6 @@
 <?php namespace Pz\Doctrine\Rest;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
@@ -13,6 +14,17 @@ class RestRepository extends EntityRepository
     protected $alias;
 
     protected $resourceKey;
+
+    /**
+     * @param EntityManager $em
+     * @param string        $class
+     *
+     * @return RestRepository
+     */
+    public static function create(EntityManager $em, $class)
+    {
+        return new RestRepository($em, $em->getClassMetadata($class));
+    }
 
     /**
      * @return \Doctrine\ORM\EntityManager
@@ -62,15 +74,15 @@ class RestRepository extends EntityRepository
     }
 
     /**
-     * @param RestRequestContract $request
+     * @param mixed $id
      *
      * @return JsonApiResource
      * @throws RestException
      */
-    public function findByIdentifier(RestRequestContract $request)
+    public function findById($id)
     {
-        if (null === ($entity = $this->find($request->getId()))) {
-            throw RestException::createNotFound($request->getId(), $this->getResourceKey(), sprintf(
+         if (null === ($entity = $this->find($id))) {
+            throw RestException::createNotFound($id, $this->getResourceKey(), sprintf(
                 'Entity of type `%s` not found.', $this->getClassName()
             ));
         }
@@ -79,7 +91,7 @@ class RestRepository extends EntityRepository
             throw RestException::notJsonApiResource($entity);
         }
 
-        return $entity;
+        return $entity;       
     }
 
     /**

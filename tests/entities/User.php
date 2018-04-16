@@ -43,14 +43,45 @@ class User implements JsonApiResource
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="Blog", mappedBy="user", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="Blog", mappedBy="user", cascade={"all"})
      */
     protected $blogs;
 
     /**
+     * @var ArrayCollection
+     *
+     * @ORM\ManyToMany(
+     *     targetEntity="Tag",
+     *     orphanRemoval=true,
+     *     fetch="EXTRA_LAZY",
+     *     cascade={"persist", "remove"}
+     * )
+     * @ORM\JoinTable(
+     *     name="user_tag",
+     *     joinColumns={
+     *         @ORM\JoinColumn(
+     *             name="user_id",
+     *             referencedColumnName="id",
+     *             nullable=false,
+     *             onDelete="CASCADE"
+     *         )
+     *     },
+     *     inverseJoinColumns={
+     *         @ORM\JoinColumn(
+     *             name="tag_id",
+     *             referencedColumnName="id",
+     *             nullable=false,
+     *             onDelete="CASCADE"
+     *         )
+     *     },
+     * )
+     */
+    protected $tags;
+
+    /**
      * @var Role
      *
-     * @ORM\ManyToOne(targetEntity="Role")
+     * @ORM\OneToOne(targetEntity="Role", cascade={"persist"})
      * @ORM\JoinColumn(name="role_id")
      */
     protected $role;
@@ -69,6 +100,7 @@ class User implements JsonApiResource
     public function __construct()
     {
         $this->blogs = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
     /**
@@ -141,6 +173,50 @@ class User implements JsonApiResource
     public function setBlogs($blogs)
     {
         $this->blogs = $blogs;
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection|Tag[]
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    /**
+     * @param Tag $tag
+     *
+     * @return $this
+     */
+    public function addTags(Tag $tag)
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Tag $tag
+     *
+     * @return $this
+     */
+    public function removeTags(Tag $tag)
+    {
+        $this->tags->removeElement($tag);
+        return $this;
+    }
+
+    /**
+     * @param array|Tag[] $tags
+     *
+     * @return $this
+     */
+    public function setTags(array $tags)
+    {
+        $this->tags = new ArrayCollection($tags);
         return $this;
     }
 

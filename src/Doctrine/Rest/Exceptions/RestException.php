@@ -1,5 +1,7 @@
 <?php namespace Pz\Doctrine\Rest\Exceptions;
 
+use Doctrine\Common\Util\ClassUtils;
+use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationInterface;
@@ -168,6 +170,94 @@ class RestException extends \Exception
 
         return static::create(Response::HTTP_UNPROCESSABLE_ENTITY, $message)
             ->error('invalid-entity', $source, $message);
+    }
+
+    /**
+     * @param object $entity
+     * @param string $field
+     * @param string $getter
+     *
+     * @return static
+     */
+    public static function missingGetter($entity, $field, $getter)
+    {
+        $source = [
+            'entity' => ClassUtils::getClass($entity),
+            'getter' => $getter
+        ];
+
+        if ($entity instanceof JsonApiResource) {
+            $source['pointer'] = $entity->getResourceKey().'.'.$field;
+        }
+
+        return static::createUnprocessable()
+            ->error('missing-getter', $source, 'Missing field getter.');
+    }
+
+    /**
+     * @param object $entity
+     * @param string $field
+     * @param string $setter
+     *
+     * @return static
+     */
+    public static function missingSetter($entity, $field, $setter)
+    {
+        $source = [
+            'entity' => ClassUtils::getClass($entity),
+            'setter' => $setter
+        ];
+
+        if ($entity instanceof JsonApiResource) {
+            $source['pointer'] = $entity->getResourceKey().'.'.$field;
+        }
+
+        return static::createUnprocessable('Setter not found for entity')
+            ->error('missing-setter', $source, 'Missing field setter.');
+    }
+
+    /**
+     * @param object $entity
+     * @param string $field
+     * @param string $adder
+     *
+     * @return RestException
+     */
+    public static function missingAdder($entity, $field, $adder)
+    {
+        $source = [
+            'entity' => ClassUtils::getClass($entity),
+            'adder' => $adder
+        ];
+
+        if ($entity instanceof JsonApiResource) {
+            $source['pointer'] = $entity->getResourceKey().'.'.$field;
+        }
+
+        return static::createUnprocessable('Missing remover method.')
+            ->error('missing-adder', $source, 'Missing collection adder.');
+    }
+
+    /**
+     * @param object $entity
+     * @param string $field
+     * @param string $remover
+     *
+     * @return static
+     */
+    public static function missingRemover($entity, $field, $remover)
+    {
+        $source = [
+            'entity' => ClassUtils::getClass($entity),
+            'remover' => $remover
+        ];
+
+        if ($entity instanceof JsonApiResource) {
+            $source['pointer'] = $entity->getResourceKey().'.'.$field;
+        }
+
+        return static::createUnprocessable('Missing remover method.')
+            ->error('missing-remover', $source, 'Missing collection remover.');
     }
 
     /**

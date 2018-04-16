@@ -198,3 +198,12 @@ Route request `DELETE http://localhost/api/{resourceKey}/{id}`.
 Response
 
     HTTP STATUS 204 NO CONTENT
+
+# Development
+
+## Generate doctrine migration diff
+We using doctrine migrations for unit tests database schema.
+
+```
+php ./vendor/bin/doctrine-migrations migrations:diff
+```

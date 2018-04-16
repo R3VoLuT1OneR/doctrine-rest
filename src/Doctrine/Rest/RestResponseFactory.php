@@ -1,9 +1,10 @@
 <?php namespace Pz\Doctrine\Rest;
 
-use League\Fractal\Manager;
 use League\Fractal\Resource\ResourceInterface;
-use League\Fractal\Serializer\JsonApiSerializer;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
+use Pz\Doctrine\Rest\Fractal\JsonApiSerializer;
+use Pz\Doctrine\Rest\Fractal\Manager;
+use Pz\Doctrine\Rest\Fractal\ScopeFactory;
 
 class RestResponseFactory
 {
@@ -16,8 +17,8 @@ class RestResponseFactory
      */
     protected static function fractal(RestRequestContract $request)
     {
-        $fractal = new Manager();
-        $fractal->setSerializer(new JsonApiSerializer($request->getBaseUrl()));
+        $fractal = new Manager(new ScopeFactory(), $request);
+        $fractal->setSerializer(new JsonApiSerializer($request));
 
         if ($includes = $request->getInclude()) {
             $fractal->parseIncludes($includes);
@@ -43,7 +44,7 @@ class RestResponseFactory
      * @return RestResponse
      */
     public function resource(
-        RestRequestContract         $request,
+        RestRequestContract $request,
         ResourceInterface   $resource = null,
         int                 $httStatus = RestResponse::HTTP_OK,
         array               $headers = []
@@ -51,5 +52,13 @@ class RestResponseFactory
         $data = $resource ? $this->fractal($request)->createData($resource)->toArray() : null;
 
         return RestResponse::create($data, $httStatus, $headers);
+    }
+
+    /**
+     * @return RestResponse
+     */
+    public function noContent()
+    {
+        return RestResponse::noContent();
     }
 }

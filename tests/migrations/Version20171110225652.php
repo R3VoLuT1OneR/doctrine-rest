@@ -27,6 +27,13 @@ class Version20171110225652 extends AbstractMigration
             ['email' => 'user5@test.com',  'name'    => 'User5Name', 'role' => 1],
         ];
 
+        $tags = [
+            ['name' => 'test1'],
+            ['name' => 'test2'],
+            ['name' => 'test3'],
+            ['name' => 'test4'],
+        ];
+
         $blogs = [
             [
                 'user' => 1,
@@ -102,6 +109,13 @@ class Version20171110225652 extends AbstractMigration
             $role = $data['role'];
             $this->addSql("INSERT INTO `user` (name, email, role_id) VALUES ('$name', '$email', $role)");
         }
+
+        foreach ($tags as $tag) {
+            $name = $tag['name'];
+            $this->addSql("INSERT INTO `tag` (name) VALUES ('$name')");
+        }
+
+        $this->addSql("INSERT INTO `user_tag` (user_id, tag_id) VALUES (1,1),(1,2),(1,3)");
 
         foreach ($blogs as $blog) {
             $userId = $blog['user'];

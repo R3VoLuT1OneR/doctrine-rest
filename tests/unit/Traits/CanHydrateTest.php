@@ -136,14 +136,14 @@ class CanHydrateTest extends TestCase
         }
 
         try {
-            $this->setProperty(new User(), 'not_exists', 'test');
+            $this->setObjectProperty(new User(), 'not_exists', 'test');
             $this->fail('Exception should be thrown.');
         } catch (RestException $e) {
             $this->assertEquals([
                 [
                     'code' => 'missing-setter',
                     'source' => [
-                        'pointer' => 'not_exists',
+                        'pointer' => 'user.not_exists',
                         'entity' => User::class,
                         'setter' => 'setNot_exists',
                     ],

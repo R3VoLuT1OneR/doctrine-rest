@@ -34,6 +34,15 @@ interface RestRequestContract
     public function getId();
 
     /**
+     * Set or get identifier that request is relationships type and shouln't return data.
+     *
+     * @param bool $value
+     *
+     * @return bool
+     */
+    public function isRelationships($value = null);
+
+    /**
      * JSON API data
      *
      * @return array

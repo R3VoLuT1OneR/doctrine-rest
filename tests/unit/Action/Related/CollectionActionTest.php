@@ -1,34 +1,57 @@
-<?php namespace Pz\Doctrine\Rest\Tests\Action;
+<?php namespace Pz\Doctrine\Rest\Tests\Action\Related;
 
-use Pz\Doctrine\Rest\Action\RelatedCollectionAction;
+use Pz\Doctrine\Rest\Action\Related\RelatedCollectionAction;
+use Pz\Doctrine\Rest\Action\Relationships\RelationshipsCollectionCreateAction;
+use Pz\Doctrine\Rest\Action\Relationships\RelationshipsCollectionDeleteAction;
+use Pz\Doctrine\Rest\Action\Relationships\RelationshipsCollectionUpdateAction;
 use Pz\Doctrine\Rest\RestRepository;
 use Pz\Doctrine\Rest\RestRequest;
 use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\Tests\Entities\Blog;
 use Pz\Doctrine\Rest\Tests\Entities\Role;
+use Pz\Doctrine\Rest\Tests\Entities\Tag;
 use Pz\Doctrine\Rest\Tests\Entities\Transformers\BlogTransformer;
+use Pz\Doctrine\Rest\Tests\Entities\Transformers\TagTransformer;
 use Pz\Doctrine\Rest\Tests\Entities\User;
 use Pz\Doctrine\Rest\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-class RelatedCollectionActionTest extends TestCase
+class CollectionActionTest extends TestCase
 {
     /**
      * @return RelatedCollectionAction
      */
-    protected function getRelatedCollectionAction()
+    protected function getRelatedBlogCollectionAction()
     {
         return new RelatedCollectionAction(
-            new RestRepository($this->em, $this->em->getClassMetadata(User::class)), 'user',
-            new RestRepository($this->em, $this->em->getClassMetadata(Blog::class)),
+            RestRepository::create($this->em, User::class), 'user',
+            RestRepository::create($this->em, Blog::class),
             new BlogTransformer()
+        );
+    }
+
+    protected function getRelatedTagCollectionCreateAction()
+    {
+        return new RelationshipsCollectionCreateAction(
+            RestRepository::create($this->em, User::class), 'tags', 'users',
+            RestRepository::create($this->em, Tag::class),
+            new TagTransformer()
+        );
+    }
+
+    protected function getRelatedTagCollectionUpdateAction()
+    {
+        return new RelationshipsCollectionUpdateAction(
+            RestRepository::create($this->em, User::class), 'tags', 'users',
+            RestRepository::create($this->em, Tag::class),
+            new TagTransformer()
         );
     }
 
     public function test_user_relation_blogs_index_action()
     {
         $request = new RestRequest(new Request(['id' => 1]));
-        $response = $this->getRelatedCollectionAction()->dispatch($request);
+        $response = $this->getRelatedBlogCollectionAction()->dispatch($request);
 
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -73,7 +96,7 @@ class RelatedCollectionActionTest extends TestCase
         $request = new Request(['id' => 1, 'page' => ['number' => 1, 'size' => 1], 'fields' => [Blog::getResourceKey() => 'title']]);
         $request->server->set('REQUEST_URI', '/user/1/blog');
 
-        $response = $this->getRelatedCollectionAction()->dispatch(new RestRequest($request));
+        $response = $this->getRelatedBlogCollectionAction()->dispatch(new RestRequest($request));
 
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -108,7 +131,7 @@ class RelatedCollectionActionTest extends TestCase
         ], json_decode($response->getContent(), true));
 
         $request = new Request(['id' => 2]);
-        $response = $this->getRelatedCollectionAction()->dispatch(new RestRequest($request));
+        $response = $this->getRelatedBlogCollectionAction()->dispatch(new RestRequest($request));
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(['data' => []], json_decode($response->getContent(), true));

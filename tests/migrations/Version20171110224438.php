@@ -27,6 +27,11 @@ class Version20171110224438 extends AbstractMigration
         $this->addSql('CREATE TABLE user (id INTEGER NOT NULL, role_id INTEGER DEFAULT NULL, email VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D649E7927C74 ON user (email)');
         $this->addSql('CREATE INDEX IDX_8D93D649D60322AC ON user (role_id)');
+
+        $this->addSql('CREATE TABLE user_tag (user_id INTEGER NOT NULL, tag_id INTEGER NOT NULL, PRIMARY KEY(user_id, tag_id))');
+        $this->addSql('CREATE INDEX IDX_E89FD608A76ED395 ON user_tag (user_id)');
+        $this->addSql('CREATE INDEX IDX_E89FD608BAD26311 ON user_tag (tag_id)');
+        $this->addSql('CREATE TABLE tag (id INTEGER NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
     }
 
     /**
@@ -41,5 +46,8 @@ class Version20171110224438 extends AbstractMigration
         $this->addSql('DROP TABLE role');
         $this->addSql('DROP TABLE blog_comment');
         $this->addSql('DROP TABLE user');
+
+        $this->addSql('DROP TABLE user_tag');
+        $this->addSql('DROP TABLE tag');
     }
 }
