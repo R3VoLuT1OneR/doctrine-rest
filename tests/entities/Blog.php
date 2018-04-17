@@ -3,8 +3,8 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
-use LaravelDoctrine\Extensions\Timestamps\Timestamps;
 use Pz\Doctrine\Rest\Contracts\JsonApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Blog
@@ -30,6 +30,7 @@ class Blog implements JsonApiResource
     /**
      * @var User
      *
+     * @Assert\NotNull()
      * @ORM\ManyToOne(targetEntity="User", inversedBy="blogs")
      * @ORM\JoinColumn(name="user_id", nullable=false)
      */
@@ -38,6 +39,7 @@ class Blog implements JsonApiResource
     /**
      * @var string
      *
+     * @Assert\NotNull()
      * @ORM\Column(name="title", type="string", length=255, nullable=false)
      */
     protected $title;
@@ -45,6 +47,7 @@ class Blog implements JsonApiResource
     /**
      * @var string
      *
+     * @Assert\NotNull()
      * @ORM\Column(name="content", type="text", nullable=true)
      */
     protected $content;

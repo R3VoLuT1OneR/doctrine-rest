@@ -1,6 +1,7 @@
 <?php namespace Pz\Doctrine\Rest\Tests\Action\Related;
 
 use Pz\Doctrine\Rest\Action\Related\RelatedCollectionAction;
+use Pz\Doctrine\Rest\Action\Related\RelatedCollectionCreateAction;
 use Pz\Doctrine\Rest\Action\Relationships\RelationshipsCollectionCreateAction;
 use Pz\Doctrine\Rest\Action\Relationships\RelationshipsCollectionDeleteAction;
 use Pz\Doctrine\Rest\Action\Relationships\RelationshipsCollectionUpdateAction;
@@ -18,41 +19,106 @@ use Symfony\Component\HttpFoundation\Request;
 
 class CollectionActionTest extends TestCase
 {
-    /**
-     * @return RelatedCollectionAction
-     */
-    protected function getRelatedBlogCollectionAction()
-    {
-        return new RelatedCollectionAction(
-            RestRepository::create($this->em, User::class), 'user',
-            RestRepository::create($this->em, Blog::class),
-            new BlogTransformer()
-        );
-    }
 
-    protected function getRelatedTagCollectionCreateAction()
+    public function test_user_related_blog_manage_action()
     {
-        return new RelationshipsCollectionCreateAction(
-            RestRepository::create($this->em, User::class), 'tags', 'users',
-            RestRepository::create($this->em, Tag::class),
-            new TagTransformer()
-        );
-    }
+        $request = new RestRequest(new Request(['id' => 1], ['data' => [
+            [
+                'attributes' => [
+                    'title' => 'Custom blog title',
+                    'content' => 'Custom blog content',
+                ]
+            ]
+        ]]));
+        $response = $this->getUserRelatedBlogCollectionCreateAction()->dispatch($request);
+        $this->assertInstanceOf(RestResponse::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertResponseContent(['data' => [
+            [
+                'id' => '1',
+                'type' => Blog::getResourceKey(),
+            ],
+            [
+                'id' => '2',
+                'type' => Blog::getResourceKey(),
+            ],
+            [
+                'id' => '3',
+                'type' => Blog::getResourceKey(),
+            ],
+            [
+                'id' => '5',
+                'type' => Blog::getResourceKey(),
+                'attributes' => [
+                    'title' => 'Custom blog title',
+                    'content' => 'Custom blog content',
+                ]
+            ],
+        ]
+        ], $response);
 
-    protected function getRelatedTagCollectionUpdateAction()
-    {
-        return new RelationshipsCollectionUpdateAction(
-            RestRepository::create($this->em, User::class), 'tags', 'users',
-            RestRepository::create($this->em, Tag::class),
-            new TagTransformer()
-        );
+        $request = new RestRequest(new Request(['id' => 5]));
+        $response = $this->getBlogItemAction()->dispatch($request);
+        $this->assertInstanceOf(RestResponse::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertResponseContent(['data' => [
+            'id' => '5',
+            'type' => Blog::getResourceKey(),
+            'attributes' => [
+                'title' => 'Custom blog title',
+                'content' => 'Custom blog content',
+            ]
+        ]], $response);
+
+        $request = new RestRequest(new Request(['id' => 5], ['data' => [
+            ['id' => 2, 'type' => Blog::getResourceKey()],
+            ['id' => 3, 'type' => Blog::getResourceKey()],
+        ]]));
+        $response = $this->getUserRelatedBlogCollectionDeleteAction()->dispatch($request);
+        $this->assertInstanceOf(RestResponse::class, $response);
+        $this->assertEquals(RestResponse::HTTP_NO_CONTENT, $response->getStatusCode());
+
+        $request = new RestRequest(new Request(['id' => 1]));
+        $response = $this->getUserRelatedBlogCollectionAction()->dispatch($request);
+        $this->assertInstanceOf(RestResponse::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(['data' => [
+            [
+                'id' => '1',
+                'type' => Blog::getResourceKey(),
+                'attributes' => [
+                    'title' => 'User1 blog title 1',
+                    'content' => 'User1 blog content 1',
+                ],
+                'links' => ['self' => '/blog/1'],
+            ],
+            [
+                'id' => '5',
+                'type' => Blog::getResourceKey(),
+                'attributes' => [
+                    'title' => 'Custom blog title',
+                    'content' => 'Custom blog content',
+                ],
+                'links' => ['self' => '/blog/5'],
+            ],
+        ]
+        ], json_decode($response->getContent(), true));
+
+
+        $request = new RestRequest(new Request(['id' => 2]));
+        $response = $this->getBlogItemAction()->dispatch($request);
+        $this->assertInstanceOf(RestResponse::class, $response);
+        $this->assertEquals(404, $response->getStatusCode());
+        $request = new RestRequest(new Request(['id' => 3]));
+        $response = $this->getBlogItemAction()->dispatch($request);
+        $this->assertInstanceOf(RestResponse::class, $response);
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function test_user_relation_blogs_index_action()
     {
         $request = new RestRequest(new Request(['id' => 1]));
-        $response = $this->getRelatedBlogCollectionAction()->dispatch($request);
-
+        $response = $this->getUserRelatedBlogCollectionAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([
@@ -96,7 +162,7 @@ class CollectionActionTest extends TestCase
         $request = new Request(['id' => 1, 'page' => ['number' => 1, 'size' => 1], 'fields' => [Blog::getResourceKey() => 'title']]);
         $request->server->set('REQUEST_URI', '/user/1/blog');
 
-        $response = $this->getRelatedBlogCollectionAction()->dispatch(new RestRequest($request));
+        $response = $this->getUserRelatedBlogCollectionAction()->dispatch(new RestRequest($request));
 
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -131,7 +197,7 @@ class CollectionActionTest extends TestCase
         ], json_decode($response->getContent(), true));
 
         $request = new Request(['id' => 2]);
-        $response = $this->getRelatedBlogCollectionAction()->dispatch(new RestRequest($request));
+        $response = $this->getUserRelatedBlogCollectionAction()->dispatch(new RestRequest($request));
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(['data' => []], json_decode($response->getContent(), true));

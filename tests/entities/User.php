@@ -176,6 +176,31 @@ class User implements JsonApiResource
     }
 
     /**
+     * @param Blog $blog
+     *
+     * @return $this
+     */
+    public function addBlogs(Blog $blog)
+    {
+        if (!$this->blogs->contains($blog)) {
+            $this->blogs->add($blog->setUser($this));
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Blog $blog
+     *
+     * @return $this
+     */
+    public function removeBlogs(Blog $blog)
+    {
+        $this->blogs->removeElement($blog);
+        return $this;
+    }
+
+    /**
      * @return ArrayCollection|Tag[]
      */
     public function getTags()

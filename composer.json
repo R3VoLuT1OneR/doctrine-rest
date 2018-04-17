@@ -1,6 +1,5 @@
 {
     "name": "pz/doctrine-rest",
-    "version": "0.0.1",
     "description": "Rest API library for Doctrine 2 ORM",
     "keywords": ["doctrine", "rest"],
     "license": "MIT",
