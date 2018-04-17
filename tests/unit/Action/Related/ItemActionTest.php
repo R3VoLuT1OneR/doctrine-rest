@@ -22,7 +22,7 @@ class ItemActionTest extends TestCase
         ]]));
         $response = $this->getUserRelatedRoleItemCreateAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(201, $response->getStatusCode());
         $this->assertResponseContent(['data' => [
             'id' => '3',
             'type' => Role::getResourceKey(),

@@ -58,6 +58,6 @@ class RelatedCollectionCreateAction extends RestAction
             $this->mappedBy(),
             $this->related(),
             $this->transformer()
-        ))->dispatch($request);
+        ))->dispatch($request)->setStatusCode(RestResponse::HTTP_CREATED);
     }
 }

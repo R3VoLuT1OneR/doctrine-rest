@@ -51,7 +51,8 @@ class RelatedItemCreateAction extends RestAction
         $this->related()->getEntityManager()->flush($entity);
 
         return $this->response()->resource($request,
-            new Item($item, $this->transformer(), $this->related()->getResourceKey())
+            new Item($item, $this->transformer(), $this->related()->getResourceKey()),
+            RestResponse::HTTP_CREATED
         );
     }
 }

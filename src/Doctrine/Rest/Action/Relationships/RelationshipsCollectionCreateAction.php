@@ -57,6 +57,6 @@ class RelationshipsCollectionCreateAction extends RestAction
                 $this->related(),
                 $this->transformer()
             )
-        )->dispatch($request);
+        )->dispatch($request)->setStatusCode(RestResponse::HTTP_CREATED);
     }
 }

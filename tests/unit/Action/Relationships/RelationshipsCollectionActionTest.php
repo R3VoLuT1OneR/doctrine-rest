@@ -92,7 +92,7 @@ class RelationshipsCollectionActionTest extends TestCase
         ]]));
         $response = $this->getRelationshipsTagCollectionCreateAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals(['data' => [
             [
                 'id' => 1,
