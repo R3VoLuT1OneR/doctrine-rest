@@ -12,10 +12,10 @@
     "type": "library",
     "minimum-stability": "stable",
     "require": {
-        "php": "^7.0",
+        "php": "^7.1",
         "doctrine/orm": "^2.5",
         "league/fractal": "^0.17.0",
-        "symfony/http-foundation": "^3.3",
+        "symfony/http-foundation": "^4.0",
         "pmill/doctrine-array-hydrator": "^0.1.2",
         "symfony/validator": "^3.3"
     },
