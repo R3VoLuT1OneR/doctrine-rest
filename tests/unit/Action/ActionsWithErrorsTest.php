@@ -200,20 +200,13 @@ class ActionsWithErrorsTest extends TestCase
         );
     }
 
+    public function test_generate_rest_exception_from_exception()
+    {
+        $this->assertInstanceOf(RestResponse::class, RestResponse::exception(new \Exception()));
+    }
+
     public function test_exception()
     {
-        $action = new ItemAction(
-            new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
-            function () {
-                throw new \Exception();
-            }
-        );
-
-        $request = new RestRequest(new Request(['id' => 1]));
-        $response = $action->dispatch($request);
-        $this->assertInstanceOf(RestResponse::class, $response);
-        $this->assertEquals(RestResponse::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
-
         $action = new CreateAction(
             new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
             function() {}

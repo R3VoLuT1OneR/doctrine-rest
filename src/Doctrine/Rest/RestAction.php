@@ -53,7 +53,7 @@ abstract class RestAction
 
             return $this->handle($request);
 
-        } catch (\Exception $e) {
+        } catch (RestException $e) {
             return RestResponse::exception($e);
         }
     }
