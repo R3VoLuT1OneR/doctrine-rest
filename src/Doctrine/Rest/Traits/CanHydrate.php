@@ -3,7 +3,6 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
-use Pz\Doctrine\Rest\Contracts\JsonApiResource;
 use Pz\Doctrine\Rest\Exceptions\RestException;
 use Pz\Doctrine\Rest\RestRepository;
 
@@ -31,7 +30,6 @@ trait CanHydrate
             $entity = $this->hydrateAttributes($entity, $data['attributes'], $scope);
             $hydrated = true;
         }
-
 
         if (isset($data['relationships']) && is_array($data['relationships'])) {
             $entity = $this->hydrateRelationships($entity, $data['relationships'], $scope);
@@ -145,6 +143,10 @@ trait CanHydrate
      */
     private function hydrateRelationData($class, $data, $scope)
     {
+        if (is_object($data)) {
+            return $data;
+        }
+
         if (is_scalar($data)) {
             return $this->repository()->getEntityManager()->getReference($class, $data);
         }

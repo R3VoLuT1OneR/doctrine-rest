@@ -81,7 +81,7 @@ class RestRepository extends EntityRepository
      */
     public function findById($id)
     {
-         if (null === ($entity = $this->find($id))) {
+        if (null === ($entity = $this->find($id))) {
             throw RestException::createNotFound($id, $this->getResourceKey(), sprintf(
                 'Entity of type `%s` not found.', $this->getClassName()
             ));
@@ -91,7 +91,7 @@ class RestRepository extends EntityRepository
             throw RestException::notJsonApiResource($entity);
         }
 
-        return $entity;       
+        return $entity;
     }
 
     /**
