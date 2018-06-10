@@ -32,6 +32,15 @@ class JsonApiSerializer extends \League\Fractal\Serializer\JsonApiSerializer
         $resources = [];
 
         foreach ($data as $resource) {
+
+            /**
+             * Add option to override resource key with data.
+             */
+            if (is_array($resource) && array_key_exists('_resource_key', $resource)) {
+                $resourceKey = $resource['_resource_key'];
+                unset($resource['_resource_key']);
+            }
+
             $resources[] = $this->item($resourceKey, $resource, $includeAttributes)['data'];
         }
 
