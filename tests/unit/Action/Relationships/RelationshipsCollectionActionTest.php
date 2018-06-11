@@ -242,7 +242,7 @@ class RelationshipsCollectionActionTest extends TestCase
             ],
         ]], json_decode($response->getContent(), true));
 
-        $request = new RestRequest(new Request(['id' => 1, 'include' => ['user']]));
+        $request = new RestRequest(new Request(['id' => 1, 'include' => 'user']));
         $response = $this->getRelationshipsRoleCollectionAction()->dispatch($request);
 
         $this->assertInstanceOf(RestResponse::class, $response);

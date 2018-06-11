@@ -123,7 +123,7 @@ class CanHydrateTest extends TestCase
         }
 
         try {
-            $this->hydrateEntity(User::class, ['relationships' => ['role' => ['data' => (new \stdClass())]]]);
+            $this->hydrateEntity(User::class, ['relationships' => ['role' => ['data' => null]]]);
             $this->fail('Exception should be thrown.');
         } catch (RestException $e) {
             $this->assertEquals([
