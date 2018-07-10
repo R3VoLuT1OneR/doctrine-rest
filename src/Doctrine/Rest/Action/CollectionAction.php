@@ -87,6 +87,16 @@ class CollectionAction extends RestAction
         $this->applyPagination($request, $qb);
         $this->applyFilter($request, $qb);
 
+        return $this->response()->resource($request, $this->prepareCollection($request, $qb));
+    }
+
+    /**
+     * @param RestRequestContract   $request
+     * @param QueryBuilder          $qb
+     * @return Collection
+     */
+    protected function prepareCollection($request, QueryBuilder $qb)
+    {
         $paginator = new Paginator($qb, false);
         $collection = new Collection($paginator, $this->transformer(), $this->repository()->getResourceKey());
 
@@ -94,12 +104,20 @@ class CollectionAction extends RestAction
             $collection->setPaginator(
                 new DoctrinePaginatorAdapter(
                     $paginator,
-                    $this->paginatorUrlGenerator($request)
+                    function(int $page) use ($request) {
+                        // return !$resourceKey ? null : "{$request->getBaseUrl()}/$resourceKey?".http_build_query([
+                        return $request->getBasePath().'?'.http_build_query([
+                            'page' => [
+                                'number'    => $page,
+                                'size'      => $request->getLimit()
+                            ]
+                        ]);
+                    }
                 )
             );
         }
 
-        return $this->response()->resource($request, $collection);
+        return $collection;
     }
 
     /**
@@ -147,23 +165,5 @@ class CollectionAction extends RestAction
             new StringFilterParser($request, $this->getStringFilterField()),
             new ArrayFilterParser($request, $this->getArrayFilterFields()),
         ];
-    }
-
-    /**
-     * @param RestRequestContract $request
-     *
-     * @return \Closure
-     */
-    protected function paginatorUrlGenerator(RestRequestContract $request)
-    {
-        return function(int $page) use ($request) {
-            // return !$resourceKey ? null : "{$request->getBaseUrl()}/$resourceKey?".http_build_query([
-            return $request->getBasePath().'?'.http_build_query([
-                'page' => [
-                    'number'    => $page,
-                    'size'      => $request->getLimit()
-                ]
-            ]);
-        };
     }
 }

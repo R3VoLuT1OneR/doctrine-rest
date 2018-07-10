@@ -38,7 +38,7 @@ class RestRepository extends EntityRepository
      * @param RestRequestContract $request
      * @return \Doctrine\ORM\QueryBuilder
      */
-    public function sourceQueryBuilder(RestRequestContract $request)
+    public function sourceQueryBuilder($request)
     {
         return $this->createQueryBuilder($this->alias());
     }
