@@ -83,7 +83,7 @@ class CollectionAction extends RestAction
     {
         $this->authorize($request, $this->repository()->getClassName());
 
-        $qb = $this->repository()->sourceQueryBuilder();
+        $qb = $this->repository()->sourceQueryBuilder($request);
         $this->applyPagination($request, $qb);
         $this->applyFilter($request, $qb);
 
