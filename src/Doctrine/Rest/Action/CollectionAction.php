@@ -7,7 +7,7 @@ use League\Fractal\Pagination\DoctrinePaginatorAdapter;
 use Pz\Doctrine\Rest\BuilderChain\CriteriaChain;
 use Pz\Doctrine\Rest\QueryParser\ArrayFilterParser;
 use Pz\Doctrine\Rest\QueryParser\FilterParserAbstract;
-use Pz\Doctrine\Rest\QueryParser\StringFilterParser;
+use Pz\Doctrine\Rest\QueryParser\SearchFilterParser;
 use Pz\Doctrine\Rest\Resource\Collection;
 use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
@@ -162,7 +162,7 @@ class CollectionAction extends RestAction
     protected function filterParsers(RestRequestContract $request)
     {
         return [
-            new StringFilterParser($request, $this->getStringFilterField()),
+            new SearchFilterParser($request, $this->getStringFilterField()),
             new ArrayFilterParser($request, $this->getArrayFilterFields()),
         ];
     }
