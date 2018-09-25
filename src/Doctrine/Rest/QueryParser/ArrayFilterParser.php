@@ -95,7 +95,7 @@ class ArrayFilterParser extends FilterParserAbstract
      */
     protected function processOperatorFilter(Criteria $criteria, $field, $value)
     {
-        if (is_array($value) && isset($value['operator']) && isset($value['value'])) {
+        if (is_array($value) && isset($value['operator']) && array_key_exists('value', $value)) {
             $operator = $value['operator'];
 
             if (!method_exists($criteria->expr(), $operator)) {
