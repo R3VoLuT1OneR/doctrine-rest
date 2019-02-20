@@ -85,7 +85,7 @@ trait CanHydrate
 
             $mapping = $metadata->associationMappings[$name];
 
-            if (!isset($data['data'])) {
+            if (!is_array($data) || !array_key_exists('data', $data)) {
                 throw RestException::missingData($scope.$name);
             }
 
