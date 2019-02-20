@@ -123,19 +123,6 @@ class CanHydrateTest extends TestCase
         }
 
         try {
-            $this->hydrateEntity(User::class, ['relationships' => ['role' => ['data' => null]]]);
-            $this->fail('Exception should be thrown.');
-        } catch (RestException $e) {
-            $this->assertEquals([
-                [
-                    'code' => 'missing-data',
-                    'source' => ['pointer' => 'role'],
-                    'detail' => 'Missing `data` member at pointer level.',
-                ]
-            ], $e->errors());
-        }
-
-        try {
             $this->setObjectProperty(new User(), 'not_exists', 'test');
             $this->fail('Exception should be thrown.');
         } catch (RestException $e) {

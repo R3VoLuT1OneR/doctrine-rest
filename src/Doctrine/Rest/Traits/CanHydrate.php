@@ -143,6 +143,10 @@ trait CanHydrate
      */
     private function hydrateRelationData($class, $data, $scope)
     {
+        if (is_null($data)) {
+            return null;
+        }
+
         if (is_object($data)) {
             return $data;
         }
