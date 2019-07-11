@@ -1,6 +1,7 @@
 <?php namespace Pz\Doctrine\Rest\Action;
 
 use Pz\Doctrine\Rest\Resource\Item;
+use Pz\Doctrine\Rest\RestResponseFactory;
 use Pz\Doctrine\Rest\Traits\CanHydrate;
 use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
@@ -26,7 +27,7 @@ class UpdateAction extends RestAction
         $this->validateEntity($entity);
         $this->repository()->getEntityManager()->flush();
 
-        return $this->response()->resource($request,
+        return RestResponseFactory::resource($request,
             new Item($entity, $this->transformer())
         );
     }

@@ -12,6 +12,7 @@ use Pz\Doctrine\Rest\Resource\Collection;
 use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestResponse;
+use Pz\Doctrine\Rest\RestResponseFactory;
 
 /**
  * Action for providing collection (list or array) of data with API.
@@ -87,7 +88,7 @@ class CollectionAction extends RestAction
         $this->applyPagination($request, $qb);
         $this->applyFilter($request, $qb);
 
-        return $this->response()->resource($request, $this->prepareCollection($request, $qb));
+        return RestResponseFactory::resource($request, $this->prepareCollection($request, $qb));
     }
 
     /**

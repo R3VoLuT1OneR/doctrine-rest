@@ -13,11 +13,6 @@ abstract class RestAction
     protected $repository;
 
     /**
-     * @var RestResponseFactory
-     */
-    protected $response;
-
-    /**
      * @var TransformerAbstract|\Closure
      */
     protected $transformer;
@@ -35,13 +30,11 @@ abstract class RestAction
      *
      * @param RestRepository                $repository
      * @param TransformerAbstract|\Closure  $transformer
-     * @param RestResponseFactory           $responseFactory
      */
-    public function __construct(RestRepository $repository, $transformer, $responseFactory = null)
+    public function __construct(RestRepository $repository, $transformer)
     {
         $this->repository = $repository;
         $this->transformer = $transformer;
-        $this->response = $responseFactory ?: new RestResponseFactory();
     }
 
     /**
@@ -66,14 +59,6 @@ abstract class RestAction
     public function repository()
     {
         return $this->repository;
-    }
-
-    /**
-     * @return RestResponseFactory
-     */
-    public function response()
-    {
-        return $this->response;
     }
 
     /**
@@ -172,15 +157,5 @@ abstract class RestAction
         }
 
         return $entity->$remover($item);
-    }
-
-    /**
-     * @param RestResponseFactory $response
-     * @return $this
-     */
-    public function setResponseFactory(RestResponseFactory $response)
-    {
-        $this->response = $response;
-        return $this;
     }
 }

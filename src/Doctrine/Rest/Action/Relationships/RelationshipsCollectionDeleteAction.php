@@ -6,6 +6,7 @@ use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\RestRepository;
 use Pz\Doctrine\Rest\RestResponse;
+use Pz\Doctrine\Rest\RestResponseFactory;
 use Pz\Doctrine\Rest\Traits\RelatedAction;
 
 class RelationshipsCollectionDeleteAction extends RestAction
@@ -46,6 +47,6 @@ class RelationshipsCollectionDeleteAction extends RestAction
 
         $this->repository()->getEntityManager()->flush();
 
-        return $this->response()->noContent();
+        return RestResponseFactory::noContent();
     }
 }

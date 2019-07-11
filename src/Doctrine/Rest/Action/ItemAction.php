@@ -5,6 +5,7 @@ use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\Resource\Item;
 use Pz\Doctrine\Rest\Exceptions\RestException;
+use Pz\Doctrine\Rest\RestResponseFactory;
 
 class ItemAction extends RestAction
 {
@@ -22,6 +23,6 @@ class ItemAction extends RestAction
 
         $resource = new Item($entity, $this->transformer());
 
-        return $this->response()->resource($request, $resource);
+        return RestResponseFactory::resource($request, $resource);
     }
 }

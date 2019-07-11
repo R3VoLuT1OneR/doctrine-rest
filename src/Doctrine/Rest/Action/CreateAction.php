@@ -5,6 +5,7 @@ use Pz\Doctrine\Rest\Resource\Item;
 use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\RestResponse;
+use Pz\Doctrine\Rest\RestResponseFactory;
 use Pz\Doctrine\Rest\Traits\CanHydrate;
 use Pz\Doctrine\Rest\Traits\CanValidate;
 
@@ -15,8 +16,10 @@ class CreateAction extends RestAction
 
     /**
      * @param RestRequestContract $request
-     *
      * @return RestResponse
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Pz\Doctrine\Rest\Exceptions\RestException
      */
     protected function handle($request)
     {
@@ -34,6 +37,6 @@ class CreateAction extends RestAction
         }
 
         $resource = new Item($entity, $this->transformer());
-        return $this->response()->resource($request, $resource, RestResponse::HTTP_CREATED, $headers);
+        return RestResponseFactory::resource($request, $resource, RestResponse::HTTP_CREATED, $headers);
     }
 }

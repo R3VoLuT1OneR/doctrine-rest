@@ -7,6 +7,7 @@ use Pz\Doctrine\Rest\Resource\Item;
 use Pz\Doctrine\Rest\RestAction;
 use Pz\Doctrine\Rest\RestRepository;
 use Pz\Doctrine\Rest\RestResponse;
+use Pz\Doctrine\Rest\RestResponseFactory;
 use Pz\Doctrine\Rest\Traits\CanHydrate;
 use Pz\Doctrine\Rest\Traits\CanValidate;
 use Pz\Doctrine\Rest\Traits\RelatedAction;
@@ -50,7 +51,7 @@ class RelatedItemCreateAction extends RestAction
 
         $this->related()->getEntityManager()->flush($entity);
 
-        return $this->response()->resource($request,
+        return RestResponseFactory::resource($request,
             new Item($item, $this->transformer(), $this->related()->getResourceKey()),
             RestResponse::HTTP_CREATED
         );

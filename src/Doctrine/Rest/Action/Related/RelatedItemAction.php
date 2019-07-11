@@ -6,6 +6,7 @@ use Pz\Doctrine\Rest\Resource\Item;
 use Pz\Doctrine\Rest\Resource\NullResource;
 use Pz\Doctrine\Rest\RestResponse;
 use Pz\Doctrine\Rest\RestRepository;
+use Pz\Doctrine\Rest\RestResponseFactory;
 use Pz\Doctrine\Rest\Traits\RelatedAction;
 
 use League\Fractal\TransformerAbstract;
@@ -41,11 +42,11 @@ class RelatedItemAction extends BaseItemAction
         $this->authorize($request, $entity);
 
         if ($relatedEntity = $this->getProperty($entity, $this->field())) {
-            return $this->response()->resource($request,
+            return RestResponseFactory::resource($request,
                 new Item($relatedEntity, $this->transformer())
             );
         }
 
-        return $this->response()->resource($request, new NullResource());
+        return RestResponseFactory::resource($request, new NullResource());
 	}
 }
