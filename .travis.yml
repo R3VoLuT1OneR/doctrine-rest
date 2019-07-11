@@ -6,6 +6,7 @@ php:
   # using major version aliases
   - 7.1
   - 7.2
+  - 7.3
 
   # aliased to a recent hhvm version
   # - nightly

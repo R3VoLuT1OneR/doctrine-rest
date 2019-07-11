@@ -1,5 +1,7 @@
 <?php namespace Pz\Doctrine\Rest\Contracts;
 
+use Symfony\Component\HttpFoundation\Request;
+
 interface RestRequestContract
 {
     /**
@@ -13,14 +15,15 @@ interface RestRequestContract
     const DEFAULT_LIMIT = 1000;
 
     /**
-     * Get base path of request without query params.
-     *
-     * @return string
+     * @return Request
      */
-    public function getBasePath();
+    public function http();
 
     /**
-     * Provide base API url
+     * The base URL for the api.
+     *
+     * Example:
+     *   https://example.domain.com/jsonapi
      *
      * @return string
      */

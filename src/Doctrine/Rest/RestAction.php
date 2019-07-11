@@ -25,6 +25,7 @@ abstract class RestAction
     /**
      * @param RestRequestContract $request
      *
+     * @throws RestException
      * @return RestResponse
      */
     abstract protected function handle($request);
@@ -32,20 +33,21 @@ abstract class RestAction
     /**
      * RestActionAbstract constructor.
      *
-     * @param RestRepository               $repository
-     * @param TransformerAbstract|\Closure $transformer
+     * @param RestRepository                $repository
+     * @param TransformerAbstract|\Closure  $transformer
+     * @param RestResponseFactory           $responseFactory
      */
-    public function __construct(RestRepository $repository, $transformer)
+    public function __construct(RestRepository $repository, $transformer, $responseFactory = null)
     {
         $this->repository = $repository;
         $this->transformer = $transformer;
-        $this->response = new RestResponseFactory();
+        $this->response = $responseFactory ?: new RestResponseFactory();
     }
 
     /**
      * @param RestRequestContract $request
-     *
      * @return RestResponse
+     * @throws RestException
      */
     public function dispatch(RestRequestContract $request)
     {
@@ -170,5 +172,15 @@ abstract class RestAction
         }
 
         return $entity->$remover($item);
+    }
+
+    /**
+     * @param RestResponseFactory $response
+     * @return $this
+     */
+    public function setResponseFactory(RestResponseFactory $response)
+    {
+        $this->response = $response;
+        return $this;
     }
 }

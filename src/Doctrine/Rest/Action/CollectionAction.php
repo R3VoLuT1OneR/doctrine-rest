@@ -76,8 +76,8 @@ class CollectionAction extends RestAction
 
     /**
      * @param RestRequestContract $request
-     *
      * @return RestResponse
+     * @throws \Doctrine\ORM\Query\QueryException
      */
     protected function handle($request)
     {
@@ -124,6 +124,7 @@ class CollectionAction extends RestAction
      * @param RestRequestContract $request
      * @param QueryBuilder        $qb
      *
+     * @throws \Doctrine\ORM\Query\QueryException
      * @return $this
      */
     protected function applyPagination(RestRequestContract $request, QueryBuilder $qb)
@@ -143,6 +144,7 @@ class CollectionAction extends RestAction
      * @param RestRequestContract $request
      * @param QueryBuilder        $qb
      *
+     * @throws \Doctrine\ORM\Query\QueryException
      * @return $this
      */
     protected function applyFilter(RestRequestContract $request, QueryBuilder $qb)
