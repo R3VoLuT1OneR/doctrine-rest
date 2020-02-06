@@ -5,19 +5,16 @@ use Pz\Doctrine\Rest\Contracts\RestRequestContract;
 use Pz\Doctrine\Rest\Fractal\JsonApiSerializer;
 use Pz\Doctrine\Rest\Fractal\Manager;
 use Pz\Doctrine\Rest\Fractal\ScopeFactory;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class RestResponseFactory
 {
-    /**
-     * @var int
-     */
-    static public $jsonEncodingOptions;
-
     /**
      * @param RestRequestContract    $request
      * @param ResourceInterface|null $resource
      * @param int                    $httStatus
      * @param array                  $headers
+     * @param int                    $jsonOptions
      *
      * @return RestResponse
      */
@@ -25,15 +22,13 @@ class RestResponseFactory
         RestRequestContract $request,
         ResourceInterface   $resource = null,
         int                 $httStatus = RestResponse::HTTP_OK,
-        array               $headers = []
+        array               $headers = [],
+        int                 $jsonOptions = JsonResponse::DEFAULT_ENCODING_OPTIONS
     ) {
         $data = $resource ? static::fractal($request)->createData($resource)->toArray() : null;
 
         $response = RestResponse::create($data, $httStatus, $headers);
-
-        if (static::$jsonEncodingOptions) {
-            $response->setEncodingOptions(static::$jsonEncodingOptions);
-        }
+        $response->setEncodingOptions($jsonOptions);
 
         return $response;
     }

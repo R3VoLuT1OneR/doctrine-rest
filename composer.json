@@ -13,6 +13,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": "^7.1",
+        "ext-json": "*",
         "doctrine/orm": "^2.5",
         "league/fractal": "^0.17.0",
         "symfony/http-foundation": "^4.0",

@@ -15,10 +15,20 @@ class UpdateActionTest extends TestCase
 
     public function test_update_user()
     {
-        $action = new UpdateAction(
+        $onUpdate = function($entity, array $change) {
+            /** @var User $entity */
+            $this->assertEquals(2, $entity->getId());
+            $this->assertEquals([
+                'email' => ['user2@gmail.com', 'new2@email.com']
+            ], $change);
+        };
+
+        $action = (new UpdateAction(
             new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
             new UserTransformer()
-        );
+        ))
+            ->beforeUpdate($onUpdate)
+            ->afterUpdate($onUpdate);
 
         $request = new RestRequest(new Request([
             'id' => '2',
