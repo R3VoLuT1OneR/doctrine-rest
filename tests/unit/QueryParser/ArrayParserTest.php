@@ -83,7 +83,7 @@ class ArrayParserTest extends TestCase
         $this->assertEquals(Comparison::GTE, $expressions[0]->getOperator());
         $this->assertEquals(1, $expressions[0]->getValue()->getValue());
         $this->assertEquals('field1', $expressions[1]->getField());
-        $this->assertEquals(Comparison::LT, $expressions[1]->getOperator());
+        $this->assertEquals(Comparison::LTE, $expressions[1]->getOperator());
         $this->assertEquals(10, $expressions[1]->getValue()->getValue());
     }
 

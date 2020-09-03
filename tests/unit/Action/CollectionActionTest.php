@@ -507,17 +507,30 @@ class CollectionActionTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(
             [
-                'data' => [[
-                    'id' => '2',
-                    'type' => 'user',
-                    'attributes' => [
-                        'name' => 'User2Name',
-                        'email' => 'user2@gmail.com',
+                'data' => [
+                    [
+                        'id' => '2',
+                        'type' => 'user',
+                        'attributes' => [
+                            'name' => 'User2Name',
+                            'email' => 'user2@gmail.com',
+                        ],
+                        'links' => [
+                            'self' => '/user/2',
+                        ]
                     ],
-                    'links' => [
-                        'self' => '/user/2',
-                    ]
-                ]],
+                    [
+                        'id' => '3',
+                        'type' => 'user',
+                        'attributes' => [
+                            'name' => 'User3Name',
+                            'email' => 'user3@test.com',
+                        ],
+                        'links' => [
+                            'self' => '/user/3',
+                        ]
+                    ],
+                ],
             ],
             json_decode($response->getContent(), true)
         );

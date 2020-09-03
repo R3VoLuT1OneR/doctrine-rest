@@ -78,7 +78,7 @@ class ArrayFilterParser extends FilterParserAbstract
 
             $criteria->andWhere($criteria->expr()->andX(
                 $criteria->expr()->gte($field, $value['start']),
-                $criteria->expr()->lt($field, $value['end'])
+                $criteria->expr()->lte($field, $value['end'])
             ));
 
         }
