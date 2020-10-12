@@ -15,6 +15,49 @@ use Symfony\Component\HttpFoundation\Request;
 class CreateActionTest extends TestCase
 {
 
+    public function test_create_before_after_callbacks()
+    {
+        $beforeCalled = false;
+        $afterCalled = false;
+
+        $action = (new CreateAction(
+            new RestRepository($this->em, $this->em->getClassMetadata(User::class)),
+            new UserTransformer()
+        ))
+            ->beforeCreate(function($entity) use (&$beforeCalled) {
+                $this->assertInstanceOf(User::class, $entity);
+                $beforeCalled = true;
+            })
+            ->afterCreated(function ($entity) use (&$afterCalled) {
+                $this->assertInstanceOf(User::class, $entity);
+                $afterCalled = true;
+            });
+
+        $request = new RestRequest(new Request(['include' => 'role'], [
+            'data' => [
+                'attributes' => [
+                    'name' => 'New User',
+                    'email' => 'test@teststst.com',
+                ],
+                'relationships' => [
+                    'role' => [
+                        'data' => [
+                            'id' => '1',
+                            'type' => 'role',
+                        ]
+                    ]
+                ]
+            ]
+        ]));
+
+        $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
+        $request->http()->headers->set('CONTENT_TYPE', RestRequest::JSON_API_CONTENT_TYPE);
+        $action->dispatch($request);
+
+        $this->assertTrue($beforeCalled);
+        $this->assertTrue($afterCalled);
+    }
+
     public function test_create_user_and_blog()
     {
         $action = new CreateAction(

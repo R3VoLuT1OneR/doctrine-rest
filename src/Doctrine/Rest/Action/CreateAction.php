@@ -14,6 +14,12 @@ class CreateAction extends RestAction
     use CanHydrate;
     use CanValidate;
 
+    /** @var array|callable[] */
+    protected $beforeCreate = [];
+
+    /** @var array|callable[] */
+    protected $afterCreated = [];
+
     /**
      * @param RestRequestContract $request
      * @return RestResponse
@@ -21,7 +27,7 @@ class CreateAction extends RestAction
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Pz\Doctrine\Rest\Exceptions\RestException
      */
-    protected function handle($request)
+    public function handle($request)
     {
         $headers = [];
         $class = $this->repository()->getClassName();
@@ -29,8 +35,13 @@ class CreateAction extends RestAction
         $this->authorize($request, $class);
         $entity = $this->hydrateEntity($class, $request->getData());
         $this->validateEntity($entity);
+
+        $this->callBeforeCreate($entity);
+
         $this->repository()->getEntityManager()->persist($entity);
         $this->repository()->getEntityManager()->flush();
+
+        $this->callAfterCreated($entity);
 
         if ($entity instanceof JsonApiResource) {
             $headers['Location'] = $this->repository()->linkJsonApiResource($request, $entity);
@@ -38,5 +49,35 @@ class CreateAction extends RestAction
 
         $resource = new Item($entity, $this->transformer());
         return RestResponseFactory::resource($request, $resource, RestResponse::HTTP_CREATED, $headers);
+    }
+
+    public function beforeCreate(callable $cb): self
+    {
+        $this->beforeCreate[] = $cb;
+        return $this;
+    }
+
+    public function afterCreated(callable $cb): self
+    {
+        $this->afterCreated[] = $cb;
+        return $this;
+    }
+
+    public function callBeforeCreate($entity): self
+    {
+        foreach ($this->beforeCreate as $cb) {
+            $cb($entity);
+        }
+
+        return $this;
+    }
+
+    public function callAfterCreated($entity): self
+    {
+        foreach ($this->afterCreated as $cb) {
+            $cb($entity);
+        }
+
+        return $this;
     }
 }
