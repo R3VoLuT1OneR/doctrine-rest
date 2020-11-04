@@ -1,13 +1,13 @@
-<?php namespace Pz\Doctrine\Rest\Tests\Action\Related;
+<?php namespace Doctrine\Rest\Tests\Action\Related;
 
-use Pz\Doctrine\Rest\Action\Related\RelatedItemAction;
-use Pz\Doctrine\Rest\RestRepository;
-use Pz\Doctrine\Rest\RestRequest;
-use Pz\Doctrine\Rest\RestResponse;
-use Pz\Doctrine\Rest\Tests\Entities\Role;
-use Pz\Doctrine\Rest\Tests\Entities\Transformers\RoleTransformer;
-use Pz\Doctrine\Rest\Tests\Entities\User;
-use Pz\Doctrine\Rest\Tests\TestCase;
+use Doctrine\Rest\Action\Related\RelatedItemAction;
+use Doctrine\Rest\RestRepository;
+use Doctrine\Rest\RestRequest;
+use Doctrine\Rest\RestResponse;
+use Doctrine\Rest\Tests\Entities\Role;
+use Doctrine\Rest\Tests\Entities\Transformers\RoleTransformer;
+use Doctrine\Rest\Tests\Entities\User;
+use Doctrine\Rest\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 class ItemActionTest extends TestCase

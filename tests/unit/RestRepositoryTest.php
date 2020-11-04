@@ -1,15 +1,14 @@
-<?php namespace Pz\Doctrine\Rest\Tests;
+<?php namespace Doctrine\Rest\Tests\Unit;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Pz\Doctrine\Rest\Exceptions\RestException;
-use Pz\Doctrine\Rest\RestRepository;
+use Doctrine\Rest\Exceptions\RestException;
+use Doctrine\Rest\RestRepository;
+use Doctrine\Rest\Tests\TestCase;
+use Doctrine\Rest\RestRequest;
 
 use Mockery as m;
 use Mockery\MockInterface;
-use Pz\Doctrine\Rest\RestRequest;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 class RestRepositoryTest extends TestCase
 {

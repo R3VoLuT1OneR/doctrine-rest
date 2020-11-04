@@ -1,37 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit
-        backupStaticAttributes="false"
-
-        bootstrap="tests/bootstrap.php"
-        cacheTokens="false"
-        colors="false"
-        convertErrorsToExceptions="true"
-        convertNoticesToExceptions="true"
-        convertWarningsToExceptions="true"
-        forceCoversAnnotation="false"
-        mapTestClassNameToCoveredClassName="false"
-
-        processIsolation="false"
-        stopOnError="false"
-        stopOnFailure="false"
-        stopOnIncomplete="false"
-        stopOnSkipped="false"
-
-        strict="false"
-        verbose="false"
->
-    <logging>
-        <!--<log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>-->
-    </logging>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.4/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         cacheResultFile=".phpunit.cache/test-results"
+         executionOrder="depends,defects"
+         forceCoversAnnotation="true"
+         beStrictAboutCoversAnnotation="true"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutTodoAnnotatedTests="true"
+         failOnRisky="true"
+         failOnWarning="true"
+         verbose="true">
     <testsuites>
-        <testsuite name="Package Test Suit">
-            <directory suffix="Test.php">./tests/unit</directory>
-            <exclude>./tests/unit/TestCase.php</exclude>
+        <testsuite name="default">
+            <directory suffix="Test.php">tests</directory>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="false">
-            <directory suffix=".php">./src/</directory>
-        </whitelist>
-    </filter>
+
+    <coverage cacheDirectory=".phpunit.cache/code-coverage"
+              processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </coverage>
 </phpunit>

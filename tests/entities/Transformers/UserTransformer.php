@@ -1,10 +1,10 @@
-<?php namespace Pz\Doctrine\Rest\Tests\Entities\Transformers;
+<?php namespace Doctrine\Rest\Tests\Entities\Transformers;
 
 use League\Fractal\ParamBag;
 use League\Fractal\TransformerAbstract;
-use Pz\Doctrine\Rest\Tests\Entities\Blog;
-use Pz\Doctrine\Rest\Tests\Entities\Role;
-use Pz\Doctrine\Rest\Tests\Entities\User;
+use Doctrine\Rest\Tests\Entities\Blog;
+use Doctrine\Rest\Tests\Entities\Role;
+use Doctrine\Rest\Tests\Entities\User;
 
 class UserTransformer extends TransformerAbstract
 {

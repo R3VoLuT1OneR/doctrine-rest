@@ -1,7 +1,7 @@
-<?php namespace Pz\Doctrine\Rest\Tests\Entities\Transformers;
+<?php namespace Doctrine\Rest\Tests\Entities\Transformers;
 
 use League\Fractal\TransformerAbstract;
-use Pz\Doctrine\Rest\Tests\Entities\Role;
+use Doctrine\Rest\Tests\Entities\Role;
 
 class RoleTransformer extends TransformerAbstract
 {

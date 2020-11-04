@@ -1,8 +1,8 @@
-<?php namespace Pz\Doctrine\Rest\Tests\Entities;
+<?php namespace Doctrine\Rest\Tests\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use LaravelDoctrine\Extensions\Timestamps\Timestamps;
-use Pz\Doctrine\Rest\Contracts\JsonApiResource;
+use Doctrine\Rest\Contracts\JsonApiResource;
 
 /**
  * Class BlogComment

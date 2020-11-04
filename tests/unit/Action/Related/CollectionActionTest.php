@@ -1,20 +1,20 @@
-<?php namespace Pz\Doctrine\Rest\Tests\Action\Related;
+<?php namespace Doctrine\Rest\Tests\Action\Related;
 
-use Pz\Doctrine\Rest\Action\Related\RelatedCollectionAction;
-use Pz\Doctrine\Rest\Action\Related\RelatedCollectionCreateAction;
-use Pz\Doctrine\Rest\Action\Relationships\RelationshipsCollectionCreateAction;
-use Pz\Doctrine\Rest\Action\Relationships\RelationshipsCollectionDeleteAction;
-use Pz\Doctrine\Rest\Action\Relationships\RelationshipsCollectionUpdateAction;
-use Pz\Doctrine\Rest\RestRepository;
-use Pz\Doctrine\Rest\RestRequest;
-use Pz\Doctrine\Rest\RestResponse;
-use Pz\Doctrine\Rest\Tests\Entities\Blog;
-use Pz\Doctrine\Rest\Tests\Entities\Role;
-use Pz\Doctrine\Rest\Tests\Entities\Tag;
-use Pz\Doctrine\Rest\Tests\Entities\Transformers\BlogTransformer;
-use Pz\Doctrine\Rest\Tests\Entities\Transformers\TagTransformer;
-use Pz\Doctrine\Rest\Tests\Entities\User;
-use Pz\Doctrine\Rest\Tests\TestCase;
+use Doctrine\Rest\Action\Related\RelatedCollectionAction;
+use Doctrine\Rest\Action\Related\RelatedCollectionCreateAction;
+use Doctrine\Rest\Action\Relationships\RelationshipsCollectionCreateAction;
+use Doctrine\Rest\Action\Relationships\RelationshipsCollectionDeleteAction;
+use Doctrine\Rest\Action\Relationships\RelationshipsCollectionUpdateAction;
+use Doctrine\Rest\RestRepository;
+use Doctrine\Rest\RestRequest;
+use Doctrine\Rest\RestResponse;
+use Doctrine\Rest\Tests\Entities\Blog;
+use Doctrine\Rest\Tests\Entities\Role;
+use Doctrine\Rest\Tests\Entities\Tag;
+use Doctrine\Rest\Tests\Entities\Transformers\BlogTransformer;
+use Doctrine\Rest\Tests\Entities\Transformers\TagTransformer;
+use Doctrine\Rest\Tests\Entities\User;
+use Doctrine\Rest\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 class CollectionActionTest extends TestCase

@@ -1,9 +1,9 @@
-<?php namespace Pz\Doctrine\Rest\Tests\BuilderChain;
+<?php namespace Doctrine\Rest\Tests\BuilderChain;
 
-use Pz\Doctrine\Rest\BuilderChain\Chain;
-use Pz\Doctrine\Rest\BuilderChain\MemberInterface;
-use Pz\Doctrine\Rest\BuilderChain\Exceptions\InvalidChainMember;
-use Pz\Doctrine\Rest\BuilderChain\Exceptions\InvalidChainMemberResponse;
+use Doctrine\Rest\BuilderChain\Chain;
+use Doctrine\Rest\BuilderChain\MemberInterface;
+use Doctrine\Rest\BuilderChain\Exceptions\InvalidChainMember;
+use Doctrine\Rest\BuilderChain\Exceptions\InvalidChainMemberResponse;
 
 use stdClass;
 use ReflectionClass;

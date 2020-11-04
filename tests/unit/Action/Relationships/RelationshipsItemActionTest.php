@@ -1,9 +1,9 @@
-<?php namespace Pz\Doctrine\Rest\Tests\Action\Relationships;
+<?php namespace Doctrine\Rest\Tests\Action\Relationships;
 
-use Pz\Doctrine\Rest\RestRequest;
-use Pz\Doctrine\Rest\RestResponse;
-use Pz\Doctrine\Rest\Tests\Entities\Role;
-use Pz\Doctrine\Rest\Tests\TestCase;
+use Doctrine\Rest\RestRequest;
+use Doctrine\Rest\RestResponse;
+use Doctrine\Rest\Tests\Entities\Role;
+use Doctrine\Rest\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 class RelationshipsItemActionTest extends TestCase

@@ -1,7 +1,7 @@
-<?php namespace Pz\Doctrine\Rest\Tests\Entities;
+<?php namespace Doctrine\Rest\Tests\Entities;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Pz\Doctrine\Rest\Contracts\JsonApiResource;
+use Doctrine\Rest\Contracts\JsonApiResource;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;

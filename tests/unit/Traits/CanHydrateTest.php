@@ -1,10 +1,10 @@
-<?php namespace Pz\Doctrine\Rest\Tests\Traits;
+<?php namespace Doctrine\Rest\Tests\Traits;
 
-use Pz\Doctrine\Rest\Exceptions\RestException;
-use Pz\Doctrine\Rest\RestRepository;
-use Pz\Doctrine\Rest\Tests\Entities\User;
-use Pz\Doctrine\Rest\Tests\TestCase;
-use Pz\Doctrine\Rest\Traits\CanHydrate;
+use Doctrine\Rest\Exceptions\RestException;
+use Doctrine\Rest\RestRepository;
+use Doctrine\Rest\Tests\Entities\User;
+use Doctrine\Rest\Tests\TestCase;
+use Doctrine\Rest\Traits\CanHydrate;
 
 class CanHydrateTest extends TestCase
 {

@@ -1,15 +1,15 @@
-<?php namespace Pz\Doctrine\Rest\Tests\Action;
+<?php namespace Doctrine\Rest\Tests\Action;
 
-use Pz\Doctrine\Rest\Action\CreateAction;
-use Pz\Doctrine\Rest\RestResponseFactory;
-use Pz\Doctrine\Rest\RestRepository;
-use Pz\Doctrine\Rest\RestRequest;
-use Pz\Doctrine\Rest\RestResponse;
-use Pz\Doctrine\Rest\Tests\Entities\Role;
-use Pz\Doctrine\Rest\Tests\Entities\Transformers\RoleTransformer;
-use Pz\Doctrine\Rest\Tests\Entities\Transformers\UserTransformer;
-use Pz\Doctrine\Rest\Tests\Entities\User;
-use Pz\Doctrine\Rest\Tests\TestCase;
+use Doctrine\Rest\Action\CreateAction;
+use Doctrine\Rest\RestResponseFactory;
+use Doctrine\Rest\RestRepository;
+use Doctrine\Rest\RestRequest;
+use Doctrine\Rest\RestResponse;
+use Doctrine\Rest\Tests\Entities\Role;
+use Doctrine\Rest\Tests\Entities\Transformers\RoleTransformer;
+use Doctrine\Rest\Tests\Entities\Transformers\UserTransformer;
+use Doctrine\Rest\Tests\Entities\User;
+use Doctrine\Rest\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 class CreateActionTest extends TestCase

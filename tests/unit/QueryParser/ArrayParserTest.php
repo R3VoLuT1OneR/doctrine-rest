@@ -1,15 +1,15 @@
-<?php namespace Pz\Doctrine\Rest\Tests\QueryParser;
+<?php namespace Doctrine\Rest\Tests\QueryParser;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 use PHPUnit\Framework\TestCase;
-use Pz\Doctrine\Rest\Exceptions\RestException;
-use Pz\Doctrine\Rest\QueryParser\ArrayFilterParser;
+use Doctrine\Rest\Exceptions\RestException;
+use Doctrine\Rest\QueryParser\ArrayFilterParser;
 
 use Mockery as m;
-use Pz\Doctrine\Rest\Contracts\RestRequestContract;
-use Pz\Doctrine\Rest\RestRequest;
+use Doctrine\Rest\Contracts\RestRequestContract;
+use Doctrine\Rest\RestRequest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
