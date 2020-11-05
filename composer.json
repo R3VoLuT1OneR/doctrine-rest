@@ -12,7 +12,8 @@
         "league/fractal": "^0.19.2",
         "psr/http-message": "^1.0",
         "fig/http-message-util": "dev-master",
-        "psr/http-server-middleware": "^1.0"
+        "psr/http-server-middleware": "^1.0",
+        "psr/http-factory": "^1.0"
     },
     "autoload": {
         "psr-4": {

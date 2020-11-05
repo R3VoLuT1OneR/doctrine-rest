@@ -13,7 +13,7 @@ class EntityNotFoundException extends RestException
         parent::__construct(StatusCodeInterface::STATUS_NOT_FOUND, 'Entity not found', $previous);
 
         $this->error('entity-not-found', ['type' => $resourceType, 'id' => $id], sprintf(
-            'Resource "%s" with identifier "%s" not found.', $resourceType, $id
+            'Resource "%s" for id "%s" was not found', $resourceType, $id
         ));
     }
 }

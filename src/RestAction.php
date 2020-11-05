@@ -1,28 +1,42 @@
 <?php namespace Doctrine\Rest;
 
-//use League\Fractal\TransformerAbstract;
-//use Doctrine\Rest\Contracts\JsonApiResource;
-//use Doctrine\Rest\Contracts\RestRequestContract;
-//use Doctrine\Rest\Exceptions\RestException;
-
 use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\Rest\Contracts\JsonApiResource;
-use Doctrine\Rest\Exceptions\RestException;
+use Doctrine\Rest\Exceptions\EntityNotFoundException;
+use Doctrine\Rest\Fractal\BaseManagerFactory;
+use Doctrine\Rest\Fractal\ManagerFactoryInterface;
 use Doctrine\Rest\Resource\AbstractTransformer;
-use League\Fractal\TransformerAbstract;
+use Doctrine\Rest\Util\ResourceUtil;
+use Doctrine\Rest\Resource\Item;
 
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Closure;
 
 abstract class RestAction implements RequestHandlerInterface
 {
+    const ATTR_ID = 'id';
+
     protected ObjectRepository $repository;
     protected AbstractTransformer $transformer;
 
-    public function __construct(
-        ObjectRepository $repository,
-        AbstractTransformer $transformer
-    ) {
+    protected ManagerFactoryInterface $managerFactory;
+    protected ResponseFactoryInterface $responseFactory;
+    protected StreamFactoryInterface $streamInterface;
+
+    /**
+     * Attribute name that will save the parsed ID from path.
+     */
+    protected string $attributeId = self::ATTR_ID;
+
+    static public function create(ObjectRepository $repository, AbstractTransformer $transformer): self
+    {
+        return new static($repository, $transformer);
+    }
+
+    public function __construct(ObjectRepository $repository, AbstractTransformer $transformer)
+    {
         $this->repository = $repository;
         $this->transformer = $transformer;
     }
@@ -35,6 +49,94 @@ abstract class RestAction implements RequestHandlerInterface
     public function transformer(): AbstractTransformer
     {
         return $this->transformer;
+    }
+
+    public function setAttributeId(string $attributeId): self
+    {
+        $this->attributeId = $attributeId;
+        return $this;
+    }
+
+    public function getAttributeId(): string
+    {
+        return $this->attributeId;
+    }
+
+    public function setManagerFactory(ManagerFactoryInterface $factory): self
+    {
+        $this->managerFactory = $factory;
+        return $this;
+    }
+
+    public function getManagerFactory(): ManagerFactoryInterface
+    {
+        if (!isset($this->managerFactory)) {
+            $this->managerFactory = new BaseManagerFactory();
+        }
+
+        return $this->managerFactory;
+    }
+
+    public function setResponseFactory(ResponseFactoryInterface $factory): self
+    {
+        $this->responseFactory = $factory;
+        return $this;
+    }
+
+    public function getResponseFactory(): ResponseFactoryInterface
+    {
+        return $this->responseFactory;
+    }
+
+    public function setStreamInterface(StreamFactoryInterface $streamInterface): self
+    {
+        $this->streamInterface = $streamInterface;
+        return $this;
+    }
+
+    public function getStreamFactory(): StreamFactoryInterface
+    {
+        return $this->streamInterface;
+    }
+
+    /**
+     * @param mixed $id
+     * @return ResourceInterface
+     * @throws EntityNotFoundException
+     */
+    public function findById($id): ResourceInterface
+    {
+        if (null === ($entity = $this->repository()->find($id))) {
+            $class = $this->repository()->getClassName();
+            $type = ResourceUtil::resourceTypeByClass($class);
+            throw new EntityNotFoundException($type, $id);
+        }
+
+        if (!$entity instanceof ResourceInterface) {
+            throw ResourceUtil::notResourceException(get_class($entity));
+        }
+
+        return $entity;
+    }
+
+    public function buildResponseFromResource(
+        ResourceInterface $resource,
+        ServerRequestInterface $request,
+        int $status = 200,
+        string $phrase = 'OK'
+    ): ResponseInterface
+    {
+        return $this->getResponseFactory()
+            ->createResponse($status, $phrase)
+            ->withBody(
+                $this->getStreamFactory()
+                    ->createStream(
+                        $this->getManagerFactory()
+                            ->createManager($request)
+                            ->createData(new Item($resource, $this->transformer()))
+                            ->toJson()
+                    )
+            );
     }
 
 //    public function findById($id)

@@ -1,17 +1,11 @@
 <?php namespace Doctrine\Rest\Resource;
 
-use Doctrine\Rest\Contracts\JsonApiResource;
+use Doctrine\Rest\ResourceInterface;
 
 class Item extends \League\Fractal\Resource\Item
 {
-    /**
-     * Item constructor.
-     *
-     * @param JsonApiResource                                   $resource
-     * @param callable|\League\Fractal\TransformerAbstract|null $transformer
-     */
-    public function __construct(JsonApiResource $resource, $transformer)
+    public function __construct(ResourceInterface $resource, $transformer)
     {
-        parent::__construct($resource, $transformer, $resource->getResourceKey());
+        parent::__construct($resource, $transformer, $resource->getResourceType());
     }
 }
