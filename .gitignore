@@ -3,3 +3,4 @@
 /tests/tmp
 
 .idea
+.phpunit.result.cache

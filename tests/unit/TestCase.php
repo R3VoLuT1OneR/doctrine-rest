@@ -1,9 +1,9 @@
 <?php namespace Pz\Doctrine\Rest\Tests;
 
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Migrations\Tools\Console\ConsoleRunner;
+use Doctrine\Migrations\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Setup;
+use PHPUnit\Framework\InvalidArgumentException;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 
 use Pz\Doctrine\Rest\Action\ItemAction;
@@ -53,7 +53,7 @@ abstract class TestCase extends PHPUnitTestCase
     public static function generateEntityManager()
     {
         $doctrineConfig = Setup::createAnnotationMetadataConfiguration(
-            ['tests/entities/'], false, getcwd().'/tests/tmp', new ArrayCache(), false
+            ['tests/entities/'], false, getcwd().'/tests/tmp', null, false
         );
 
         $doctrineConfig->setAutoGenerateProxyClasses(true);
@@ -83,14 +83,14 @@ abstract class TestCase extends PHPUnitTestCase
         return static::$migrations;
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->em = static::generateEntityManager();
         static::migrations()->run(new StringInput('migrations:migrate --quiet'));
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
         static::migrations()->run(new StringInput('migrations:migrate first --quiet'));
