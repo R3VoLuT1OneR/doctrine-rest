@@ -112,8 +112,8 @@ trait CanHydrate
      * @param mixed  $data
      * @param string $scope
      *
-     * @return object
-     * @throws RestException
+     * @return void
+     * @throws RestException|\Doctrine\ORM\ORMException
      */
     private function hydrateToManyRelation($entity, $name, $targetEntity, $data, $scope)
     {

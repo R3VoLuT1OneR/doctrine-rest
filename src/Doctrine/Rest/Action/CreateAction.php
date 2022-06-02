@@ -33,7 +33,7 @@ class CreateAction extends RestAction
         $class = $this->repository()->getClassName();
 
         $this->authorize($request, $class);
-        $entity = $this->hydrateEntity($class, $request->getData());
+        $entity = $this->hydrateRootEntity($class, $request);
         $this->validateEntity($entity);
 
         $this->callBeforeCreate($entity, $request);
@@ -49,6 +49,11 @@ class CreateAction extends RestAction
 
         $resource = new Item($entity, $this->transformer());
         return RestResponseFactory::resource($request, $resource, RestResponse::HTTP_CREATED, $headers);
+    }
+
+    public function hydrateRootEntity($entity, RestRequestContract $request)
+    {
+        return $this->hydrateEntity($entity, $request->getData());
     }
 
     public function beforeCreate(callable $cb): self

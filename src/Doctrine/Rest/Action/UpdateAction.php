@@ -32,7 +32,7 @@ class UpdateAction extends RestAction
         $entity = $this->repository()->findById($request->getId());
 
         $this->authorize($request, $entity);
-        $this->hydrateEntity($entity, $request->getData());
+        $this->hydrateRootEntity($entity, $request);
         $this->validateEntity($entity);
 
         if ($this->hasEvents()) {
@@ -62,6 +62,11 @@ class UpdateAction extends RestAction
         return RestResponseFactory::resource($request,
             new Item($entity, $this->transformer())
         );
+    }
+
+    public function hydrateRootEntity($entity, RestRequestContract $request)
+    {
+        return $this->hydrateEntity($entity, $request->getData());
     }
 
     /**
