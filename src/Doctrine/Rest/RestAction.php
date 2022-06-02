@@ -77,11 +77,10 @@ abstract class RestAction
      * @param RestRequestContract $request
      * @param object|string       $entity
      *
-     * @return mixed
+     * @return void
      */
     public function authorize(/** @scrutinizer ignore-unused */$request, /** @scrutinizer ignore-unused */$entity)
     {
-        return true;
     }
 
     /**

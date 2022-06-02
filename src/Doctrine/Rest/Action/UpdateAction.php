@@ -48,7 +48,7 @@ class UpdateAction extends RestAction
         }
 
         if (isset($changeSet)) {
-            $this->callBeforeUpdate($entity, $changeSet);
+            $this->callBeforeUpdate($entity, $changeSet, $request);
         }
 
         $this->repository()
@@ -56,7 +56,7 @@ class UpdateAction extends RestAction
             ->flush();
 
         if (isset($changeSet)) {
-            $this->callAfterUpdate($entity, $changeSet);
+            $this->callAfterUpdate($entity, $changeSet, $request);
         }
 
         return RestResponseFactory::resource($request,
@@ -95,22 +95,24 @@ class UpdateAction extends RestAction
     /**
      * @param object $entity
      * @param array $changeSet
+     * @param RestRequestContract $request
      */
-    protected function callBeforeUpdate($entity, array $changeSet)
+    protected function callBeforeUpdate($entity, array $changeSet, RestRequestContract $request)
     {
         foreach ($this->beforeUpdate as $beforeUpdate) {
-            $beforeUpdate($entity, $changeSet);
+            $beforeUpdate($entity, $changeSet, $request);
         }
     }
 
     /**
      * @param object $entity
      * @param array $changeSet
+     * @param RestRequestContract $request
      */
-    protected function callAfterUpdate($entity, array $changeSet)
+    protected function callAfterUpdate($entity, array $changeSet, RestRequestContract $request)
     {
         foreach ($this->afterUpdate as $afterUpdate) {
-            $afterUpdate($entity, $changeSet);
+            $afterUpdate($entity, $changeSet, $request);
         }
     }
 }

@@ -36,12 +36,12 @@ class CreateAction extends RestAction
         $entity = $this->hydrateEntity($class, $request->getData());
         $this->validateEntity($entity);
 
-        $this->callBeforeCreate($entity);
+        $this->callBeforeCreate($entity, $request);
 
         $this->repository()->getEntityManager()->persist($entity);
         $this->repository()->getEntityManager()->flush();
 
-        $this->callAfterCreated($entity);
+        $this->callAfterCreated($entity, $request);
 
         if ($entity instanceof JsonApiResource) {
             $headers['Location'] = $this->repository()->linkJsonApiResource($request, $entity);
@@ -63,19 +63,19 @@ class CreateAction extends RestAction
         return $this;
     }
 
-    public function callBeforeCreate($entity): self
+    public function callBeforeCreate($entity, RestRequestContract $request): self
     {
         foreach ($this->beforeCreate as $cb) {
-            $cb($entity);
+            $cb($entity, $request);
         }
 
         return $this;
     }
 
-    public function callAfterCreated($entity): self
+    public function callAfterCreated($entity, RestRequestContract $request): self
     {
         foreach ($this->afterCreated as $cb) {
-            $cb($entity);
+            $cb($entity, $request);
         }
 
         return $this;
