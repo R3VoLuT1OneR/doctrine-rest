@@ -3,7 +3,7 @@
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\Serializer\JsonApiSerializer;
-use League\Fractal\Serializer\SerializerAbstract;
+use League\Fractal\Serializer\Serializer;
 
 class Scope extends \League\Fractal\Scope
 {
@@ -32,7 +32,7 @@ class Scope extends \League\Fractal\Scope
      *
      * @return array
      */
-    protected function serializeResource(SerializerAbstract $serializer, $data)
+    protected function serializeResource(Serializer $serializer, $data): array|null
     {
         $includeAttributes = true;
         $resourceKey = $this->resource->getResourceKey();

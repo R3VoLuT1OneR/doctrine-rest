@@ -12,7 +12,7 @@ class ScopeFactory extends \League\Fractal\ScopeFactory
      *
      * @return Scope
      */
-    public function createScopeFor(Manager $manager, ResourceInterface $resource, $scopeIdentifier = null)
+    public function createScopeFor(Manager $manager, ResourceInterface $resource, $scopeIdentifier = null): \League\Fractal\Scope
     {
         $scope = new Scope($manager, $resource, $scopeIdentifier);
         $scope->isRelationships($manager->request()->isRelationships());

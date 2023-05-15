@@ -1,9 +1,9 @@
 <?php namespace Pz\Doctrine\Rest\Tests;
 
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\Migrations\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Setup;
-use PHPUnit\Framework\InvalidArgumentException;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 
 use Pz\Doctrine\Rest\Action\ItemAction;
@@ -18,7 +18,6 @@ use Pz\Doctrine\Rest\Action\Relationships\RelationshipsItemDeleteAction;
 use Pz\Doctrine\Rest\Action\Relationships\RelationshipsItemUpdateAction;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Query;
 
 use Mockery as m;
 use Pz\Doctrine\Rest\RestRepository;
@@ -29,11 +28,12 @@ use Pz\Doctrine\Rest\Tests\Entities\Transformers\BlogTransformer;
 use Pz\Doctrine\Rest\Tests\Entities\Transformers\RoleTransformer;
 use Pz\Doctrine\Rest\Tests\Entities\User;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\StringInput;
 
 abstract class TestCase extends PHPUnitTestCase
 {
+    use ArraySubsetAsserts;
+
     /**
      * @var EntityManager|m\Mock
      */

@@ -15,21 +15,22 @@
     "type": "library",
     "minimum-stability": "stable",
     "require": {
-        "php": "^8.0.2",
+        "php": "^8.1",
         "ext-json": "*",
         "doctrine/orm": "^2.7",
         "doctrine/annotations": "^1.13",
         "doctrine/common": "^3.2",
         "doctrine/cache": "^1.11",
-        "league/fractal": "^0.17.0",
+        "league/fractal": "^0.20",
         "symfony/http-foundation": "^6.0",
         "pmill/doctrine-array-hydrator": "^0.1.2",
         "symfony/validator": "^5.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8.5",
+        "phpunit/phpunit": "^9",
         "mockery/mockery": "^1.0",
-        "doctrine/migrations": "^2.2"
+        "doctrine/migrations": "^2.3",
+        "dms/phpunit-arraysubset-asserts": "^0.4.0"
     },
     "autoload": {
         "psr-4": {

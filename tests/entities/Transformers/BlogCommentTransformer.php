@@ -7,7 +7,7 @@ use Pz\Doctrine\Rest\Tests\Entities\User;
 
 class BlogCommentTransformer extends TransformerAbstract
 {
-    protected $availableIncludes = [
+    protected array $availableIncludes = [
         'user', 'blog',
     ];
 

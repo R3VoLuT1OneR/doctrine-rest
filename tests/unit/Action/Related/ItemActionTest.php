@@ -15,11 +15,13 @@ class ItemActionTest extends TestCase
 
     public function test_item_related_manage_action()
     {
-        $request = new RestRequest(new Request(['id' => 1], ['data' => [
+        $request = new RestRequest(new Request(
+            query: ['id' => 1],
+            content: json_encode(['data' => [
             'attributes' => [
                 'name' => 'new role',
             ]
-        ]]));
+        ]])));
         $response = $this->getUserRelatedRoleItemCreateAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());

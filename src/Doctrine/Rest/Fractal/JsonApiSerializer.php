@@ -27,7 +27,7 @@ class JsonApiSerializer extends \League\Fractal\Serializer\JsonApiSerializer
      *
      * @return array
      */
-    public function collection($resourceKey, array $data, $includeAttributes = true)
+    public function collection($resourceKey, array $data, $includeAttributes = true): array
     {
         $resources = [];
 
@@ -54,7 +54,7 @@ class JsonApiSerializer extends \League\Fractal\Serializer\JsonApiSerializer
      *
      * @return array
      */
-    public function item($resourceKey, array $data, $includeAttributes = true)
+    public function item($resourceKey, array $data, $includeAttributes = true): array
     {
         $item = parent::item($resourceKey, $data);
         if (!$includeAttributes) {

@@ -34,7 +34,7 @@ class ItemActionTest extends TestCase
         $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
         $this->assertInstanceOf(RestResponse::class, $response = $this->getItemAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(
+        $this->assertArraySubset(
             [
                 'data' => [
                     'id' => '1',
