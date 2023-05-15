@@ -64,13 +64,16 @@ class RestRequest implements RestRequestContract
      */
     public function getData()
     {
-        $request = $this->http()->request;
-
-        if ($request->has('data')) {
-            return $request->get('data');
+        try {
+            $data = $this->http()->toArray()['data'] ?? false;
+            if (!is_array($data)) {
+                throw new \Exception('no data');
+            }
+        } catch (\Throwable $e) {
+            throw RestException::missingRootData();
         }
 
-        throw RestException::missingRootData();
+        return $data;
     }
 
     /**

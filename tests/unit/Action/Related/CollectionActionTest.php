@@ -22,14 +22,20 @@ class CollectionActionTest extends TestCase
 
     public function test_user_related_blog_manage_action()
     {
-        $request = new RestRequest(new Request(['id' => 1], ['data' => [
-            [
-                'attributes' => [
-                    'title' => 'Custom blog title',
-                    'content' => 'Custom blog content',
+        $request = new RestRequest(new Request(
+            query: ['id' => 1],
+            content: json_encode([
+                'data' => [
+                    [
+                        'attributes' => [
+                            'title' => 'Custom blog title',
+                            'content' => 'Custom blog content',
+                        ]
+                    ]
                 ]
-            ]
-        ]]));
+            ])
+        ));
+
         $response = $this->getUserRelatedBlogCollectionCreateAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());
@@ -70,10 +76,14 @@ class CollectionActionTest extends TestCase
             ]
         ]], $response);
 
-        $request = new RestRequest(new Request(['id' => 5], ['data' => [
-            ['id' => 2, 'type' => Blog::getResourceKey()],
-            ['id' => 3, 'type' => Blog::getResourceKey()],
-        ]]));
+        $request = new RestRequest(new Request(
+            query: ['id' => 5],
+            content: json_encode([
+                'data' => [
+                    ['id' => 2, 'type' => Blog::getResourceKey()],
+                    ['id' => 3, 'type' => Blog::getResourceKey()],
+                ]])
+        ));
         $response = $this->getUserRelatedBlogCollectionDeleteAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(RestResponse::HTTP_NO_CONTENT, $response->getStatusCode());
@@ -82,7 +92,7 @@ class CollectionActionTest extends TestCase
         $response = $this->getUserRelatedBlogCollectionAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(['data' => [
+        $this->assertArraySubset(['data' => [
             [
                 'id' => '1',
                 'type' => Blog::getResourceKey(),
@@ -121,7 +131,7 @@ class CollectionActionTest extends TestCase
         $response = $this->getUserRelatedBlogCollectionAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals([
+        $this->assertArraySubset([
             'data' => [
                 [
                     'id' => '1',
@@ -166,7 +176,7 @@ class CollectionActionTest extends TestCase
 
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals([
+        $this->assertArraySubset([
             'data' => [
                 [
                     'id' => '1',

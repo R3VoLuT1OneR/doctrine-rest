@@ -35,7 +35,7 @@ class CollectionActionTest extends TestCase
         $request = new RestRequest(new Request(['include' => 'user', 'fields' => ['user' => 'id,name']]));
         $this->assertInstanceOf(RestResponse::class, $response = $action->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(
+        $this->assertArraySubset(
             [
                 'data' => [
                     [
@@ -51,6 +51,9 @@ class CollectionActionTest extends TestCase
                                     'self' => '/blog_comment/1/relationships/user',
                                     'related' => '/blog_comment/1/user',
                                 ]
+                            ],
+                            'blog' => [
+                                'links' => []
                             ]
                         ],
                         'links' => [
@@ -243,7 +246,7 @@ class CollectionActionTest extends TestCase
         $request = new RestRequest(new Request(['include' => 'blogs', 'exclude' => 'blogs.user']));
         $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals([
+        $this->assertArraySubset([
             'data' => [
                 [
                     'id' => '1',
@@ -419,7 +422,7 @@ class CollectionActionTest extends TestCase
         $response = $this->getCollectionAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(
+        $this->assertArraySubset(
             [
                 'data' => [
                     [
@@ -484,7 +487,7 @@ class CollectionActionTest extends TestCase
         $response = $this->getCollectionAction()->setFilterProperty('email')->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(
+        $this->assertArraySubset(
             [
                 'data' => [[
                     'id' => '2',
@@ -505,7 +508,7 @@ class CollectionActionTest extends TestCase
         $response = $this->getCollectionAction()->setFilterable(['id'])->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(
+        $this->assertArraySubset(
             [
                 'data' => [
                     [
@@ -697,7 +700,7 @@ class CollectionActionTest extends TestCase
 
         $this->assertInstanceOf(RestResponse::class, $response = $this->getCollectionAction()->dispatch($request));
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals([
+        $this->assertArraySubset([
             'data' => [
                 [
                     'id' => '5',

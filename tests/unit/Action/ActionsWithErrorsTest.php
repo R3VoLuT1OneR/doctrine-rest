@@ -25,7 +25,10 @@ class ActionsWithErrorsTest extends TestCase
 
     public function test_related_action_wrong_type()
     {
-        $request = new RestRequest(new Request(['id' => 1], ['data' => ['id' => 33333, 'type' => 'fasfa']]));
+        $request = new RestRequest(new Request(
+            query: ['id' => 1],
+            content: json_encode(['data' => ['id' => 33333, 'type' => 'fasfa']])
+        ));
         $response = $this->getUserRelationshipsRoleUpdateAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(422, $response->getStatusCode());
@@ -37,7 +40,10 @@ class ActionsWithErrorsTest extends TestCase
             ],
         ]], json_decode($response->getContent(), true));
 
-        $request = new RestRequest(new Request(['id' => 1], ['data' => ['type' => 'fasfa']]));
+        $request = new RestRequest(new Request(
+            query: ['id' => 1],
+            content: json_encode(['data' => ['type' => 'fasfa']]),
+        ));
         $response = $this->getUserRelationshipsRoleUpdateAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(422, $response->getStatusCode());
@@ -112,7 +118,10 @@ class ActionsWithErrorsTest extends TestCase
             new RoleTransformer()
         );
 
-        $request = new RestRequest(new Request(['id' => 1], ['data' => [['id' => 1, 'type' => Role::getResourceKey()]]]));
+        $request = new RestRequest(new Request(
+            query: ['id' => 1],
+            content: json_encode(['data' => [['id' => 1, 'type' => Role::getResourceKey()]]]),
+        ));
         $response = $action->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(422, $response->getStatusCode());
@@ -136,7 +145,10 @@ class ActionsWithErrorsTest extends TestCase
             new RoleTransformer()
         );
 
-        $request = new RestRequest(new Request(['id' => 1], ['data' => [['id' => 1, 'type' => Role::getResourceKey()]]]));
+        $request = new RestRequest(new Request(
+            query: ['id' => 1],
+            content: json_encode(['data' => [['id' => 1, 'type' => Role::getResourceKey()]]])
+        ));
         $response = $action->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(422, $response->getStatusCode());
@@ -159,7 +171,10 @@ class ActionsWithErrorsTest extends TestCase
             new UserTransformer()
         );
 
-        $request = new RestRequest(new Request([], ['data' => ['attributes' => []]]));
+        $request = new RestRequest(new Request(
+            query: [],
+            content: json_encode(['data' => ['attributes' => []]])
+        ));
         $response = $action->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(
@@ -180,10 +195,17 @@ class ActionsWithErrorsTest extends TestCase
             json_decode($response->getContent(), true)
         );
 
-        $request = new RestRequest(new Request([], ['data' => ['attributes' => [
-            'name' => 'Test',
-            'email' => 'wrong-email',
-        ]]]));
+        $request = new RestRequest(new Request(
+            query: [],
+            content: json_encode([
+                'data' => [
+                    'attributes' => [
+                        'name' => 'Test',
+                        'email' => 'wrong-email',
+                    ]
+                ]
+            ])
+        ));
         $response = $action->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(

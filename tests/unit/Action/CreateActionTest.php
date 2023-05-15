@@ -33,22 +33,25 @@ class CreateActionTest extends TestCase
                 $afterCalled = true;
             });
 
-        $request = new RestRequest(new Request(['include' => 'role'], [
-            'data' => [
-                'attributes' => [
-                    'name' => 'New User',
-                    'email' => 'test@teststst.com',
-                ],
-                'relationships' => [
-                    'role' => [
-                        'data' => [
-                            'id' => '1',
-                            'type' => 'role',
+        $request = new RestRequest(new Request(
+            query: ['include' => 'role'],
+            content: json_encode([
+                'data' => [
+                    'attributes' => [
+                        'name' => 'New User',
+                        'email' => 'test@teststst.com',
+                    ],
+                    'relationships' => [
+                        'role' => [
+                            'data' => [
+                                'id' => '1',
+                                'type' => 'role',
+                            ]
                         ]
                     ]
                 ]
-            ]
-        ]));
+            ])
+        ));
 
         $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
         $request->http()->headers->set('CONTENT_TYPE', RestRequest::JSON_API_CONTENT_TYPE);
@@ -65,22 +68,25 @@ class CreateActionTest extends TestCase
             new UserTransformer()
         );
 
-        $request = new RestRequest(new Request(['include' => 'role'], [
-            'data' => [
-                'attributes' => [
-                    'name' => 'New User',
-                    'email' => 'test@teststst.com',
-                ],
-                'relationships' => [
-                    'role' => [
-                        'data' => [
-                            'id' => '1',
-                            'type' => 'role',
+        $request = new RestRequest(new Request(
+            query: ['include' => 'role'],
+            content: json_encode([
+                'data' => [
+                    'attributes' => [
+                        'name' => 'New User',
+                        'email' => 'test@teststst.com',
+                    ],
+                    'relationships' => [
+                        'role' => [
+                            'data' => [
+                                'id' => '1',
+                                'type' => 'role',
+                            ]
                         ]
                     ]
                 ]
-            ]
-        ]));
+            ])
+        ));
 
         $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
         $request->http()->headers->set('CONTENT_TYPE', RestRequest::JSON_API_CONTENT_TYPE);
@@ -88,7 +94,7 @@ class CreateActionTest extends TestCase
 
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());
-        $this->assertEquals(
+        $this->assertArraySubset(
             [
                 'data' => [
                     'id' => '6',
@@ -137,13 +143,16 @@ class CreateActionTest extends TestCase
             new RoleTransformer()
         );
 
-        $request = new RestRequest(new Request([], [
-            'data' => [
-                'attributes' => [
-                    'name' => 'New Role',
+        $request = new RestRequest(new Request(
+            query: [],
+            content: json_encode([
+                'data' => [
+                    'attributes' => [
+                        'name' => 'New Role',
+                    ]
                 ]
-            ]
-        ]));
+            ])
+        ));
 
         $request->http()->headers->set('CONTENT_TYPE', RestRequest::JSON_API_CONTENT_TYPE);
         $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);

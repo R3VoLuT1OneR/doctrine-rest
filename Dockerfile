@@ -1,5 +1,5 @@
 # Used for local development
-FROM php:8.0.2-cli-alpine
+FROM php:8.1-cli-alpine
 
 USER root
 

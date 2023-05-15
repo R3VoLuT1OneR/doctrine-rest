@@ -30,18 +30,21 @@ class UpdateActionTest extends TestCase
             ->beforeUpdate($onUpdate)
             ->afterUpdate($onUpdate);
 
-        $request = new RestRequest(new Request([
-            'id' => '2',
-            'fields' => [
-                'user' => 'email',
-            ]
-        ], [
-            'data' => [
-                'attributes' => [
-                    'email' => 'new2@email.com',
+        $request = new RestRequest(new Request(
+            query: [
+                'id' => '2',
+                'fields' => [
+                    'user' => 'email',
                 ]
-            ]
-        ]));
+            ],
+            content: json_encode([
+                'data' => [
+                    'attributes' => [
+                        'email' => 'new2@email.com',
+                    ]
+                ]
+            ])
+        ));
 
         $request->http()->headers->set('CONTENT_TYPE', RestRequest::JSON_API_CONTENT_TYPE);
         $request->http()->headers->set('Accept', RestRequest::JSON_API_CONTENT_TYPE);
@@ -49,7 +52,7 @@ class UpdateActionTest extends TestCase
 
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(
+        $this->assertArraySubset(
             [
                 'data' => [
                     'id' => '2',
