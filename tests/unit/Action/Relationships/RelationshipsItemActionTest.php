@@ -34,7 +34,9 @@ class RelationshipsItemActionTest extends TestCase
         $this->assertEquals(['data' => null], json_decode($response->getContent(), true));
 
 
-        $request = new RestRequest(new Request(['id' => 1], ['data' => ['id' => 2, 'type' => Role::getResourceKey()]]));
+        $request = new RestRequest(new Request(['id' => 1], content: json_encode([
+            'data' => ['id' => 2, 'type' => Role::getResourceKey()]
+        ])));
         $response = $this->getUserRelationshipsRoleUpdateAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());

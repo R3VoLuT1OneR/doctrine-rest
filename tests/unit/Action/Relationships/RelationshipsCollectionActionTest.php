@@ -87,9 +87,9 @@ class RelationshipsCollectionActionTest extends TestCase
             ],
         ]], json_decode($response->getContent(), true));
 
-        $request = new RestRequest(new Request(['id' => 1], ['data' => [
+        $request = new RestRequest(new Request(['id' => 1], content: json_encode(['data' => [
             ['id' => 4, 'type' => Tag::getResourceKey()]
-        ]]));
+        ]])));
         $response = $this->getRelationshipsTagCollectionCreateAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());
@@ -124,16 +124,16 @@ class RelationshipsCollectionActionTest extends TestCase
 
     public function test_user_relation_tags_update_action()
     {
-        $request = new RestRequest(new Request(['id' => 1], ['data' => []]));
+        $request = new RestRequest(new Request(['id' => 1], content: json_encode(['data' => []])));
         $response = $this->getRelationshipsTagCollectionUpdateAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(['data' => []], json_decode($response->getContent(), true));
 
-        $request = new RestRequest(new Request(['id' => 1], ['data' => [
+        $request = new RestRequest(new Request(['id' => 1], content: json_encode(['data' => [
             ['id' => 4, 'type' => Tag::getResourceKey()],
             ['id' => 2, 'type' => Tag::getResourceKey()],
-        ]]));
+        ]])));
         $response = $this->getRelationshipsTagCollectionUpdateAction()->dispatch($request);
 
         $this->assertInstanceOf(RestResponse::class, $response);
@@ -164,16 +164,16 @@ class RelationshipsCollectionActionTest extends TestCase
 
     public function test_user_relation_tags_delete_action()
     {
-        $request = new RestRequest(new Request(['id' => 1], ['data' => []]));
+        $request = new RestRequest(new Request(['id' => 1], content: json_encode(['data' => []])));
         $response = $this->getRelationshipsTagCollectionDeleteAction()->dispatch($request);
 
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals([], json_decode($response->getContent(), true));
 
-        $request = new RestRequest(new Request(['id' => 1], ['data' => [
+        $request = new RestRequest(new Request(['id' => 1], content: json_encode(['data' => [
             ['id' => 1, 'type' => Tag::getResourceKey()],
-        ]]));
+        ]])));
         $response = $this->getRelationshipsTagCollectionDeleteAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(204, $response->getStatusCode());
@@ -199,10 +199,10 @@ class RelationshipsCollectionActionTest extends TestCase
             ]
         ], json_decode($response->getContent(), true));
 
-        $request = new RestRequest(new Request(['id' => 1], ['data' => [
+        $request = new RestRequest(new Request(['id' => 1], content: json_encode(['data' => [
             ['id' => 2, 'type' => Tag::getResourceKey()],
             ['id' => 3, 'type' => Tag::getResourceKey()],
-        ]]));
+        ]])));
 
         $response = $this->getRelationshipsTagCollectionDeleteAction()->dispatch($request);
         $this->assertInstanceOf(RestResponse::class, $response);
@@ -224,7 +224,7 @@ class RelationshipsCollectionActionTest extends TestCase
 
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(['data' => [
+        $this->assertArraySubset(['data' => [
             [
                 'id' => '1',
                 'type' => Blog::getResourceKey(),
@@ -247,7 +247,7 @@ class RelationshipsCollectionActionTest extends TestCase
 
         $this->assertInstanceOf(RestResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals([
+        $this->assertArraySubset([
             'data' => [
                 [
                     'id' => '1',

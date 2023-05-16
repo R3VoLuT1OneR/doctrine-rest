@@ -6,6 +6,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class RestResponse extends JsonResponse
 {
+    public static function create($data, $status, array $headers = []): static
+    {
+        return new static($data, $status, $headers);
+    }
+
     /**
      * @return static
      */
