@@ -27,6 +27,13 @@ class CollectionAction extends RestAction
     protected $filterProperty;
 
     /**
+     * Either to apply a loose or strict search.
+     *
+     * @var bool
+     */
+    protected bool $filterPropertyStrict = false;
+
+    /**
      * Get list of filterable entity fields.
      *
      * @var array
@@ -38,9 +45,10 @@ class CollectionAction extends RestAction
      *
      * @return $this
      */
-    public function setFilterProperty($property)
+    public function setFilterProperty($property, bool $strict = false)
     {
         $this->filterProperty = $property;
+        $this->filterPropertyStrict = $strict;
         return $this;
     }
 
@@ -165,7 +173,7 @@ class CollectionAction extends RestAction
     protected function filterParsers(RestRequestContract $request)
     {
         return [
-            new SearchFilterParser($request, $this->getStringFilterField()),
+            new SearchFilterParser($request, $this->getStringFilterField(), $this->filterPropertyStrict),
             new ArrayFilterParser($request, $this->getArrayFilterFields()),
         ];
     }
