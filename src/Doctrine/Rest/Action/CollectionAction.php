@@ -31,7 +31,7 @@ class CollectionAction extends RestAction
      *
      * @var bool
      */
-    protected bool $filterPropertyStrict = false;
+    protected $filterPropertyStrict = false;
 
     /**
      * Get list of filterable entity fields.
@@ -45,11 +45,28 @@ class CollectionAction extends RestAction
      *
      * @return $this
      */
-    public function setFilterProperty($property, bool $strict = false)
+    public function setFilterProperty($property)
     {
         $this->filterProperty = $property;
-        $this->filterPropertyStrict = $strict;
         return $this;
+    }
+
+    /**
+     * @param bool $filterPropertyStrict
+     * @return $this
+     */
+    public function setFilterPropertyStrict(bool $filterPropertyStrict): self
+    {
+        $this->filterPropertyStrict = $filterPropertyStrict;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getFilterPropertyStrict()
+    {
+        return $this->filterPropertyStrict;
     }
 
     /**
@@ -173,7 +190,12 @@ class CollectionAction extends RestAction
     protected function filterParsers(RestRequestContract $request)
     {
         return [
-            new SearchFilterParser($request, $this->getStringFilterField(), strict: $this->filterPropertyStrict),
+            new SearchFilterParser(
+                $request,
+                $this->getStringFilterField(),
+                SearchFilterParser::SEARCH_KEY,
+                $this->getFilterPropertyStrict()
+            ),
             new ArrayFilterParser($request, $this->getArrayFilterFields()),
         ];
     }
