@@ -173,7 +173,7 @@ class CollectionAction extends RestAction
     protected function filterParsers(RestRequestContract $request)
     {
         return [
-            new SearchFilterParser($request, $this->getStringFilterField(), $this->filterPropertyStrict),
+            new SearchFilterParser($request, $this->getStringFilterField(), strict: $this->filterPropertyStrict),
             new ArrayFilterParser($request, $this->getArrayFilterFields()),
         ];
     }
