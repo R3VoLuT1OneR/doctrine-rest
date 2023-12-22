@@ -22,7 +22,7 @@ class SearchFilterParser extends FilterParserAbstract
     /**
      * @var bool
      */
-    protected bool $searchStrict;
+    protected $searchStrict;
 
     /**
      * StringParser constructor.
@@ -34,8 +34,8 @@ class SearchFilterParser extends FilterParserAbstract
      */
     public function __construct(
         RestRequestContract $request,
-        $property,
-        $searchKey = self::SEARCH_KEY,
+        string $property,
+        string $searchKey = self::SEARCH_KEY,
         bool $strict = false
     ) {
         parent::__construct($request);
