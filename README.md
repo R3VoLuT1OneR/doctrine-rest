@@ -34,7 +34,7 @@ Change entity repository to `RestRepository` or create new one.
 
     // Provide configured entity manager
     $entityManager = getEntityManager()
-    
+
     // Repository that action will work with
     $restRepository = new RestRepository($entityManager, $entityManager->getClassMetadata($entityClass));
 
@@ -52,9 +52,9 @@ Route request `GET http://localhost/api/{resourceKey}`
 
     /** @var RestResponse|Symfony\Component\HttpFoundation\Response */
     $response = $action->dispatch($restRequest);
- 
+
 Regular response
- 
+
     {
         'data': [
             { ...transformer data },
@@ -95,9 +95,9 @@ Route request `GET http://localhost/api/{resourceKey}/{id}`.
 
     /** @var RestResponse|Symfony\Component\HttpFoundation\Response */
     $response = $action->dispatch($restRequest);
- 
+
 Regular response
- 
+
     {
         'data': [
             'id': {id},
@@ -128,9 +128,9 @@ Route request `POST http://localhost/api/{resourceKey}`.
 
     /** @var RestResponse|Symfony\Component\HttpFoundation\Response */
     $response = $action->dispatch($restRequest);
- 
+
 Regular response
- 
+
     {
         'data': [
             'id': {id},
@@ -161,9 +161,9 @@ Route request `PATCH http://localhost/api/{resourceKey}/{id}`.
 
     /** @var RestResponse|Symfony\Component\HttpFoundation\Response */
     $response = $action->dispatch($restRequest);
- 
+
 Regular response
- 
+
     {
         'data': [
             'id': {id},
@@ -206,4 +206,10 @@ We using doctrine migrations for unit tests database schema.
 
 ```
 php ./vendor/bin/doctrine-migrations migrations:diff
+```
+
+## Run tests
+```
+docker-compose up -d
+docker-compose run php phpunit
 ```
