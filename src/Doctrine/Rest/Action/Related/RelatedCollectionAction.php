@@ -60,7 +60,7 @@ class RelatedCollectionAction extends BaseCollectionAction
      * @return $this
      * @throws \Pz\Doctrine\Rest\Exceptions\RestException
      */
-    protected function applyFilter(RestRequestContract $request, QueryBuilder $qb)
+    protected function applyFilter(RestRequestContract $request, QueryBuilder $qb): self
     {
         $entity = $this->base()->findById($request->getId());
 
@@ -70,6 +70,6 @@ class RelatedCollectionAction extends BaseCollectionAction
         $qb->innerJoin($qb->getRootAliases()[0].'.'.$this->mappedBy(), $this->mappedBy());
         $qb->addCriteria($relateCriteria);
 
-        parent::applyFilter($request, $qb);
+        return parent::applyFilter($request, $qb);
     }
 }

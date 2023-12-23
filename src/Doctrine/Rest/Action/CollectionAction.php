@@ -22,7 +22,7 @@ class CollectionAction extends RestAction
     /**
      * Field that can be filtered if filter is string.
      *
-     * @var string
+     * @var string|null
      */
     protected $filterProperty;
 
@@ -41,11 +41,11 @@ class CollectionAction extends RestAction
     protected $filterable = [];
 
     /**
-     * @param string $property
+     * @param string|null $property
      *
      * @return $this
      */
-    public function setFilterProperty($property)
+    public function setFilterProperty(?string $property): self
     {
         $this->filterProperty = $property;
         return $this;
@@ -74,7 +74,7 @@ class CollectionAction extends RestAction
      *
      * @return $this
      */
-    public function setFilterable(array $filterable)
+    public function setFilterable(array $filterable): self
     {
         $this->filterable = $filterable;
         return $this;
@@ -88,6 +88,24 @@ class CollectionAction extends RestAction
     public function getStringFilterField()
     {
         return $this->filterProperty;
+    }
+
+    /**
+     * @param bool $filterPropertyStrict
+     * @return $this
+     */
+    public function setFilterPropertyStrict(bool $filterPropertyStrict): self
+    {
+        $this->filterPropertyStrict = $filterPropertyStrict;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getFilterPropertyStrict()
+    {
+        return $this->filterPropertyStrict;
     }
 
     /**
@@ -153,7 +171,7 @@ class CollectionAction extends RestAction
      * @throws \Doctrine\ORM\Query\QueryException
      * @return $this
      */
-    protected function applyPagination(RestRequestContract $request, QueryBuilder $qb)
+    protected function applyPagination(RestRequestContract $request, QueryBuilder $qb): self
     {
         $qb->addCriteria(
             new Criteria(null,
@@ -173,7 +191,7 @@ class CollectionAction extends RestAction
      * @throws \Doctrine\ORM\Query\QueryException
      * @return $this
      */
-    protected function applyFilter(RestRequestContract $request, QueryBuilder $qb)
+    protected function applyFilter(RestRequestContract $request, QueryBuilder $qb): self
     {
         $qb->addCriteria(
             CriteriaChain::create($this->filterParsers($request))->process()

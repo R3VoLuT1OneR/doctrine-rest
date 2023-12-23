@@ -28,13 +28,13 @@ class SearchFilterParser extends FilterParserAbstract
      * StringParser constructor.
      *
      * @param RestRequestContract $request
-     * @param string              $property Property name that will be filtered by query.
+     * @param string|null         $property Property name to be filtered by.
      * @param string              $searchKey
      * @param bool                $strict
      */
     public function __construct(
         RestRequestContract $request,
-        string $property,
+        ?string $property,
         string $searchKey = self::SEARCH_KEY,
         bool $strict = false
     ) {
