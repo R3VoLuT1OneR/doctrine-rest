@@ -52,9 +52,6 @@ class CollectionActionTest extends TestCase
                                     'related' => '/blog_comment/1/user',
                                 ]
                             ],
-                            'blog' => [
-                                'links' => []
-                            ]
                         ],
                         'links' => [
                             'self' => '/blog_comment/1'

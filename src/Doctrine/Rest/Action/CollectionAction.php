@@ -91,24 +91,6 @@ class CollectionAction extends RestAction
     }
 
     /**
-     * @param bool $filterPropertyStrict
-     * @return $this
-     */
-    public function setFilterPropertyStrict(bool $filterPropertyStrict): self
-    {
-        $this->filterPropertyStrict = $filterPropertyStrict;
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getFilterPropertyStrict()
-    {
-        return $this->filterPropertyStrict;
-    }
-
-    /**
      * Get list of filterable entity properties.
      *
      * @return array
