@@ -7,6 +7,21 @@ use Pz\Doctrine\Rest\Exceptions\RestException;
 
 class ArrayFilterParser extends FilterParserAbstract
 {
+    private static array $operators = [
+        'eq',
+        'lt',
+        'gt',
+        'gte',
+        'lte',
+        'neq',
+        'isNull',
+        'in',
+        'notIn',
+        'contains',
+        'startsWith',
+        'endsWith',
+    ];
+
     /**
      * @var bool|array
      */
@@ -98,8 +113,11 @@ class ArrayFilterParser extends FilterParserAbstract
         if (is_array($value) && isset($value['operator']) && array_key_exists('value', $value)) {
             $operator = $value['operator'];
 
-            if (!method_exists($criteria->expr(), $operator)) {
-                throw RestException::createFilterError(['field' => $field, 'filter' => $value], 'Unknown operator.');
+            if (!in_array($operator, self::$operators)) {
+                throw RestException::createFilterError(['field' => $field, 'filter' => $value], sprintf(
+                    'Unknown operator. Allowed operators are: %s.',
+                    implode(', ', self::$operators)
+                ));
             }
 
             $criteria->andWhere(

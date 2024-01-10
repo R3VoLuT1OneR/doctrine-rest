@@ -32,7 +32,7 @@ class ArrayParserTest extends TestCase
                 [
                     'code' => 'filter-input',
                     'source' => ['field' => 'field1', 'filter' => ['operator' => 'not', 'value' => false]],
-                    'detail' => 'Unknown operator.',
+                    'detail' => 'Unknown operator. Allowed operators are: eq, lt, gt, gte, lte, neq, isNull, in, notIn, contains, startsWith, endsWith.',
                 ]
             ], $e->errors());
         }
