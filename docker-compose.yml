@@ -1,7 +1,9 @@
 version: "3.3"
 services:
   php:
-    build: .
+    build:
+      context: docker
+      dockerfile: Dockerfile
     volumes:
       - .:/opt/project
     user: '1000'

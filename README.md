@@ -209,7 +209,7 @@ php ./vendor/bin/doctrine-migrations migrations:diff
 ```
 
 ## Run tests
-```
-docker-compose up -d
-docker-compose run php phpunit
+
+```shell
+docker compose run php phpunit
 ```

@@ -17,8 +17,6 @@ class Version20171110225652 extends AbstractMigration
      */
     public function up(Schema $schema): void
     {
-        $em = TestCase::generateEntityManager();
-
         $users = [
             ['email' => 'user1@test.com',  'name'    => 'User1Name', 'role' => 1],
             ['email' => 'user2@gmail.com', 'name'    => 'User2Name', 'role' => 2],
@@ -130,8 +128,6 @@ class Version20171110225652 extends AbstractMigration
             $content = $comment['content'];
             $this->addSql("INSERT INTO `blog_comment` (user_id, blog_id, content) VALUES ($userId, $blogId, '$content')");
         }
-
-        $em->flush();
     }
 
     /**

@@ -1,7 +1,13 @@
 <?php namespace Pz\Doctrine\Rest\Tests;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\Migrations\Configuration\Configuration;
+use Doctrine\Migrations\Configuration\Connection\ExistingConnection;
+use Doctrine\Migrations\Configuration\EntityManager\ExistingEntityManager;
+use Doctrine\Migrations\Configuration\Migration\ExistingConfiguration;
+use Doctrine\Migrations\DependencyFactory;
 use Doctrine\Migrations\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Setup;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
@@ -39,45 +45,63 @@ abstract class TestCase extends PHPUnitTestCase
      */
     protected $em;
 
-    static public $connection;
+    static public Connection $connection;
 
-    /**
-     * @var Application
-     */
-    static public $migrations;
+    static public Application $migrations;
 
     /**
      * @return EntityManager
      * @throws \Doctrine\ORM\ORMException
      */
-    public static function generateEntityManager()
+    public static function generateEntityManager(): EntityManager
     {
         $doctrineConfig = Setup::createAnnotationMetadataConfiguration(
-            ['tests/entities/'], false, getcwd().'/tests/tmp', null, false
+            paths: ['tests/entities/'],
+            proxyDir: __DIR__.'/../tmp',
+            useSimpleAnnotationReader: false
         );
 
         $doctrineConfig->setAutoGenerateProxyClasses(true);
-        return EntityManager::create(static::connection(), $doctrineConfig);
+
+        return new EntityManager(static::connection(), $doctrineConfig);
     }
 
-    public static function connection()
+    public static function connection(): Connection
     {
-        if (static::$connection === null) {
+        if (!isset(static::$connection)) {
             static::$connection = DriverManager::getConnection([
-                'driver'=>'pdo_sqlite',
-                'dbname'=>':memory:',
+                'driver' => 'pdo_sqlite',
+                'memory' => true,
+                'path' => ':memory:'
             ]);
         }
 
         return static::$connection;
     }
 
-    public static function migrations()
+    public static function migrations(): Application
     {
-        if (static::$migrations === null) {
-            $helperSet = include(__DIR__ . '/../../cli-config.php');
-            static::$migrations = ConsoleRunner::createApplication($helperSet);
-            static::$migrations->setAutoExit(false);
+        // TODO: Disabled for now, as it's not working
+        //       https://github.com/doctrine/migrations/issues/1402
+        if (!isset(static::$migrations) || true) {
+            $configuration = new Configuration();
+            $configuration->addMigrationsDirectory(
+                'Pz\Doctrine\Rest\Tests\Migrations',
+                __DIR__ . '/../migrations'
+            );
+
+            $dependencyFactory = DependencyFactory::fromConnection(
+                configurationLoader: new ExistingConfiguration($configuration),
+                connectionLoader: new ExistingConnection(static::connection()),
+            );
+
+            $migrationsApplication = ConsoleRunner::createApplication(
+                dependencyFactory: $dependencyFactory
+            );
+
+            $migrationsApplication->setAutoExit(false);
+
+            static::$migrations = $migrationsApplication;
         }
 
         return static::$migrations;
